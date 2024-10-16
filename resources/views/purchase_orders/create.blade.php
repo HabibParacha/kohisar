@@ -506,8 +506,8 @@
         let tableBody = $('#table tbody');
 
         let row = `
-            <tr>
-                <td><a href=""><i class="bx bx-menu"></i></a> </td>
+             <tr>
+                <td><a href=""><i class="bx bx-menu handle"></i></a> </td>
                 <td> 
                     <select name="item_id[]" class="form-control select2 item-dropdown-list" style="width:100%">                                                
                         <option >Choose...</option>
@@ -532,7 +532,7 @@
 
 
                 <td> 
-                    <input type="number" name="unit_quantity[]" step="0.01" class="form-control item-unit-quantity" readonly>  
+                    <input type="number" name="unit_quantity[]" step="0.01" class="form-control item-unit-quantity " readonly>  
                 </td>
                 
                 
@@ -544,6 +544,32 @@
                     <input type="number" name="gross_weight[]" step="0.01" class="form-control gross-weight" readonly>  
                 </td>
 
+
+                <td> 
+                    <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage">  
+                </td>
+                <td> 
+                    <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value" readonly>  
+                </td>
+                <td> 
+                    <input type="number" name="after_cut_total_weight[]" step="0.01" class="form-control item-after-cut-total-weight" readonly>  
+                </td>
+
+
+
+                <td> 
+                    <input type="number" name="per_package_weight[]" value="0" step="0.01" class="form-control item-per-package-weight">  
+                </td>
+                <td> 
+                    <input type="number" name="total_package_weight[]" value="0" step="0.01" class="form-control item-total-package-weight" readonly>  
+                </td>
+                <td> 
+                    <input type="number" name="net_weight[]" value="0" step="0.01" class="form-control item-net-weight" readonly>  
+                </td>
+                
+
+
+
                 <td> 
                     <input type="number" name="price[]" step="0.01" class="form-control item-price">  
                 </td>
@@ -551,6 +577,12 @@
                 <td> 
                     <input type="number" name="quantity_price[]" step="0.01" class="form-control item-quantity-price" readonly>  
                 </td>
+
+
+
+
+            
+
 
                 <td>
                     <input type="number" name="discount_value[]" value="0" step="0.01" class="form-control item-discount-value" >
