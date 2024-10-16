@@ -145,19 +145,29 @@
                         <div class="card-body">
                             <h4 class="card-title mb-4">Purchase Order</h4>
                             <div class="table-responsive">
-                                <table id="table" class="table" style="border-collapse:collapse;">
+                                <table id="table" class="table table-border" style="border-collapse:collapse;">
                                     <thead>
                                         <tr>
                                             <th class="text-center" width="50"></th>
                                             <th class="text-center" width="250">Item</th> 
                                             <th class="text-center" width="150">Unit</th>
-                                            <th class="text-center" width="100">Unit <br> Quantity</th>
+                                            <th class="text-center" width="100">Unit <br> Qty</th>
                                             <th class="text-center" width="100">Qty</th>
-                                            <th class="text-center" width="100">Total <br> Quantity</th>
+                                            <th class="text-center" width="100">Gross <br> Qty</th>
+                                            <th class="text-center" width="50">Cut(%)</th>
+                                            <th class="text-center" width="100">Cut Value</th>
+                                            <th class="text-center" width="100">After Cut</th>
+
+
+                                            <th class="text-center" width="100">Per package <br> Wgt</th>
+                                            <th class="text-center" width="100">package <br> Total Wgt</th>
+                                            <th class="text-center" width="100">Net<br> Wgt</th>
+
+
+
                                             <th class="text-center" width="100">Unit <br> Price</th>
                                             <th class="text-center" width="100">Qty <br> Price</th>
-                                            <th class="text-center" width="100">Cut(%)</th>
-                                            <th class="text-center" width="100">After Cut</th>
+                                           
 
                                             <th class="text-end"    width="100">Discount</th>
                                             <th class="text-start"  width="130">Type</th>
@@ -197,7 +207,7 @@
 
 
                                             <td> 
-                                                <input type="number" name="unit_quantity[]" step="0.01" class="form-control item-unit-quantity" readonly>  
+                                                <input type="number" name="unit_quantity[]" step="0.01" class="form-control item-unit-quantity " readonly>  
                                             </td>
                                             
                                             
@@ -206,8 +216,34 @@
                                             </td>
 
                                             <td> 
-                                                <input type="number" name="total_quantity[]" step="0.01" class="form-control item-total-quantity" readonly>  
+                                                <input type="number" name="gross_weight[]" step="0.01" class="form-control gross-weight" readonly>  
                                             </td>
+
+
+                                            <td> 
+                                                <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage">  
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value" readonly>  
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="after_cut_total_quantity[]" step="0.01" class="form-control item-after-cut-total-quantity" readonly>  
+                                            </td>
+
+
+
+                                            <td> 
+                                                <input type="number" name="per_package_weight[]" value="0" step="0.01" class="form-control item-per-package-weight">  
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="total_package_weight[]" value="0" step="0.01" class="form-control item-total-package-weight" readonly>  
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="net_weight[]" value="0" step="0.01" class="form-control item-net-weight" readonly>  
+                                            </td>
+                                          
+
+
 
                                             <td> 
                                                 <input type="number" name="price[]" step="0.01" class="form-control item-price">  
@@ -220,12 +256,7 @@
 
 
 
-                                            <td> 
-                                                <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value">  
-                                            </td>
-                                            <td> 
-                                                <input type="number" name="after_cut_total_quantity[]" step="0.01" class="form-control item-after-cut-total-quantity" readonly>  
-                                            </td>
+                                           
 
 
 
@@ -344,7 +375,7 @@
 
     });
 
-    $(document).on('keyup','.item-unit-quantity, .item-quantity, .item-price, .item-discount-value, .item-cut-value',function(){
+    $(document).on('keyup','.item-unit-quantity, .item-quantity, .item-price, .item-discount-value, .item-cut-percentage, .item-per-package-weight',function(){
         
         let row = $(this).closest('tr');
 
@@ -361,38 +392,55 @@
         let quantity_price = quantity * price;
         row.find('.item-quantity-price').val(quantity_price.toFixed(2));
 
-
+        //Unit Quantity
         let selected_unit_base_value = row.find('.unit-dropdown-list option:selected').data('base-unit-value');
         row.find('.item-unit-quantity').val(selected_unit_base_value);
 
-        let total_quantity = selected_unit_base_value * quantity;
-        row.find('.item-total-quantity').val(total_quantity.toFixed(2));
-
-        let cut_value = parseFloat(row.find('.item-cut-value').val()) || 0;
-        let after_cut_total_quantity =  total_quantity; 
-        if(cut_value > 0){
-            after_cut_total_quantity = (cut_value/100) * total_quantity;
-        }
-        row.find('.item-after-cut-total-quantity').val(after_cut_total_quantity.toFixed(2));
+        //Gross Weight
+        let gross_weight = selected_unit_base_value * quantity;
+        row.find('.gross-weight').val(gross_weight.toFixed(2));
 
 
-        // Fetch discount type and value
-        let discount_type = row.find('.item-discount-type').val();
-        let discount_value = parseFloat(row.find('.item-discount-value').val()) || 0;
+        //Cut Calcaution:start
+            let cut_percentage = parseFloat(row.find('.item-cut-percentage').val()) || 0;
+            let after_cut_total_quantity =  gross_weight; 
+            if(cut_percentage > 0){
+                cut_value = (cut_percentage/100) * gross_weight;
+                row.find('.item-cut-value').val(cut_value.toFixed(2));
 
-        let after_discount = 0;
+                after_cut_total_quantity = gross_weight - cut_value;
 
-        // Calculate after discount based on discount type
-        if (discount_type === "fixed") {
-            after_discount = Math.max(quantity_price - discount_value, 0); // Avoid negative values
-        } else if (discount_type === "percentage" && quantity_price > 0) {
-            // Calculate percentage discount
-            let percentage_amount = (quantity_price * discount_value) / 100;
-            after_discount = Math.max(quantity_price - percentage_amount, 0); // Avoid negative values
-        }
+            }
+            row.find('.item-after-cut-total-quantity').val(after_cut_total_quantity.toFixed(2));
+        //Cut Calcaution:end
 
-        // Update the after-discount field
-        row.find('.item-after-discount').val(after_discount.toFixed(2));
+
+        //Package Weight Calcaution: start
+            let per_package_weight = parseFloat(row.find('.item-per-package-weight').val()) || 0;
+            let total_package_weight = per_package_weight * quantity;
+            row.find('.item-total-package-weight').val(total_package_weight.toFixed(2));
+
+            let net_weight = after_cut_total_quantity 
+        //Package Weight Calcaution: end
+
+
+
+        // Discount Calculation: start
+            let discount_type = row.find('.item-discount-type').val();
+            let discount_value = parseFloat(row.find('.item-discount-value').val()) || 0;
+
+            let after_discount = 0;
+
+            // Calculate after discount based on discount type
+            if (discount_type === "fixed") {
+                after_discount = Math.max(quantity_price - discount_value, 0); // Avoid negative values
+            } else if (discount_type === "percentage" && quantity_price > 0) {
+                // Calculate percentage discount
+                let percentage_amount = (quantity_price * discount_value) / 100;
+                after_discount = Math.max(quantity_price - percentage_amount, 0); // Avoid negative values
+            }
+            row.find('.item-after-discount').val(after_discount.toFixed(2));
+        // Discount Calculation: end
 
 
         let tax_rate = row.find('.item-tax-dropdown option:selected').data('tax-rate');
@@ -493,7 +541,7 @@
                 </td>
 
                 <td> 
-                    <input type="number" name="total_quantity[]" step="0.01" class="form-control item-total-quantity" readonly>  
+                    <input type="number" name="gross_weight[]" step="0.01" class="form-control gross-weight" readonly>  
                 </td>
 
                 <td> 

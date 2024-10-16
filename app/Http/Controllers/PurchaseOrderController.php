@@ -21,11 +21,13 @@ class PurchaseOrderController extends Controller
         $items = Item::all();
         $taxes = Tax::all();
         $units = Unit::all();
+
+        $paymentTerms = $this->paymentTerms();
         
         
         return view('purchase_orders.create', 
         compact(
-            'suppliers','items','taxes','units'
+            'suppliers','items','taxes','units','paymentTerms'
         ));
     }
 
@@ -93,5 +95,19 @@ class PurchaseOrderController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function paymentTerms(){
+        $data = [
+            [   'name' => 'net 07','value' => 07  ],
+            [   'name' => 'net 10','value' => 10  ],
+            [   'name' => 'net 15','value' => 15  ],
+            [   'name' => 'net 20','value' => 20  ],
+            [   'name' => 'net 45','value' => 30  ],
+            [   'name' => 'net 45','value' => 45  ],
+           
+        ];
+
+        return $data;
     }
 }

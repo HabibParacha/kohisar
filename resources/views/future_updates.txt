@@ -1,3 +1,29 @@
+
+
+-------------------------------------pending: start-------------------------
 add ajax dropdownn for supplier 
 add supplier form dropdown 
-drag and drop in po
+all ajax function , model can be called globally 
+
+
+-------------------------------------pending: end--------------------------
+
+
+
+
+
+
+
+
+
+-------------------------------------done: start---------------------------
+drag and drop in po 
+
+
+-------------------------------------done: end------------------------------
+
+
+
+
+
+
