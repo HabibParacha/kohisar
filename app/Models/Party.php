@@ -10,7 +10,7 @@ class Party extends Model
     use HasFactory;
 
     protected $fillable = [
-        'contact_type',
+        'party_type',
         'type',
         'business_name',
         'name',

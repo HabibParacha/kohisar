@@ -9,7 +9,8 @@
                     
                     <a href="{{ route('admin-dashboard') }}" class="waves-effect">
                    
-                        <i class="mdi mdi-speedometer-slow mb-0"></i>
+                        <i class="
+                        mdi mdi-speedometer-slow mb-0"></i>
 
                         <span key="t-dashboards">Admin Dashboard</span>
                     </a>
@@ -33,6 +34,7 @@
                         <li> <a href="{{ route('item.index') }}" key="t-products">Items</a></li>
                         <li> <a href="{{ route('party-index','supplier') }}" key="t-products">Supplier</a></li>
                         <li> <a href="{{ route('party-index','customer') }}" key="t-products">Customer</a></li>
+                        <li> <a href="{{ route('purchase-order.index') }}" key="t-products">Purchase Order</a></li>
                     
                        
 

@@ -18,10 +18,10 @@ return new class extends Migration
             // $table->integer('business_id')->unsigned();
             // $table->foreign('business_id')->references('id')->on('business')->onDelete('cascade');
             $table->string('type')->index(); // customer / supplier / both
-            $table->string('contact_type')->nullable();// individual or Business
+            $table->string('party_type')->nullable();// individual or Business
             $table->string('business_name')->nullable();
             
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('prefix')->nullable();
             $table->string('first_name')->nullable();
             $table->string('middle_name')->nullable();

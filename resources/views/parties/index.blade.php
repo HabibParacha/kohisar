@@ -15,8 +15,9 @@
                             <div class="page-title-right d-flex">
 
                                 <div class="page-btn">
-                                    <a href="#" class="btn btn-added btn-primary" data-bs-toggle="modal" data-bs-target="#add-party"><i class="me-2"></i>Add New Party</a>
-                                </div>  
+                                    <a href="#" class="btn btn-added btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#add-party"><i class="me-2"></i>Add New Party</a>
+                                </div>
                             </div>
 
 
@@ -75,105 +76,111 @@
         </div>
     </div>
 
-        <!-- Add Party -->
-            <div class="modal fade" id="add-party">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content">
-                        <div class="page-wrapper-new p-0">
-                            <div class="content">
-                                <div class="modal-header border-0 custom-modal-header">
-                                    <div class="page-title">
-                                        <h4>Create Party</h4>
-                                    </div>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                        
-                                    </button>
-                                </div>
-                                <div class="modal-body custom-modal-body">
-                                    <form id="party-store" enctype="multipart/form-data">
-                                        @csrf
-                                        @include('parties.create_modal_fields')
-
-                                        <div class="modal-footer-btn text-end">
-                                            <button type="button" class="btn btn-cancel me-2 btn-dark" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" id="submit-party-store" class="btn btn-submit btn-primary">Create Party</button>
-                                        </div>
-                                    </form>
-                                </div>
+    <!-- Add Party -->
+    <div class="modal fade" id="add-party">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="page-wrapper-new p-0">
+                    <div class="content">
+                        <div class="modal-header border-0 custom-modal-header">
+                            <div class="page-title">
+                                <h4>Create Party</h4>
                             </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+                            </button>
                         </div>
-                    </div>
-                </div>
-            </div>
-        <!-- /Add Party -->
+                        <div class="modal-body custom-modal-body">
+                            <form id="party-store" enctype="multipart/form-data">
+                                @csrf
+                                @include('parties.create_modal_fields')
 
-         <!-- Edit Party -->
-            <div class="modal fade" id="edit-party">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content">
-                        <div class="page-wrapper-new p-0">
-                            <div class="content">
-                                <div class="modal-header border-0 custom-modal-header">
-                                    <div class="page-title">
-                                        <h4>Edit Party</h4>
-                                    </div>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                        
-                                    </button>
+                                <div class="modal-footer-btn text-end">
+                                    <button type="button" class="btn btn-cancel me-2 btn-dark"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" id="submit-party-store" class="btn btn-submit btn-primary">Create
+                                        Party</button>
                                 </div>
-                                <div class="modal-body custom-modal-body">
-                                    <form id="party-update" enctype="multipart/form-data">
-                                        @csrf
-                                        @method('PUT') <!-- For PUT method -->
-                                        <input type="hidden" name="id" id="party_id"> <!-- Hidden field to store the party ID -->
-                                        @include('parties.edit_modal_fields')
-                                       
-                                        <div class="modal-footer-btn">
-                                            <button type="button" class="btn btn-cancel me-2 btn-dark" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" id="submit-party-update" class="btn btn-submit btn-primary">Update Party</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    <!-- /Edit Party -->
-
-     <!-- Delete Party -->
-        <div class="modal fade" id="delete-party">
-            <div class="modal-dialog custom-modal-two">
-                <div class="modal-content">
-                    <div class="page-wrapper-new p-0">
-                        <div class="content">
-                            <div class="modal-header border-0 custom-modal-header">
-                                <div class="page-title">
-                                    <h4>Delete Party</h4>
-                                </div>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                    
-                                </button>
-                            </div>
-                            
-                                <div class="modal-body custom-modal-body pt-3 pb-0">
-                                    <p class="text-center">Are you sure you want to delete this party?</p>
-                                </div>
-                                <div class="modal-footer-btn p-3 mt-2">
-                                    <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-submit shadow-sm btn-danger" id="submit-party-destroy">Delete</button>
-                                </div>
-                                
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-     
+    </div>
+    <!-- /Add Party -->
+
+    <!-- Edit Party -->
+    <div class="modal fade" id="edit-party">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="page-wrapper-new p-0">
+                    <div class="content">
+                        <div class="modal-header border-0 custom-modal-header">
+                            <div class="page-title">
+                                <h4>Edit Party</h4>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+                            </button>
+                        </div>
+                        <div class="modal-body custom-modal-body">
+                            <form id="party-update" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT') <!-- For PUT method -->
+                                <input type="hidden" name="id" id="party_id">
+                                <!-- Hidden field to store the party ID -->
+                                @include('parties.edit_modal_fields')
+
+                                <div class="modal-footer-btn">
+                                    <button type="button" class="btn btn-cancel me-2 btn-dark"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" id="submit-party-update"
+                                        class="btn btn-submit btn-primary">Update Party</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Edit Party -->
+
+    <!-- Delete Party -->
+    <div class="modal fade" id="delete-party">
+        <div class="modal-dialog custom-modal-two">
+            <div class="modal-content">
+                <div class="page-wrapper-new p-0">
+                    <div class="content">
+                        <div class="modal-header border-0 custom-modal-header">
+                            <div class="page-title">
+                                <h4>Delete Party</h4>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+                            </button>
+                        </div>
+
+                        <div class="modal-body custom-modal-body pt-3 pb-0">
+                            <p class="text-center">Are you sure you want to delete this party?</p>
+                        </div>
+                        <div class="modal-footer-btn p-3 mt-2">
+                            <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-submit shadow-sm btn-danger"
+                                id="submit-party-destroy">Delete</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- /Delete Party -->
 
 
- 
+
 
 
     <!-- END: Content-->
@@ -190,39 +197,35 @@
         });
     </script>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function() {
 
-          
+
             $('.individual').addClass('d-none');
             $('.business').addClass('d-none');
 
-            $('#type-individual, #edit-type-individual').on('click', function(){
+            $('#type-individual, #edit-type-individual').on('click', function() {
                 $('.business').addClass('d-none');
                 $('.individual').removeClass('d-none');
             });
 
-            $('#type-business, #edit-type-business').on('click', function(){
+            $('#type-business, #edit-type-business').on('click', function() {
                 $('.individual').addClass('d-none');
                 $('.business').removeClass('d-none');
             });
 
-            $('#btn-more-info, #edit-btn-more-info').on('click', function(){
-                
-                if($('.more-info').hasClass('d-none')){
+            $('#btn-more-info, #edit-btn-more-info').on('click', function() {
+
+                if ($('.more-info').hasClass('d-none')) {
                     $('.more-info').removeClass('d-none');
-                }
-                else{
+                } else {
                     $('.more-info').addClass('d-none');
                 }
-            
+
             });
         });
-
-        
     </script>
 
     <script>
-
         $(document).ready(function() {
 
             var type = "{{ $type }}"; // Retrieve the type value passed to the view
@@ -231,35 +234,55 @@
                 processing: true,
                 serverSide: true,
 
-                url: "{{ route('party.index') }}?type=" + type, // Pass the type as a URL parameter
-              
-                columns: [
-                    { data: 'id' },
-                    { data: 'business_name' },
-                    { data: 'name' },
-                    { data: 'email' },
-                    { data: 'tax_number' },
-                    { data: 'opening_balance' },
-                    { data: 'mobile' },
-                    { 
+                ajax: {
+                    url: "{{ route('party-index', ':type') }}".replace(':type', type), // Using route name
+                    type: 'GET' // Specify the request type
+                },
+                columns: [{
+                        data: 'id'
+                    },
+                    {
+                        data: 'business_name'
+                    },
+                    {
+                        data: 'name'
+                    },
+                    {
+                        data: 'email'
+                    },
+                    {
+                        data: 'tax_number'
+                    },
+                    {
+                        data: 'opening_balance'
+                    },
+                    {
+                        data: 'mobile'
+                    },
+                    {
                         data: 'is_active',
                         className: 'text-center', // This applies the text-center class to the entire column
-                        render: function(data,type,row){
-                            
-                            if(data == 1)
+                        render: function(data, type, row) {
+
+                            if (data == 1)
                                 return '<span class="badge bg-success font-size-12 text-center">Active</span>';
                             else
                                 return '<span class="badge bg-danger font-size-12">Inactive</span>';
-                    
+
                         }
-                    
-                     },
-                    { data: 'action', orderable: false, searchable: false },
+
+                    },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ],
-                order: [[0, 'desc']],
+                order: [
+                    [0, 'desc']
+                ],
             });
 
-          
             $('#party-store').on('submit', function(e) {
                 e.preventDefault();
                 var submit_btn = $('#submit-party-store');
@@ -278,28 +301,28 @@
                         submit_btn.html('Processing');
                     },
                     success: function(response) {
-                        
-                        submit_btn.prop('disabled', false).html('Create Party');  
 
-                        if(response.success == true){
-                            $('#add-party').modal('hide'); 
-                            $('#party-store')[0].reset();  // Reset all form data
+                        submit_btn.prop('disabled', false).html('Create Party');
+
+                        if (response.success == true) {
+                            $('#add-party').modal('hide');
+                            $('#party-store')[0].reset(); // Reset all form data
                             table.ajax.reload();
-                        
+
                             notyf.success({
-                                message: response.message, 
+                                message: response.message,
                                 duration: 3000
                             });
-                        }else{
+                        } else {
                             notyf.error({
                                 message: response.message,
                                 duration: 5000
                             });
-                        }   
+                        }
                     },
                     error: function(e) {
                         submit_btn.prop('disabled', false).html('Create Party');
-                    
+
                         notyf.error({
                             message: e.responseJSON.message,
                             duration: 5000
@@ -307,7 +330,7 @@
                     }
                 });
             });
-            
+
             $('#party-update').on('submit', function(e) {
                 e.preventDefault();
                 var submit_btn = $('#submit-party-update');
@@ -316,7 +339,8 @@
                 let editFormData = new FormData(this);
                 $.ajax({
                     type: "POST",
-                    url: "{{ route('party.update', ':id') }}".replace(':id', party_id), // Using route name
+                    url: "{{ route('party.update', ':id') }}".replace(':id',
+                    party_id), // Using route name
                     dataType: 'json',
                     contentType: false,
                     processData: false,
@@ -328,28 +352,28 @@
                         submit_btn.html('Processing');
                     },
                     success: function(response) {
-                        
-                        submit_btn.prop('disabled', false).html('Update Party');  
 
-                        if(response.success == true){
-                            $('#edit-party').modal('hide'); 
-                            $('#party-update')[0].reset();  // Reset all form data
+                        submit_btn.prop('disabled', false).html('Update Party');
+
+                        if (response.success == true) {
+                            $('#edit-party').modal('hide');
+                            $('#party-update')[0].reset(); // Reset all form data
                             table.ajax.reload();
-                        
+
                             notyf.success({
-                                message: response.message, 
+                                message: response.message,
                                 duration: 3000
                             });
-                        }else{
+                        } else {
                             notyf.error({
                                 message: response.message,
                                 duration: 5000
                             });
-                        }   
+                        }
                     },
                     error: function(e) {
                         submit_btn.prop('disabled', false).html('Update Party');
-                    
+
                         notyf.error({
                             message: e.responseJSON.message,
                             duration: 5000
@@ -365,36 +389,37 @@
 
                 $.ajax({
                     type: 'DELETE',
-                    url: "{{ route('party.destroy', ':id') }}".replace(':id', party_id), // Using route name
+                    url: "{{ route('party.destroy', ':id') }}".replace(':id',
+                    party_id), // Using route name
                     data: {
                         _token: "{{ csrf_token() }}" // Add CSRF token
                     },
                     beforeSend: function() {
-                            submit_btn.prop('disabled', true);
-                            submit_btn.html('Processing');
-                        },
+                        submit_btn.prop('disabled', true);
+                        submit_btn.html('Processing');
+                    },
                     success: function(response) {
-                        
-                        submit_btn.prop('disabled', false).html('Delete Party');  
 
-                        if(response.success == true){
-                            $('#delete-party').modal('hide'); 
+                        submit_btn.prop('disabled', false).html('Delete Party');
+
+                        if (response.success == true) {
+                            $('#delete-party').modal('hide');
                             table.ajax.reload();
-                        
+
                             notyf.success({
-                                message: response.message, 
+                                message: response.message,
                                 duration: 3000
                             });
-                        }else{
+                        } else {
                             notyf.error({
                                 message: response.message,
                                 duration: 5000
                             });
-                        }   
+                        }
                     },
                     error: function(e) {
                         submit_btn.prop('disabled', false).html('Delete Party');
-                    
+
                         notyf.error({
                             message: e.responseJSON.message,
                             duration: 5000
@@ -403,15 +428,19 @@
                 });
             });
 
+
         });
 
+
+
+
         // Handle the delete button click
-       
+
 
         function editParty(id) {
             $.get("{{ route('party.edit', ':id') }}".replace(':id', id), function(response) {
                 $('#party_id').val(response.id);
-                $('#edit_contact_type').val(response.contact_type);
+                $('#edit_party_type').val(response.party_type);
                 $('#edit_business_name').val(response.business_name);
                 $('#edit_prefix').val(response.prefix);
                 $('#edit_first_name').val(response.first_name);
@@ -434,15 +463,14 @@
                 $('#edit_shipping_address').val(response.shipping_address);
                 $('#edit_is_active').val(response.is_active);
                 $('#edit_is_default').val(response.is_default);
-                $('#edit_is_active').val(response.is_active).trigger('change'); 
-                
-                if(response.type == 'individual'){
+                $('#edit_is_active').val(response.is_active).trigger('change');
+
+                if (response.type == 'individual') {
                     $('#edit-type-individual').val(response.type).prop('checked', true);
                     $('.individual').removeClass('d-none');
                     $('.business').addClass('d-none');
 
-                }
-                else{
+                } else {
                     $('#edit-type-business').val(response.type).prop('checked', true);
                     $('.individual').addClass('d-none');
                     $('.business').removeClass('d-none');
@@ -459,7 +487,6 @@
             $('#submit-party-destroy').data('id', id);
             $('#delete-party').modal('show');
         }
-
     </script>
 
     <script>

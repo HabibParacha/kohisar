@@ -3,7 +3,7 @@
         <div class="col-md-3">
             <div class="mb-3">
                 <label class="form-label">Party Type</label>
-                <select name="contact_type" id="edit_contact_type" class="form-control select2" style="width: 100%">
+                <select name="party_type" id="edit_party_type" class="form-control select2" style="width: 100%">
                     <option value="supplier">Supplier</option>
                     <option value="customer">Customer</option>
                     <option value="both">Both (Supplier & Customer)</option>

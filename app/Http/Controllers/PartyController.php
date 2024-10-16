@@ -24,10 +24,10 @@ class PartyController extends Controller
 
                 
                 if($type == 'supplier'){
-                    $data = Party::where('contact_type','supplier')->get();
+                    $data = Party::where('party_type','supplier')->get();
                 }  
                 elseif($type == 'customer'){
-                    $data = Party::whereIn('contact_type',['customer','both'])->get();   
+                    $data = Party::whereIn('party_type',['customer','both'])->get();   
                 }
                 else{
                     $data = Party::all();
@@ -87,7 +87,7 @@ class PartyController extends Controller
 
             // Validate the request data
             $validator = Validator::make($request->all(), [
-                'contact_type' => 'nullable',
+                'party_type' => 'nullable',
                 'type' => 'required',
                 'business_name' => 'nullable',
                 'prefix' => 'nullable',
@@ -122,7 +122,11 @@ class PartyController extends Controller
             }
 
             $data = $request->all();// storing request data in array
-            $data['name'] = $request->prefix.' '.$request->first_name.' '.$request->middle_name.' '.$request->last_name ;
+            if($request->type == 'individual'){
+                $data['business_name'] = $request->prefix.' '.$request->first_name.' '.$request->middle_name.' '.$request->last_name ;
+            }
+
+            
 
             Party::create($data);
 
@@ -179,7 +183,7 @@ class PartyController extends Controller
         
         // Validate the request data
         $validator = Validator::make($request->all(), [
-                'contact_type' => 'nullable',
+                'party_type' => 'nullable',
                 'type' => 'required',
                 'business_name' => 'nullable',
                 'prefix' => 'nullable',
