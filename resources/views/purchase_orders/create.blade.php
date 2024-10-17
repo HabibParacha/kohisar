@@ -1,5 +1,5 @@
 @extends('template.tmp')
-@section('title', 'pagetitle')
+@section('title', 'kohisar')
 
 @section('content')
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -21,6 +21,7 @@
     table tbody tr input.form-control{
     
         border-radius: 0rem !important;
+        font-size: 11px;
     
     }
 
@@ -65,16 +66,7 @@
                                         </select>
                                     </div>                                        
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label class="form-label">Sale Person </label>
-                                        <select id="saleman_id" name="saleman_id"  class="select2 form-select">                                                
-                                            <option selected="">Choose...</option>
-                                            <option>Saleman 1</option>
-                                            <option>Saleman 2</option>
-                                        </select>
-                                    </div>                                        
-                                </div>
+                                
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label class="form-label">Invoice No</label>
@@ -84,6 +76,17 @@
                                         </div> 
                                     </div> 
                                 </div>
+
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Reference No</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><span class="bx bx-file" ></span> </div>
+                                            <input type="text" name="reference_no" id="reference_no" class="form-control">
+                                        </div> 
+                                    </div> 
+                                </div>
+                               
 
                              
                                 <div class="col-md-4">
@@ -122,17 +125,8 @@
                                         </div> 
                                     </div> 
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label class="form-label">Reference No</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bx-file" ></span> </div>
-                                            <input type="text" name="reference_no" id="reference_no" class="form-control">
-                                        </div> 
-                                    </div> 
-                                </div>
-                               
-                                <div class="col-md-4">
+                                
+                                <div class="col-md-4 d-none">
                                     <div class="mb-3">
                                         <label class="form-label">File</label>
                                         <input type="file" name="file" id="file" class="form-control">
@@ -154,16 +148,15 @@
                                     <thead>
                                         <tr  >
                                             <th class="text-center" width="50"></th>
-                                            <th class="text-center" width="250">Item</th> 
-                                            <th class="text-center" width="150">Unit</th>
-                                            <th class="text-center" width="100">Unit <br> Qty</th>
-                                            <th class="text-center" width="100">Qty</th>
-                                            <th class="text-center" width="100">Gross <br> Qty</th>
+                                            <th class="text-center" width="150">Item</th> 
+                                            <th class="text-center" width="100">Gross <br> wgt</th>
+                                            <th class="text-center" width="50">Cut</th>
                                             <th class="text-center" width="50">Cut <br>(%)</th>
                                             <th class="text-center" width="100">Cut <br> Value</th>
                                             <th class="text-center" width="100">After <br> Cut</th>
 
 
+                                            <th class="text-center" width="100">Total Bags</th>
                                             <th class="text-center" width="100">Per package <br> Wgt</th>
                                             <th class="text-center" width="100">package <br> Total Wgt</th>
                                             <th class="text-center" width="100">Net<br> Wgt</th>
@@ -171,128 +164,15 @@
 
 
                                             <th class="text-center" width="100">Unit <br> Price</th>
-                                            <th class="text-center" width="100">Qty <br> Price</th>
-                                           
-
-                                            <th class="text-end"    width="100">Discount</th>
-                                            <th class="text-start"  width="130">Type</th>
-                                            <th class="text-center" width="150">After Discount</th>
-                                            <th class="text-center" width="100">Tax</th>
-                                            <th class="text-center" width="100">Tax Value</th>
-                                            
-                                          
+                                            <th class="text-center" width="100">Total <br> Price</th>
+                                
                                             <th class="text-center" width="50"></th>
                                         
                                         </tr>
                                     </thead>
                                     <tbody id="sortable-table">
-                                        <tr>
-                                            <td><a href=""><i class="bx bx-menu handle"></i></a> </td>
-                                            <td> 
-                                                <select name="item_id[]" class="form-control select2 item-dropdown-list" style="width:100%">                                                
-                                                    <option >Choose...</option>
-                                                    @foreach ($items as $item)
-                                                        <option value="{{$item->id}}"  data-unit-id="{{ $item->unit_id }}"  >{{ $item->name }}</option>
-                                                    @endforeach
-                                                    
-                                                </select>
-                                                
-                                            </td>
-
-
-                                            <td> 
-                                                <select name="unit_id[]"  class="form-control select2 unit-dropdown-list" style="width:100%">                                                
-                                                    <option>Choose...</option>
-                                                    @foreach ($units as $unit)
-                                                        <option value="{{$unit->id}}" data-base-unit-value="{{ $unit->base_unit_value }}" >{{ $unit->base_unit }}</option>
-                                                    @endforeach
-                                                </select>
-                                                
-                                            </td>
-
-
-                                            <td> 
-                                                <input type="number" name="unit_quantity[]" step="0.01" class="form-control item-unit-quantity " readonly>  
-                                            </td>
-                                            
-                                            
-                                            <td> 
-                                                <input type="number" name="quantity[]" step="0.01" class="form-control item-quantity">  
-                                            </td>
-
-                                            <td> 
-                                                <input type="number" name="gross_weight[]" step="0.01" class="form-control gross-weight" readonly>  
-                                            </td>
-
-
-                                            <td> 
-                                                <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage">  
-                                            </td>
-                                            <td> 
-                                                <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value" readonly>  
-                                            </td>
-                                            <td> 
-                                                <input type="number" name="after_cut_total_weight[]" step="0.01" class="form-control item-after-cut-total-weight" readonly>  
-                                            </td>
-
-
-
-                                            <td> 
-                                                <input type="number" name="per_package_weight[]" value="0" step="0.01" class="form-control item-per-package-weight">  
-                                            </td>
-                                            <td> 
-                                                <input type="number" name="total_package_weight[]" value="0" step="0.01" class="form-control item-total-package-weight" readonly>  
-                                            </td>
-                                            <td> 
-                                                <input type="number" name="net_weight[]" value="0" step="0.01" class="form-control item-net-weight" readonly>  
-                                            </td>
-                                          
-
-
-
-                                            <td> 
-                                                <input type="number" name="price[]" step="0.01" class="form-control item-price">  
-                                            </td>
-
-                                            <td> 
-                                                <input type="number" name="quantity_price[]" step="0.01" class="form-control item-quantity-price" readonly>  
-                                            </td>
-
-
-
-
+                                        {{-- dynamically add row --}}
                                         
-
-
-                                            <td>
-                                                <input type="number" name="discount_value[]" value="0" step="0.01" class="form-control item-discount-value" >
-                                            </td>
-                                            <td>
-                                                <select name="discount_type[]"  class="form-select item-discount-type">                                                
-                                                    <option selected value="fixed">Fixed</option>
-                                                    <option value="percentage">Percentage</option>
-                                                </select>
-                                            </td>
-
-                                            <td> 
-                                                <input type="number" name="after_discount[]" class="form-control item-after-discount" readonly>  
-                                            </td>
-                                            <td> 
-                                                <select name="tax_id[]"  class="form-control select2 item-tax-dropdown" style="width:100%">                                                
-                                                    @foreach ($taxes as $tax)
-                                                        <option  value="{{$tax->id}}" data-tax-rate="{{ $tax->rate }}" >{{ $tax->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                            <td> 
-                                                <input type="number" name="tax_value[]" class="form-control item-tax-value" readonly>  
-                                            </td>
-
-                                            <td class="text-center">  
-                                                <a href=""><span class="bx bx-trash text-danger remove-item"></span></a> 
-                                            </td>
-
-                                        </tr>
                                     </tbody> 
                                 </table>
 
@@ -310,20 +190,7 @@
                                             <td>
                                                 <input type="number" name="sub_total" id="sub-total" value="0" class="form-control" >
                                             </td>
-                                        </tr>
-                                        <tr>
-                                            <th>GST (18%)</th>
-                                            <td>
-                                                <input type="number" name="tax_total" id="tax-total" value="0" class="form-control" >
-                                            </td>
-                                        </tr>
-                                       
-                                        <tr>
-                                            <th>Discount</th>
-                                            <td>
-                                                <input type="number" name="discount_total" id="discount-total" value="0" class="form-control" >
-                                            </td>
-                                        </tr>
+                                        </tr>  
                                        
                                     </table>
                                 </div>
@@ -346,26 +213,10 @@
 
 <script>  
     $(document).ready(function () {
-        // appendNewRow();
+        appendNewRow();
     });
   
 
-    $(document).on('change', '.item-dropdown-list', function(e){
-        
-        let selected_item = $(this).find('option:selected');
-        
-        let unit_id = selected_item.data('unit-id');
-        
-        let row =  $(this).closest('tr');
-        
-        let unit_dropdown = row.find('.unit-dropdown-list');
-
-        unit_dropdown.val(unit_id).trigger('change');
-        
-        calculation(row);  
-
-
-    });
     $(document).on('change', '.unit-dropdown-list, .item-discount-type, .item-tax-dropdown', function(e){
     
         let row =  $(this).closest('tr');
@@ -374,31 +225,38 @@
 
     });
 
-    $(document).on('keyup','.item-unit-quantity, .item-quantity, .item-price, .item-discount-value, .item-cut-percentage, .item-per-package-weight',function(){
+    $(document).on('keyup','.item-gross-weight, .item-per-unit-price, .item-discount-value, .item-cut-percentage, .item-per-package-weight',function(){
         
         let row = $(this).closest('tr');
 
         calculation(row);  
     });
 
+    $(document).on('change', '.cut-checkbox', function(e){
+        
+        let row =  $(this).closest('tr');
+    
+        if($(this).prop('checked'))
+        {
+            
+           row.find('.item-cut-percentage').removeClass('d-none');
+           row.find('.item-cut-value').removeClass('d-none');
+           row.find('.item-after-cut-total-weight').removeClass('d-none');
+        }   
+        else{
+            row.find('.item-cut-percentage').addClass('d-none').val('0');//reest value to 0
+            row.find('.item-cut-value').addClass('d-none').val('0');//reest value to 0
+            row.find('.item-after-cut-total-weight').addClass('d-none');
+            calculation(row);
+
+        }     
+   
+    });
    
     function calculation(row) {
 
-        let quantity = parseFloat(row.find('.item-quantity').val()) || 0;
+        let gross_weight = parseFloat(row.find('.item-gross-weight').val()) || 0;
         let price = parseFloat(row.find('.item-price').val()) || 0;
-
-        // Calculate total price for quantity and price
-        let quantity_price = quantity * price;
-        row.find('.item-quantity-price').val(quantity_price.toFixed(2));
-
-        //Unit Quantity
-        let selected_unit_base_value = row.find('.unit-dropdown-list option:selected').data('base-unit-value');
-        row.find('.item-unit-quantity').val(selected_unit_base_value);
-
-        //Gross Weight
-        let gross_weight = selected_unit_base_value * quantity;
-        row.find('.gross-weight').val(gross_weight.toFixed(2));
-
 
         //Cut Calcaution:start
             let cut_percentage = parseFloat(row.find('.item-cut-percentage').val()) || 0;
@@ -415,41 +273,21 @@
 
 
         //Package Weight Calcaution: start
+            let total_bags = parseFloat(row.find('.item-total-bags').val()) || 0;
             let per_package_weight = parseFloat(row.find('.item-per-package-weight').val()) || 0;
-            let total_package_weight = per_package_weight * quantity;
+
+            let total_package_weight = per_package_weight * total_bags;
             row.find('.item-total-package-weight').val(total_package_weight.toFixed(2));
 
             let net_weight = after_cut_total_weight - total_package_weight
             row.find('.item-net-weight').val(net_weight.toFixed(2));
         //Package Weight Calcaution: end
 
-
-
-        // Discount Calculation: start
-            let discount_type = row.find('.item-discount-type').val();
-            let discount_value = parseFloat(row.find('.item-discount-value').val()) || 0;
-
-            let after_discount = 0;
-
-            // Calculate after discount based on discount type
-            if (discount_type === "fixed") {
-                after_discount = Math.max(quantity_price - discount_value, 0); // Avoid negative values
-            } else if (discount_type === "percentage" && quantity_price > 0) {
-                // Calculate percentage discount
-                let percentage_amount = (quantity_price * discount_value) / 100;
-                after_discount = Math.max(quantity_price - percentage_amount, 0); // Avoid negative values
-            }
-            row.find('.item-after-discount').val(after_discount.toFixed(2));
-        // Discount Calculation: end
-
-
-        let tax_rate = row.find('.item-tax-dropdown option:selected').data('tax-rate');
-        let tax_value = (tax_rate / 100) * after_discount;
-
-        if(after_discount > 0){
-            row.find('.item-tax-value').val(tax_value.toFixed(2));
-
-        }
+        //Total Price Calcaution: start    
+            let per_unit_price =  parseFloat(row.find('.item-per-unit-price').val()) || 0;
+            let total_price = per_unit_price * after_cut_total_weight;
+            row.find('.item-total-price').val(total_price.toFixed(2));
+        //Total Price Calcaution: end    
 
         summaryCalculation();
 
@@ -461,53 +299,43 @@
         let tax_total = 0;
         let discount_total = 0;
 
-        $('.item-after-discount').each(function(){
-            let item_after_discount_value = parseFloat($(this).val()) || 0;
-            sub_total+= item_after_discount_value;
+        $('.item-total-price').each(function(){
+            let item_total_price = parseFloat($(this).val()) || 0;
+            sub_total+= item_total_price;
         });
         $('#sub-total').val(sub_total);
 
-        $('.item-tax-value').each(function(){
-            let item_tax_value = parseFloat($(this).val()) || 0;
-            tax_total+= item_tax_value;
-        });
-        $('#tax-total').val(tax_total);
-
-
-        $('.item-discount-value').each(function(){
-            let item_discount_value = parseFloat($(this).val()) || 0;
-            discount_total+= item_discount_value;
-        });
-        $('#discount-total').val(discount_total);
-
+        
 
     }
-
-    
-
-   
-
-  
 
     $('#btn-add-more').on('click', function(e){
         e.preventDefault();
         appendNewRow();
        
     });
-    $('.remove-item').on('click', function(e){
+    
+    $(document).on('click', '.remove-item', function(e) {
         e.preventDefault();
-
-        $(this).closest('tr').remove();
-        alert("YES");
+        
+        // Show a confirmation dialog
+        if (confirm("Are you sure you want to remove this item?")) {
+            // If confirmed, remove the row
+            $(this).closest('tr').remove();
+            
+            // Recalculate the summary
+            summaryCalculation();
+        }
     });
 
+   
 
     function appendNewRow(){
         let tableBody = $('#table tbody');
 
         let row = `
              <tr>
-                <td><a href=""><i class="bx bx-menu handle"></i></a> </td>
+                <td><a href=""><i style="font-size:25px" class="bx bx-menu handle"></i></a> </td>
                 <td> 
                     <select name="item_id[]" class="form-control select2 item-dropdown-list" style="width:100%">                                                
                         <option >Choose...</option>
@@ -517,99 +345,54 @@
                         
                     </select>
                     
+                </td>  
+            
+                <td class="text-end"> 
+                    <input type="number" name="gross_weight[]" step="0.01" class="form-control item-gross-weight">  
                 </td>
+
+                <td class="text-center"> 
+                    <input class="form-check-input cut-checkbox" type="checkbox">
+                </td>
+                <td> 
+                    <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage d-none">  
+                </td>
+                <td> 
+                    <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value d-none text-end" readonly>  
+                </td>
+                <td> 
+                    <input type="number" name="after_cut_total_weight[]" step="0.01" class="form-control item-after-cut-total-weight d-none text-end" readonly>  
+                </td>
+
 
 
                 <td> 
-                    <select name="unit_id[]"  class="form-control select2 unit-dropdown-list" style="width:100%">                                                
-                        <option>Choose...</option>
-                        @foreach ($units as $unit)
-                            <option value="{{$unit->id}}" data-base-unit-value="{{ $unit->base_unit_value }}" >{{ $unit->base_unit }}</option>
-                        @endforeach
-                    </select>
-                    
+                    <input type="number" name="total_bags[]" value="0" step="0.01" class="form-control item-total-bags">  
                 </td>
-
-
-                <td> 
-                    <input type="number" name="unit_quantity[]" step="0.01" class="form-control item-unit-quantity " readonly>  
-                </td>
-                
-                
-                <td> 
-                    <input type="number" name="quantity[]" step="0.01" class="form-control item-quantity">  
-                </td>
-
-                <td> 
-                    <input type="number" name="gross_weight[]" step="0.01" class="form-control gross-weight" readonly>  
-                </td>
-
-
-                <td> 
-                    <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage">  
-                </td>
-                <td> 
-                    <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value" readonly>  
-                </td>
-                <td> 
-                    <input type="number" name="after_cut_total_weight[]" step="0.01" class="form-control item-after-cut-total-weight" readonly>  
-                </td>
-
-
-
                 <td> 
                     <input type="number" name="per_package_weight[]" value="0" step="0.01" class="form-control item-per-package-weight">  
                 </td>
                 <td> 
-                    <input type="number" name="total_package_weight[]" value="0" step="0.01" class="form-control item-total-package-weight" readonly>  
+                    <input type="number" name="total_package_weight[]" value="0" step="0.01" class="form-control item-total-package-weight text-end" readonly>  
                 </td>
                 <td> 
-                    <input type="number" name="net_weight[]" value="0" step="0.01" class="form-control item-net-weight" readonly>  
+                    <input type="number" name="net_weight[]" value="0" step="0.01" class="form-control item-net-weight text-end" readonly>  
                 </td>
                 
 
 
-
                 <td> 
-                    <input type="number" name="price[]" step="0.01" class="form-control item-price">  
+                    <input type="number" name="per_unit_price[]" step="0.01" class="form-control item-per-unit-price">  
+                </td>
+                
+
+                <td > 
+                    <input type="number" name="total_price[]" step="0.01" class="form-control item-total-price text-end" readonly>  
                 </td>
 
-                <td> 
-                    <input type="number" name="quantity_price[]" step="0.01" class="form-control item-quantity-price" readonly>  
-                </td>
-
-
-
-
-            
-
-
-                <td>
-                    <input type="number" name="discount_value[]" value="0" step="0.01" class="form-control item-discount-value" >
-                </td>
-                <td>
-                    <select name="discount_type[]"  class="form-select item-discount-type">                                                
-                        <option selected value="fixed">Fixed</option>
-                        <option value="percentage">Percentage</option>
-                    </select>
-                </td>
-
-                <td> 
-                    <input type="number" name="after_discount[]" class="form-control item-after-discount" readonly>  
-                </td>
-                <td> 
-                    <select name="tax_id[]"  class="form-control select2 item-tax-dropdown" style="width:100%">                                                
-                        @foreach ($taxes as $tax)
-                            <option  value="{{$tax->id}}" data-tax-rate="{{ $tax->rate }}" >{{ $tax->name }}</option>
-                        @endforeach
-                    </select>
-                </td>
-                <td> 
-                    <input type="number" name="tax_value[]" class="form-control item-tax-value" readonly>  
-                </td>
 
                 <td class="text-center">  
-                    <a href=""><span class="bx bx-trash text-danger remove-item"></span></a> 
+                    <a href="#"><span class="bx bx-trash text-danger remove-item"></span></a>
                 </td>
 
             </tr>

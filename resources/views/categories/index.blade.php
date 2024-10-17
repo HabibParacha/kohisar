@@ -1,5 +1,5 @@
 @extends('template.tmp')
-@section('title', 'pagetitle')
+@section('title', 'kohisar')
 
 @section('content')
 

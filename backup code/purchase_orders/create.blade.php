@@ -1,6 +1,5 @@
 @extends('template.tmp')
-@section('title', 'kohisar')
-
+@section('title', 'pagetitle')
 
 @section('content')
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -157,21 +156,23 @@
                                         <tr  >
                                             <th class="text-center" width="50"></th>
                                             <th class="text-center" width="250">Item</th> 
-                                            <th class="text-center" width="100">Gross <br> wgt</th>
+                                            <th class="text-center" width="150">Unit</th>
+                                            <th class="text-center" width="100">Unit <br> Qty</th>
+                                            <th class="text-center" width="100">Qty</th>
+                                            <th class="text-center" width="100">Gross <br> Qty</th>
                                             <th class="text-center" width="50">Cut <br>(%)</th>
                                             <th class="text-center" width="100">Cut <br> Value</th>
                                             <th class="text-center" width="100">After <br> Cut</th>
 
 
-                                            <th class="text-center" width="100">Total Bags</th>
                                             <th class="text-center" width="100">Per package <br> Wgt</th>
                                             <th class="text-center" width="100">package <br> Total Wgt</th>
                                             <th class="text-center" width="100">Net<br> Wgt</th>
 
 
 
-                                            <th class="text-center" width="100">Total <br> Price</th>
                                             <th class="text-center" width="100">Unit <br> Price</th>
+                                            <th class="text-center" width="100">Qty <br> Price</th>
                                            
 
                                             <th class="text-end"    width="100">Discount</th>
@@ -197,10 +198,31 @@
                                                     
                                                 </select>
                                                 
-                                            </td>  
-                                        
+                                            </td>
+
+
                                             <td> 
-                                                <input type="number" name="gross_weight[]" step="0.01" class="form-control item-gross-weight">  
+                                                <select name="unit_id[]"  class="form-control select2 unit-dropdown-list" style="width:100%">                                                
+                                                    <option>Choose...</option>
+                                                    @foreach ($units as $unit)
+                                                        <option value="{{$unit->id}}" data-base-unit-value="{{ $unit->base_unit_value }}" >{{ $unit->base_unit }}</option>
+                                                    @endforeach
+                                                </select>
+                                                
+                                            </td>
+
+
+                                            <td> 
+                                                <input type="number" name="unit_quantity[]" step="0.01" class="form-control item-unit-quantity " readonly>  
+                                            </td>
+                                            
+                                            
+                                            <td> 
+                                                <input type="number" name="quantity[]" step="0.01" class="form-control item-quantity">  
+                                            </td>
+
+                                            <td> 
+                                                <input type="number" name="gross_weight[]" step="0.01" class="form-control gross-weight" readonly>  
                                             </td>
 
 
@@ -217,9 +239,6 @@
 
 
                                             <td> 
-                                                <input type="number" name="total_bags[]" value="0" step="0.01" class="form-control item-total-bags">  
-                                            </td>
-                                            <td> 
                                                 <input type="number" name="per_package_weight[]" value="0" step="0.01" class="form-control item-per-package-weight">  
                                             </td>
                                             <td> 
@@ -232,16 +251,16 @@
 
 
 
-                                           
+                                            <td> 
+                                                <input type="number" name="price[]" step="0.01" class="form-control item-price">  
+                                            </td>
 
                                             <td> 
-                                                <input type="number" name="total_price[]" step="0.01" class="form-control item-total-price" readonly>  
+                                                <input type="number" name="quantity_price[]" step="0.01" class="form-control item-quantity-price" readonly>  
                                             </td>
 
 
-                                            <td> 
-                                                <input type="number" name="per_unit_price[]" step="0.01" class="form-control item-per-unit-price">  
-                                            </td>
+
 
                                         
 
@@ -332,6 +351,22 @@
     });
   
 
+    $(document).on('change', '.item-dropdown-list', function(e){
+        
+        let selected_item = $(this).find('option:selected');
+        
+        let unit_id = selected_item.data('unit-id');
+        
+        let row =  $(this).closest('tr');
+        
+        let unit_dropdown = row.find('.unit-dropdown-list');
+
+        unit_dropdown.val(unit_id).trigger('change');
+        
+        calculation(row);  
+
+
+    });
     $(document).on('change', '.unit-dropdown-list, .item-discount-type, .item-tax-dropdown', function(e){
     
         let row =  $(this).closest('tr');
@@ -340,7 +375,7 @@
 
     });
 
-    $(document).on('keyup','.item-gross-weight, .item-per-unit-price, .item-discount-value, .item-cut-percentage, .item-per-package-weight',function(){
+    $(document).on('keyup','.item-unit-quantity, .item-quantity, .item-price, .item-discount-value, .item-cut-percentage, .item-per-package-weight',function(){
         
         let row = $(this).closest('tr');
 
@@ -350,8 +385,21 @@
    
     function calculation(row) {
 
-        let gross_weight = parseFloat(row.find('.item-gross-weight').val()) || 0;
+        let quantity = parseFloat(row.find('.item-quantity').val()) || 0;
         let price = parseFloat(row.find('.item-price').val()) || 0;
+
+        // Calculate total price for quantity and price
+        let quantity_price = quantity * price;
+        row.find('.item-quantity-price').val(quantity_price.toFixed(2));
+
+        //Unit Quantity
+        let selected_unit_base_value = row.find('.unit-dropdown-list option:selected').data('base-unit-value');
+        row.find('.item-unit-quantity').val(selected_unit_base_value);
+
+        //Gross Weight
+        let gross_weight = selected_unit_base_value * quantity;
+        row.find('.gross-weight').val(gross_weight.toFixed(2));
+
 
         //Cut Calcaution:start
             let cut_percentage = parseFloat(row.find('.item-cut-percentage').val()) || 0;
@@ -368,21 +416,15 @@
 
 
         //Package Weight Calcaution: start
-            let total_bags = parseFloat(row.find('.item-total-bags').val()) || 0;
             let per_package_weight = parseFloat(row.find('.item-per-package-weight').val()) || 0;
-
-            let total_package_weight = per_package_weight * total_bags;
+            let total_package_weight = per_package_weight * quantity;
             row.find('.item-total-package-weight').val(total_package_weight.toFixed(2));
 
             let net_weight = after_cut_total_weight - total_package_weight
             row.find('.item-net-weight').val(net_weight.toFixed(2));
         //Package Weight Calcaution: end
 
-        //Total Price Calcaution: start    
-            let per_unit_price =  parseFloat(row.find('.item-per-unit-price').val()) || 0;
-            let total_price = per_unit_price * after_cut_total_weight;
-            row.find('.item-total-price').val(total_price.toFixed(2));
-        //Total Price Calcaution: end    
+
 
         // Discount Calculation: start
             let discount_type = row.find('.item-discount-type').val();
@@ -392,11 +434,11 @@
 
             // Calculate after discount based on discount type
             if (discount_type === "fixed") {
-                after_discount = Math.max(total_price - discount_value, 0); // Avoid negative values
-            } else if (discount_type === "percentage" && total_price > 0) {
+                after_discount = Math.max(quantity_price - discount_value, 0); // Avoid negative values
+            } else if (discount_type === "percentage" && quantity_price > 0) {
                 // Calculate percentage discount
-                let percentage_amount = (total_price * discount_value) / 100;
-                after_discount = Math.max(total_price - percentage_amount, 0); // Avoid negative values
+                let percentage_amount = (quantity_price * discount_value) / 100;
+                after_discount = Math.max(quantity_price - percentage_amount, 0); // Avoid negative values
             }
             row.find('.item-after-discount').val(after_discount.toFixed(2));
         // Discount Calculation: end
@@ -534,7 +576,7 @@
                 </td>
 
                 <td> 
-                    <input type="number" name="total_price[]" step="0.01" class="form-control item-total-price" readonly>  
+                    <input type="number" name="quantity_price[]" step="0.01" class="form-control item-quantity-price" readonly>  
                 </td>
 
 
