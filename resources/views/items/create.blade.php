@@ -1,7 +1,6 @@
 @extends('template.tmp')
 @section('title', 'kohisar')
 
-
 @section('content')
     <div class="main-content">
         <div class="page-content">

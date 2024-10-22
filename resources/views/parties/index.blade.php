@@ -16,7 +16,7 @@
 
                                 <div class="page-btn">
                                     <a href="#" class="btn btn-added btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#add-party"><i class="me-2"></i>Add New Party</a>
+                                        data-bs-target="#add-party"><i class="me-2"></i>Add New <span class="text-capitalize">{{ $type }}</span></a>
                                 </div>
                             </div>
 

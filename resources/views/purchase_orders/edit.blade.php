@@ -48,11 +48,12 @@
         <div class="page-content">
             <div class="container-fluid">
                 <!-- start page title -->
-                <form id="purchase-order-store" method="POST" enctype="multipart/form-data">
+                <form id="purchase-order-update" method="POST" enctype="multipart/form-data">
                     @csrf
+                    @method('PUT')
+                    <input type="hidden" id="invoice_master_id" value="{{ $invoice_master->id }}">
                     <div class="card">
                         <div class="card-body">
-                            {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
                             <h4 class="card-title mb-4">Bill Receipt</h4>
 
                             <div class="row">
@@ -62,8 +63,11 @@
                                         <select name="party_id"  class="select2 form-select">                                                
                                             <option selected="">Choose...</option>
                                             @foreach ($suppliers as $supplier)
-                                                <option value="{{$supplier->id}}">
-                                                    {{ $supplier->business_name }}
+                                                <option 
+                                                
+                                                    @if($supplier->id ==  $invoice_master->party_id ) selected @endif 
+                                                    
+                                                    value="{{$supplier->id}}"> {{ $supplier->business_name }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -75,7 +79,7 @@
                                         <label class="form-label">Receipt No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-receipt"></span> </div>
-                                            <input type="text" name="invoice_no" id="invoice_no" class="form-control" value="{{ $newInvoiceNo }}" readonly>
+                                            <input type="text" name="invoice_no" class="form-control" value="{{ $invoice_master->invoice_no }}" readonly>
                                         </div> 
                                     </div> 
                                 </div>
@@ -85,7 +89,7 @@
                                         <label class="form-label">Vehicle No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bxs-truck" ></span> </div>
-                                            <input type="text" name="vehicle_no" id="vehicle_no" class="form-control">
+                                            <input type="text" name="vehicle_no" value="{{ $invoice_master->vehicle_no }}" class="form-control">
                                         </div> 
                                     </div> 
                                 </div>
@@ -97,7 +101,7 @@
                                         <label class="form-label">Date</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
-                                            <input type="date" name="date" id="date" class="form-control" value="{{ date('Y-m-d') }}">
+                                            <input type="date" name="date" id="date" class="form-control" value="{{ $invoice_master->date }}">
                                         </div>
                                        
                                     </div> 
@@ -180,7 +184,77 @@
                                         </tr>
                                     </thead>
                                     <tbody id="sortable-table">
-                                        {{-- dynamically add row --}}
+                                      @foreach ($invoice_detail as $detail)
+                                      <tr>
+                                        <td><a href=""><i style="font-size:25px" class="bx bx-menu handle text-dark"></i></a> </td>
+                                        <td> 
+                                            <select name="item_id[]" class="form-control select2 item-dropdown-list" style="width:100%">                                                
+                                                <option>Choose...</option>
+                                                @foreach ($items as $item)
+                                                    <option 
+                                                    @if($detail->item_id == $item->id ) selected @endif
+                                                    value="{{ $item->id }}"  data-unit-id="{{ $item->unit_id }}">{{ $item->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>  
+                                        <td> 
+                                            <input type="number" name="gross_weight[]" value="{{ $detail->gross_weight }}" step="0.01" class="form-control item-gross-weight">  
+                                        </td>
+                                    
+                                        @if($detail->cut_percentage > 0)
+                                            <td class="text-center"> 
+                                                <input class="form-check-input cut-checkbox" type="checkbox" checked>
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="cut_percentage[]" value="{{ $detail->cut_percentage }}" step="0.01" class="form-control item-cut-percentage">  
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="cut_value[]" value="{{ $detail->cut_value }}" step="0.01" class="form-control item-cut-value text-end" readonly>  
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="after_cut_total_weight[]" value="{{ $detail->after_cut_total_weight }}" step="0.01" class="form-control item-after-cut-total-weight text-end" readonly>  
+                                            </td>
+                                        @else
+                                            <td class="text-center"> 
+                                                <input class="form-check-input cut-checkbox" type="checkbox">
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage d-none">  
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value d-none text-end" readonly>  
+                                            </td>
+                                            <td> 
+                                                <input type="number" name="after_cut_total_weight[]" value="{{ $detail->after_cut_total_weight }}" step="0.01" class="form-control item-after-cut-total-weight d-none text-end" readonly>  
+                                            </td>
+                                        @endif
+                                    
+                                        <td> 
+                                            <input type="number" name="total_quantity[]" value="{{ $detail->total_quantity }}" step="0.01" class="form-control item-total-quantity">  
+                                        </td>
+                                        <td> 
+                                            <input type="number" name="per_package_weight[]" value="{{ $detail->per_package_weight }}" step="0.01" class="form-control item-per-package-weight">  
+                                        </td>
+                                        <td> 
+                                            <input type="number" name="total_package_weight[]" value="{{ $detail->total_package_weight }}" step="0.01" class="form-control item-total-package-weight text-end" readonly>  
+                                        </td>
+                                        <td> 
+                                            <input type="number" name="net_weight[]" value="{{ $detail->net_weight }}" step="0.01" class="form-control item-net-weight text-end" readonly>  
+                                        </td>
+                                        <td> 
+                                            <input type="number" name="per_unit_price[]" value="{{ $detail->per_unit_price }}" step="0.01" class="form-control item-per-unit-price">  
+                                            <input type="hidden" name="per_unit_price_old_value[]" value="{{ $detail->per_unit_price }}" step="0.01" class="form-control">  
+                                        
+                                        </td>
+                                        <td> 
+                                            <input type="number" name="total_price[]" value="{{ $detail->total_price }}" step="0.01" class="form-control item-total-price text-end" readonly>  
+                                        </td>
+                                        <td class="text-center">  
+                                            <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
+                                        </td>
+                                    </tr>
+                                    
+                                      @endforeach
                                         
                                     </tbody> 
                                 </table>
@@ -191,29 +265,29 @@
 
                             <div class="row mt-3">
                                 <div class="col-md-8">
+
                                     <label for="form-label">Descripion</label>
-                                    <textarea name="description" id="description" class="form-control text-start"  rows="4"></textarea> 
+                                    <textarea name="description" id="description" rows="4" class="form-control">{{ $invoice_master->description }}</textarea> 
                                 </div>
-                                
                                 <div class="col-md-4 d-flex align-items-center">
                                     <table id="summary-table" class="table">
                                         <tr>
                                             <th width="50%">Sub Total</th>
                                             <td width="50%">
-                                                <input type="number" name="sub_total" id="sub-total" value="0" class="form-control text-end" readonly>
+                                                <input type="number" name="sub_total" id="sub-total" value="{{ $invoice_master->sub_total }}" class="form-control text-end" readonly>
                                             </td>
                                         </tr>  
                                         <tr>
                                             <th>Shipping</th>
                                             <td>
-                                                <input type="number" name="shipping" value="0" class="form-control text-end" >
+                                                <input type="number" name="shipping" value="{{ $invoice_master->shipping }}" class="form-control text-end" >
                                             </td>
                                         </tr>
 
                                         <tr class="">
                                             <th width="50%">Grand Total</th>
                                             <td width="50%">
-                                                <input type="number" name="grand_total" id="grand-total" value="0" class="form-control text-end" readonly>
+                                                <input type="number" name="grand_total" id="grand-total" value="{{ $invoice_master->grand_total }}" class="form-control text-end" readonly>
                                             </td>
                                         </tr>  
                             
@@ -231,11 +305,12 @@
                                 <label class="col-md-3 col-form-label">Attachment</label>
                                 <div class="col-md-9">
                                     <input type="file" name="attachment" class="form-control">
+                                    <input type="hidden" name="attachment_old_value" value="{{ $invoice_master->attachment }}" class="form-control">
                                 </div>
                             </div>  
                         </div>
                         <div class="col-md-8 text-end">
-                            <button type="submit"id="submit-purchase-order-store" class="btn btn-success w-md">Save</button>
+                            <button type="submit"id="submit-purchase-order-update" class="btn btn-success w-md">Save</button>
                             <a href="{{ route('purchase-order.index') }}"class="btn btn-secondary w-md ">Cancel</a>
         
                         </div>
@@ -267,10 +342,7 @@
     </script>
 
 <script>  
-    $(document).ready(function () {
-        appendNewRow();
-    });
-  
+   
 
     $(document).on('change', '.unit-dropdown-list, .item-discount-type, .item-tax-dropdown', function(e){
     
@@ -444,6 +516,8 @@
 
                 <td> 
                     <input type="number" name="per_unit_price[]" step="0.01" class="form-control item-per-unit-price">  
+                    <input type="hidden" name="per_unit_price_old_value[]" value="" step="0.01" class="form-control">  
+
                 </td>
                 
 
@@ -486,58 +560,58 @@
 
 
 <script>
-    $('#purchase-order-store').on('submit', function(e) {
-        e.preventDefault();
-        var submit_btn = $('#submit-purchase-order-store');
-        let createformData = new FormData(this);
-        $.ajax({
-            type: "POST",
-            url: "{{ route('purchase-order.store') }}",
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            cache: false,
-            data: createformData,
-            enctype: "multipart/form-data",
-            beforeSend: function() {
-                submit_btn.prop('disabled', true);
-                submit_btn.html('Processing');
-            },
-            success: function(response) {
-                
-                submit_btn.prop('disabled', false).html('Save');  
+    $('#purchase-order-update').on('submit', function(e) {
+                e.preventDefault();
+                var submit_btn = $('#submit-purchase-order-update');
+                let invoice_master_id = $('#invoice_master_id').val(); // Get the ID of the purchase-order being edited
 
-                if(response.success == true){
-                    $('#purchase-order-store')[0].reset();  // Reset all form data
-                
-                    notyf.success({
-                        message: response.message, 
-                        duration: 3000
-                    });
+                let editFormData = new FormData(this);
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('purchase-order.update', ':id') }}".replace(':id', invoice_master_id), // Using route name
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    data: editFormData,
+                    enctype: "multipart/form-data",
+                    beforeSend: function() {
+                        submit_btn.prop('disabled', true);
+                        submit_btn.html('Processing');
+                    },
+                    success: function(response) {
+                        
+                        submit_btn.prop('disabled', false).html('Update');  
 
-                    // Redirect after success notification
-                    setTimeout(function() {
-                        window.location.href = '{{ route("purchase-order.index") }}';
-                    }, 200); // Redirect after 3 seconds (same as notification duration)
+                        if(response.success == true){
+                            $('#purchase-order-update')[0].reset();  // Reset all form data
+                        
+                            notyf.success({
+                                message: response.message, 
+                                duration: 3000
+                            });
 
-
-                }else{
-                    notyf.error({
-                        message: response.message,
-                        duration: 5000
-                    });
-                }   
-            },
-            error: function(e) {
-                submit_btn.prop('disabled', false).html('Save');
-            
-                notyf.error({
-                    message: e.responseJSON.message,
-                    duration: 5000
+                             // Redirect after success notification
+                        setTimeout(function() {
+                            window.location.href = '{{ route("purchase-order.index") }}';
+                        }, 200); // Redirect after 3 seconds (same as notification duration)
+                        }else{
+                            notyf.error({
+                                message: response.message,
+                                duration: 5000
+                            });
+                        }   
+                    },
+                    error: function(e) {
+                        submit_btn.prop('disabled', false).html('Update');
+                    
+                        notyf.error({
+                            message: e.responseJSON.message,
+                            duration: 5000
+                        });
+                    }
                 });
-            }
-        });
-    });
+            });
             
 </script>
     
