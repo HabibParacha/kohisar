@@ -56,7 +56,7 @@
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label class="form-label">Supplier</label>
-                                        <select id="supplier_id" name="supplier_id"  class="select2 form-select">                                                
+                                        <select id="supplier_id" name="supplier_id"  class="select2 form-select" tabindex="1">                                                
                                             <option selected="">Choose...</option>
                                             @foreach ($suppliers as $supplier)
                                                 <option value="{{$supplier->id}}">

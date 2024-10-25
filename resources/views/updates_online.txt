@@ -1,0 +1,2 @@
+change shipping to fright
+remove description from create receipt

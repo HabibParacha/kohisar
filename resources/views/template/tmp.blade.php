@@ -93,7 +93,9 @@
     height: 38px
 }
 .select2-container .select2-selection--single:focus {
-    outline: 0
+    outline: 0;
+    border: 1px solid rgb(64, 148, 218);
+
 }
 .select2-container .select2-selection--single .select2-selection__rendered {
     line-height: 36px;
@@ -263,7 +265,24 @@
         @include('template.footer')
         <!-- end of footer -->
 
+        <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
         <script>
+            // Create an instance of Notyf
+            let notyf = new Notyf({
+                duration: 3000,
+                position: {
+                    x: 'right',
+                    y: 'top',
+                },
+            });
+        </script>
+        
+        <script>
+            
+
+
+
+
             function globleDelete(id) {
                 alert("yes");
                 // $('#submit-model-destroy').data('id', id);

@@ -46,7 +46,7 @@ class InvoiceDetail extends Model
         return $this->belongsTo(Item::class);
     }
 
-    public function invoice_master()
+    public function invoiceMaster()
     {
         return $this->belongsTo(InvoiceMaster::class);
     }

@@ -25,6 +25,8 @@ class PurchaseOrderController extends Controller
      */
     public function index(Request $request)
     {
+
+      
       
         try{
             if ($request->ajax()) {
@@ -98,6 +100,7 @@ class PurchaseOrderController extends Controller
      */
     public function create()
     {
+        
         $suppliers = Party::whereIn('party_type',['supplier','both'])->get();
         $items = Item::all();
         $taxes = Tax::all();
@@ -106,10 +109,13 @@ class PurchaseOrderController extends Controller
         $paymentTerms = $this->paymentTerms();
         $newInvoiceNo = $this->generateInvoiceNo('PR','receipt');
         
+
+        $itemController = new ItemController;
+        $itemTypes = $itemController->itemTypes();
         
         return view('purchase_orders.create', 
         compact(
-            'suppliers','items','taxes','units','paymentTerms','newInvoiceNo'
+            'suppliers','items','taxes','units','paymentTerms','newInvoiceNo','itemTypes'
         ));
     }
 
@@ -121,24 +127,34 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
+        
+          // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'party_id' => 'required',
+            'item_id.*' =>'required',
+            'gross_weight.*' =>'required',
+            'per_unit_price.*' =>'required',
+        ],
+        [
+            'party_id.required' => 'The Supplier is required.',
+            'item_id.*.required' => 'Each item is required.',
+            'gross_weight.*.required' => 'Gross weight is required for all items.',
+            'per_unit_price.*.required' => 'Per Kg price is required for each item.',
+        ]);
+    
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
+        
         // Start a transaction
         DB::beginTransaction();
-
+       
         try {
-
-            // Validate the request data
-            $validator = Validator::make($request->all(), [
-               
-            ]);
-
-
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $validator->errors()->first()
-                ]);
-            }
 
             $newInvoiceNo = $this->generateInvoiceNo('PR','receipt');
 
@@ -296,23 +312,38 @@ class PurchaseOrderController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+
+        $validator = Validator::make($request->all(), [
+            'party_id' => 'required',
+            'description' => 'required',
+            'item_id.*' =>'required',
+            'gross_weight.*' =>'required',
+            'per_unit_price.*' =>'required',
+        ],
+        [
+            'party_id.required' => 'The Supplier is required.',
+            'item_id.*.required' => 'Each item is required.',
+            'gross_weight.*.required' => 'Gross weight is required for all items.',
+            'per_unit_price.*.required' => 'Per Kg price is required for each item.',
+        ]);
+    
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
+
+      
         // Start a transaction
         DB::beginTransaction();
 
         try {
 
-            // Validate the request data
-            $validator = Validator::make($request->all(), [
-               'description' => 'required'
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $validator->errors()->first()
-                ]);
-            }
-
+        
             $invoice_master_data = [
                 'date' => $request->input('date'),
                 'vehicle_no' => $request->input('vehicle_no'),
@@ -415,7 +446,33 @@ class PurchaseOrderController extends Controller
      */
     public function destroy($id)
     {
-        //
+        DB::beginTransaction();// Start a transaction
+
+        try {
+           
+             // Delete invoice details first
+            DB::table('invoice_detail')->where('invoice_master_id', $id)->delete();
+
+            // Then delete the invoice master record
+            DB::table('invoice_master')->where('id', $id)->delete();
+        
+            DB::commit();// Commit the transaction
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Item Delete successfully.',
+                ],200);
+                
+        } catch (\Exception $e) {
+          
+            DB::rollBack();  // Rollback the transaction if there is an error
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+        
     }
 
     public function paymentTerms(){
@@ -459,5 +516,8 @@ class PurchaseOrderController extends Controller
         }
           
     }
+
+
+  
 
 }

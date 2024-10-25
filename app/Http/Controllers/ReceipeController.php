@@ -2,40 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Party;
+use App\Models\Item;
+use App\Models\Unit;
+use App\Models\Receipe;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
-class PartyController extends Controller
+class ReceipeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
 
-    public function index(Request $request, $type = null)
+    public function index(Request $request)
     {
         
+
         try{
             if ($request->ajax()) {
-
-                
-                if($type == 'supplier'){
-                    $data = Party::where('party_type','supplier')->get();
-                }  
-                elseif($type == 'customer'){
-                    $data = Party::whereIn('party_type',['customer','both'])->get();   
-                }
-                else{
-                    $data = Party::all();
-                }
+                $data = Receipe::all();
     
                 return Datatables::of($data)
                     ->addIndexColumn()
                     // Status toggle column
+                   
+
                     ->addColumn('action', function ($row) {
                         $btn = '
                             <div class="d-flex align-items-center col-actions">
@@ -45,10 +41,23 @@ class PartyController extends Controller
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li>
-                                            <a href="javascript:void(0)" onclick="editParty(' . $row->id . ')" class="dropdown-item">
+                                            <a href="'. route('receipe.show', $row->id) .'"  class="dropdown-item">
+                                                <i class="bx bx-show font-size-16 text-primary me-1"></i> Show
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="'.route('receipe.edit', $row->id).'" class="dropdown-item">
                                                 <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
                                             </a>
                                         </li>
+                                        <li>
+                                            <a href="javascript:void(0)" onclick="deleteReceipe(' . $row->id . ')" class="dropdown-item">
+                                                <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
+                                            </a>
+                                        </li>
+                                        
+                                       
+                                       
                                        
                                     </ul>
                                 </div>
@@ -56,13 +65,15 @@ class PartyController extends Controller
     
                    
                     return $btn;
-                  
+                   
                     })
+                    
+                    
                     ->rawColumns(['action']) // Mark these columns as raw HTML
                     ->make(true);
             }
     
-            return view('parties.index',compact('type'));
+            return view('receipes.index');
 
         }catch (\Exception $e){
 
@@ -70,6 +81,14 @@ class PartyController extends Controller
         }
         
         
+    }
+
+    public function create()
+    {
+        $items  = Item::all();
+        $units = Unit::all();
+
+        return view('receipes.create', compact('items','units'));
     }
 
     public function store(Request $request)
@@ -81,32 +100,13 @@ class PartyController extends Controller
 
             // Validate the request data
             $validator = Validator::make($request->all(), [
-                'party_type' => 'nullable',
-                'type' => 'required',
-                'business_name' => 'nullable',
-                'prefix' => 'nullable',
-                'first_name' => 'nullable',
-                'middle_name' => 'nullable',
-                'last_name' => 'nullable',
-                'mobile' => 'nullable',
-                'alternate_number' => 'nullable',
-                'landline' => 'nullable',
-                'email' => 'nullable',
-                'tax_number' => 'nullable',
-                'balance' => 'nullable',
-                'pay_term_type' => 'nullable',
-                'credit_limit' => 'nullable',
-                'address_line_1' => 'nullable',
-                'address_line_2' => 'nullable',
-                'city' => 'nullable',
-                'state' => 'nullable',
-                'country' => 'nullable',
-                'zip_code' => 'nullable',
-                'shipping_address' => 'nullable',
-                'is_active' => 'nullable',
+                'name' => 'required',
+                'description' => 'nullable', // Validation for image
+                'item_id.*' => 'required',
+                'unit_id.*' => 'required',
+                'quantity.*' => 'required',
+
             ]);
-
-
 
             if ($validator->fails()) {
                 return response()->json([
@@ -115,21 +115,35 @@ class PartyController extends Controller
                 ]);
             }
 
-            $data = $request->all();// storing request data in array
-            if($request->type == 'individual'){
-                $data['business_name'] = $request->prefix.' '.$request->first_name.' '.$request->middle_name.' '.$request->last_name ;
+
+            $receipe = [
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'user_id' => Auth::id(),
+            ];
+
+            $receipe_id = DB::table('receipes')->insertGetId($receipe);
+
+
+            for($i=0; $i < count($request->item_id); $i++)
+            {
+                $receipeDetail = [
+                    'receipe_id' => $receipe_id,
+                    'item_id'    => $request->item_id[$i],
+                    'unit_id'    => $request->unit_id[$i],
+                    'quantity'   => $request->quantity[$i],
+                ];
+
+                DB::table('receipe_detail')->insert($receipeDetail);
+                
             }
-
-            
-
-            Party::create($data);
 
             DB::commit();// Commit the transaction
 
             // Return a JSON response with a success message
             return response()->json([
                 'success' => true,
-                'message' => 'Party added successfully.',
+                'message' => 'Receipe added successfully.',
             ],200);
         
 
@@ -146,17 +160,35 @@ class PartyController extends Controller
         }
     }
 
-
-
     /**
      * Show the form for editing the specified resource.
      */
+    public function show($id)
+    {
+        $items  = Item::all();
+        $units = Unit::all();
+        try {
+            $receipe = Receipe::findOrFail($id);
+            $receipeDetails = $receipe->receipeDetails;
+            return view('receipes.show', compact('receipe','receipeDetails','items','units'));
+
+        } catch (\Exception $e) {
+            // Return a JSON response with an error message
+            return response()->json([
+                'message' => $e->getMessage(),
+                'success' => false,
+            ], 500);
+        }
+    }
+
     public function edit($id)
     {
-        
+        $items  = Item::all();
+        $units = Unit::all();
         try {
-            $data = Party::findOrFail($id);
-            return response()->json($data);
+            $receipe = Receipe::findOrFail($id);
+            $receipeDetails = $receipe->receipeDetails;
+            return view('receipes.edit', compact('receipe','receipeDetails','items','units'));
 
         } catch (\Exception $e) {
             // Return a JSON response with an error message
@@ -173,33 +205,13 @@ class PartyController extends Controller
 
     public function update(Request $request, $id)
     {
-        DB::beginTransaction();
-        
         // Validate the request data
         $validator = Validator::make($request->all(), [
-                'party_type' => 'nullable',
-                'type' => 'required',
-                'business_name' => 'nullable',
-                'prefix' => 'nullable',
-                'first_name' => 'nullable',
-                'middle_name' => 'nullable',
-                'last_name' => 'nullable',
-                'mobile' => 'nullable',
-                'alternate_number' => 'nullable',
-                'landline' => 'nullable',
-                'email' => 'nullable',
-                'tax_number' => 'nullable',
-                'balance' => 'nullable',
-                'pay_term_type' => 'nullable',
-                'credit_limit' => 'nullable',
-                'address_line_1' => 'nullable',
-                'address_line_2' => 'nullable',
-                'city' => 'nullable',
-                'state' => 'nullable',
-                'country' => 'nullable',
-                'zip_code' => 'nullable',
-                'shipping_address' => 'nullable',
-                'is_active' => 'nullable',
+            'name' => 'required',
+            'description' => 'nullable', // Validation for image
+            'item_id.*' => 'required',
+            'unit_id.*' => 'required',
+            'quantity.*' => 'required',
 
         ]);
 
@@ -210,23 +222,41 @@ class PartyController extends Controller
             ]);
         }
 
-       
-        $data = $request->all();// storing request data in array
-        $data['name'] = $request->prefix.' '.$request->first_name.' '.$request->middle_name.' '.$request->last_name ;
 
+
+        DB::beginTransaction();
+        
 
        try {
-           $party = Party::findOrFail($id);
+            $receipe = [
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'user_id' => Auth::id(),
+            ];
+
+          DB::table('receipes')->where('id',$id)->update($receipe);
+          DB::table('receipe_detail')->where('receipe_id',$id)->delete();
 
 
-           $party->update($data);
+            for($i=0; $i < count($request->item_id); $i++)
+            {
+                $receipeDetail = [
+                    'receipe_id' => $id,
+                    'item_id'    => $request->item_id[$i],
+                    'unit_id'    => $request->unit_id[$i],
+                    'quantity'   => $request->quantity[$i],
+                ];
 
-           DB::commit();// Commit the transaction
+                DB::table('receipe_detail')->insert($receipeDetail);
+                
+            }
+
+            DB::commit();// Commit the transaction
 
            // Return a JSON response with a success message
            return response()->json([
                'success' => true,
-               'message' => 'Party Update successfully.',
+               'message' => 'Receipe Update successfully.',
                ],200);
 
 
@@ -248,20 +278,21 @@ class PartyController extends Controller
    
     public function destroy($id)
     {
-
-
+       
         DB::beginTransaction();// Start a transaction
 
         try {
-            $party = Party::find($id);
+            $receipe = Receipe::find($id);
 
-            $party->delete();// Delete the party record
+            DB::table('receipe_detail')->where('receipe_id',$id)->delete();
+
+            $receipe->delete();// Delete the receipe record
 
             DB::commit();// Commit the transaction
             
             return response()->json([
                 'success' => true,
-                'message' => 'Party Delete successfully.',
+                'message' => 'Receipe Delete successfully.',
                 ],200);
                 
         } catch (\Exception $e) {
@@ -281,4 +312,3 @@ class PartyController extends Controller
 
 
 }
-

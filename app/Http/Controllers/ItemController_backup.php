@@ -2,40 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Party;
+use App\Models\Tax;
+use App\Models\Item;
+use App\Models\Unit;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Variation;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use App\Models\InvoiceDetail;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
-class PartyController extends Controller
+class ItemController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
 
-    public function index(Request $request, $type = null)
+    public function index(Request $request)
     {
-        
+        $categories = Category::all();
+        $brands = Brand::all();
+        // $variation = DB::table('variations')->get();
+        $taxes = Tax::all();
+        $units = Unit::all();
+        $warehouses = Warehouse::all();
+
+        $itemTypes = $this->itemTypes();
+      
+
         try{
             if ($request->ajax()) {
-
-                
-                if($type == 'supplier'){
-                    $data = Party::where('party_type','supplier')->get();
-                }  
-                elseif($type == 'customer'){
-                    $data = Party::whereIn('party_type',['customer','both'])->get();   
-                }
-                else{
-                    $data = Party::all();
-                }
+                $data = Item::all();
     
                 return Datatables::of($data)
                     ->addIndexColumn()
                     // Status toggle column
+
+                    ->addColumn('category_name', function ($row) {
+                        return $row->category->name ?? 'N/A';
+                    })
+                    ->addColumn('brand_name', function ($row) {
+                        return $row->brand->name ?? 'N/A';
+                    })
+                    ->addColumn('tax_name', function ($row) {
+                        return $row->tax->name ?? 'N/A';
+                    })
+                    ->addColumn('unit', function ($row) {
+                        return $row->unit->base_unit.' , '.$row->unit->child_unit  ?? 'N/A';
+                    })
+                   
+
                     ->addColumn('action', function ($row) {
                         $btn = '
                             <div class="d-flex align-items-center col-actions">
@@ -45,10 +66,16 @@ class PartyController extends Controller
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li>
-                                            <a href="javascript:void(0)" onclick="editParty(' . $row->id . ')" class="dropdown-item">
+                                            <a href="javascript:void(0)" onclick="editItem(' . $row->id . ')" class="dropdown-item">
                                                 <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
                                             </a>
                                         </li>
+                                         <li>
+                                            <a href="javascript:void(0)" onclick="deleteItem(' . $row->id . ')" class="dropdown-item">
+                                                <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
+                                            </a>
+                                        </li>
+                                       
                                        
                                     </ul>
                                 </div>
@@ -56,13 +83,14 @@ class PartyController extends Controller
     
                    
                     return $btn;
-                  
+                   
                     })
+
                     ->rawColumns(['action']) // Mark these columns as raw HTML
                     ->make(true);
             }
     
-            return view('parties.index',compact('type'));
+            return view('items.index', compact('categories','brands','taxes','units','warehouses','itemTypes'));
 
         }catch (\Exception $e){
 
@@ -74,6 +102,7 @@ class PartyController extends Controller
 
     public function store(Request $request)
     {
+        
         // Start a transaction
         DB::beginTransaction();
 
@@ -81,28 +110,19 @@ class PartyController extends Controller
 
             // Validate the request data
             $validator = Validator::make($request->all(), [
-                'party_type' => 'nullable',
+                'name' => 'required',
+                'code' => 'nullable',
                 'type' => 'required',
-                'business_name' => 'nullable',
-                'prefix' => 'nullable',
-                'first_name' => 'nullable',
-                'middle_name' => 'nullable',
-                'last_name' => 'nullable',
-                'mobile' => 'nullable',
-                'alternate_number' => 'nullable',
-                'landline' => 'nullable',
-                'email' => 'nullable',
-                'tax_number' => 'nullable',
-                'balance' => 'nullable',
-                'pay_term_type' => 'nullable',
-                'credit_limit' => 'nullable',
-                'address_line_1' => 'nullable',
-                'address_line_2' => 'nullable',
-                'city' => 'nullable',
-                'state' => 'nullable',
-                'country' => 'nullable',
-                'zip_code' => 'nullable',
-                'shipping_address' => 'nullable',
+                'sell_price' => 'nullable', 
+                'purchase_price' => 'nullable', 
+                'stock_alert_qty' => 'nullable',
+                
+                'category_id' => 'nullable',
+                'brand_id' => 'nullable', 
+                'unit_id' => 'required', 
+                'tax_id' => 'nullable', 
+                'warehouse_id' => 'nullable', 
+
                 'is_active' => 'nullable',
             ]);
 
@@ -116,20 +136,22 @@ class PartyController extends Controller
             }
 
             $data = $request->all();// storing request data in array
-            if($request->type == 'individual'){
-                $data['business_name'] = $request->prefix.' '.$request->first_name.' '.$request->middle_name.' '.$request->last_name ;
+
+             // Handle the image upload
+            if ($request->hasFile('image')) {
+                $imageName = time() . '.' . $request->image->extension();
+                $request->image->move(public_path('build/img/item'), $imageName);
+                $data['image'] = $imageName; // Save the image name in the data array
             }
 
-            
-
-            Party::create($data);
+            Item::create($data);
 
             DB::commit();// Commit the transaction
 
             // Return a JSON response with a success message
             return response()->json([
                 'success' => true,
-                'message' => 'Party added successfully.',
+                'message' => 'Item added successfully.',
             ],200);
         
 
@@ -147,7 +169,6 @@ class PartyController extends Controller
     }
 
 
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -155,7 +176,7 @@ class PartyController extends Controller
     {
         
         try {
-            $data = Party::findOrFail($id);
+            $data = Item::findOrFail($id);
             return response()->json($data);
 
         } catch (\Exception $e) {
@@ -177,29 +198,20 @@ class PartyController extends Controller
         
         // Validate the request data
         $validator = Validator::make($request->all(), [
-                'party_type' => 'nullable',
-                'type' => 'required',
-                'business_name' => 'nullable',
-                'prefix' => 'nullable',
-                'first_name' => 'nullable',
-                'middle_name' => 'nullable',
-                'last_name' => 'nullable',
-                'mobile' => 'nullable',
-                'alternate_number' => 'nullable',
-                'landline' => 'nullable',
-                'email' => 'nullable',
-                'tax_number' => 'nullable',
-                'balance' => 'nullable',
-                'pay_term_type' => 'nullable',
-                'credit_limit' => 'nullable',
-                'address_line_1' => 'nullable',
-                'address_line_2' => 'nullable',
-                'city' => 'nullable',
-                'state' => 'nullable',
-                'country' => 'nullable',
-                'zip_code' => 'nullable',
-                'shipping_address' => 'nullable',
-                'is_active' => 'nullable',
+            'name' => 'nullable',
+            'code' => 'nullable',
+            'type' => 'nullable',
+            'sell_price' => 'nullable', 
+            'purchase_price' => 'nullable', 
+            'stock_alert_qty' => 'nullable',
+            
+            'category_id' => 'nullable',
+            'brand_id' => 'nullable', 
+            'unit_id' => 'nullable', 
+            'tax_id' => 'nullable', 
+            'warehouse_id' => 'nullable', 
+
+            'is_active' => 'nullable',
 
         ]);
 
@@ -212,21 +224,32 @@ class PartyController extends Controller
 
        
         $data = $request->all();// storing request data in array
-        $data['name'] = $request->prefix.' '.$request->first_name.' '.$request->middle_name.' '.$request->last_name ;
-
+      
 
        try {
-           $party = Party::findOrFail($id);
+           $item = Item::findOrFail($id);
+
+           // Handle the image upload
+           if ($request->hasFile('image')) {
+               // Delete old image if it exists
+               if ($item->image && $item->image != 'default.jpg') {
+                   unlink(public_path('build/img/item/' . $item->image));
+               }
+
+               $imageName = time() . '.' . $request->image->extension();
+               $request->image->move(public_path('build/img/item'), $imageName);
+               $data['image'] = $imageName; // Save the image name in the data array
+           }
 
 
-           $party->update($data);
+           $item->update($data);
 
            DB::commit();// Commit the transaction
 
            // Return a JSON response with a success message
            return response()->json([
                'success' => true,
-               'message' => 'Party Update successfully.',
+               'message' => 'Item Update successfully.',
                ],200);
 
 
@@ -248,20 +271,30 @@ class PartyController extends Controller
    
     public function destroy($id)
     {
-
+        
 
         DB::beginTransaction();// Start a transaction
 
         try {
-            $party = Party::find($id);
+            $item = Item::find($id);
+            
+            // Check if the item has any associated invoice details
+            $invoiceDetailExists = $item->invoiceDetails()->exists();
 
-            $party->delete();// Delete the party record
+            if ($invoiceDetailExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Item record exists in an invoice detail and cannot be deleted.'
+                ], 409);
+            }
+
+            $item->delete();// Delete the item record
 
             DB::commit();// Commit the transaction
             
             return response()->json([
                 'success' => true,
-                'message' => 'Party Delete successfully.',
+                'message' => 'Item Delete successfully.',
                 ],200);
                 
         } catch (\Exception $e) {
@@ -276,9 +309,18 @@ class PartyController extends Controller
         
     }
 
+    public function itemTypes()
+    {
+        $data = [
+            'Raw',
+            'Product',
+        ];
+
+        return $data;
+    }
+
 
    
 
 
 }
-

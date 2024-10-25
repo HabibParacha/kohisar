@@ -76,6 +76,39 @@
         </div>
     </div>
 
+     <!-- Delete Purchase Order -->
+     <div class="modal fade" id="delete-purchase-order">
+        <div class="modal-dialog custom-modal-two">
+            <div class="modal-content">
+                <div class="page-wrapper-new p-0">
+                    <div class="content">
+                        <div class="modal-header border-0 custom-modal-header">
+                            <div class="page-title">
+                                <h4>Delete Purchase Order</h4>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                
+                            </button>
+                        </div>
+                        
+                            <div class="modal-body custom-modal-body pt-3 pb-0">
+                                <h5 class="text-center text-danger">This action cannot be undone</h5>
+                                <p class="text-center">Are you sure you want to permanently delete this purchase order?</p>
+                            </div>
+                            <div class="modal-footer-btn p-3 mt-2">
+                                <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-submit shadow-sm btn-danger" id="submit-purchase-order-destroy">Delete</button>
+                            </div>
+                            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+<!-- /Delete Purchase Order -->
+
+
 
     <script>
          $(document).ready(function() {
@@ -95,7 +128,58 @@
                 ],
                 order: [[0, 'desc']],
             });
+
+            $('#submit-purchase-order-destroy').click(function() {
+                let invoice_master_id = $(this).data('id');
+                var submit_btn = $('#submit-purchase-order-destroy');
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: "{{ route('purchase-order.destroy', ':id') }}".replace(':id', invoice_master_id), // Using route name
+                    data: {
+                        _token: "{{ csrf_token() }}" // Add CSRF token
+                    },
+                    beforeSend: function() {
+                            submit_btn.prop('disabled', true);
+                            submit_btn.html('Processing');
+                        },
+                    success: function(response) {
+                        
+                        submit_btn.prop('disabled', false).html('Delete');  
+
+                        if(response.success == true){
+                            $('#delete-purchase-order').modal('hide'); 
+                            table.ajax.reload();
+                        
+                            notyf.success({
+                                message: response.message, 
+                                duration: 3000
+                            });
+                        }else{
+                            notyf.error({
+                                message: response.message,
+                                duration: 5000
+                            });
+                        }   
+                    },
+                    error: function(e) {
+                        submit_btn.prop('disabled', false).html('Delete');
+                    
+                        notyf.error({
+                            message: e.responseJSON.message,
+                            duration: 5000
+                        });
+                    }
+                });
+            });
         });
+        function deletePurchaseOrder(id) {
+            $('#submit-purchase-order-destroy').data('id', id);
+            $('#delete-purchase-order').modal('show');
+        }
+
+
+        
 
         
         

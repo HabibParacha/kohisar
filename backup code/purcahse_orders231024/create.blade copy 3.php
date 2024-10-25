@@ -35,6 +35,8 @@
     opacity: 1;
 }
 
+
+    
 </style>
 <style>
     .ui-state-highlight {
@@ -45,21 +47,6 @@
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
-                <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h3 class="mb-sm-0 font-size-18">All Items</h3>
-
-                        <div class="page-title-right d-flex">
-
-                            <div class="page-btn">
-                                <a href="#" class="btn btn-added btn-primary" data-bs-toggle="modal" data-bs-target="#add-item"><i class="me-2 bx bx-plus"></i>Item</a>
-                            </div>  
-                        </div>
-
-
-
-                    </div>
-                </div>
                 <!-- start page title -->
                 <form id="purchase-order-store" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -72,11 +59,11 @@
                                 <div class="col-md-3">
                                     <div class="mb-3">
                                         <label class="form-label">Supplier</label>
-                                        <select name="party_id"  id="party_id" class="select2 form-control" autofocus>                                                
-                                            <option value="">Choose...</option>
+                                        <select name="party_id"  id="party_id" class="select2 form-select" tabindex="1" autofocus >                                                
+                                            <option selected="">Choose...</option>
                                             @foreach ($suppliers as $supplier)
                                                 <option value="{{$supplier->id}}">
-                                                    {{ $supplier->id .'-'.$supplier->business_name }}
+                                                    {{ $supplier->business_name }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -98,7 +85,7 @@
                                         <label class="form-label">Vehicle No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bxs-truck" ></span> </div>
-                                            <input type="text" name="vehicle_no" id="vehicle_no" class="form-control" autocomplete="off">
+                                            <input type="text" name="vehicle_no" id="vehicle_no" class="form-control" tabindex="2">
                                         </div> 
                                     </div> 
                                 </div>
@@ -115,7 +102,32 @@
                                        
                                     </div> 
                                 </div>
-                               
+                                <div class="col-md-4 d-none">
+                                    <div class="mb-3">
+                                        <label class="form-label">Payment Terms</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><span class="bx bx-money" ></span> </div>
+                                            <select name="payment_terms" id="payment_terms"  class="form-control">
+                                                <option selected value="">Choose...</option>
+                                                @foreach ($paymentTerms as $term )
+                                                    <option value="{{ $term['value'] }}">{{ $term['name'] }}</option>
+                                                    
+                                                @endforeach
+
+                                            </select>
+                                        </div>
+                                       
+                                    </div> 
+                                </div>
+                                <div class="col-md-4 d-none">
+                                    <div class="mb-3">
+                                        <label class="form-label">Due Date</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
+                                            <input type="date" name="due_date" id="due_date" class="form-control">
+                                        </div> 
+                                    </div> 
+                                </div>
                                 
                               
                                 
@@ -168,7 +180,8 @@
                                         </tr>
                                     </thead>
                                     <tbody id="sortable-table">
-                                      
+                                       
+                                        
                                     </tbody> 
                                 </table>
 
@@ -178,8 +191,8 @@
 
                             <div class="row mt-3">
                                 <div class="col-md-8">
-                                    {{-- <label for="form-label">Descripion</label> --}}
-                                    <textarea name="description" id="description" class="form-control text-start d-none"  rows="4"></textarea> 
+                                    <label for="form-label">Descripion</label>
+                                    <textarea name="description" id="description" class="form-control text-start"  rows="4"></textarea> 
                                 </div>
                                 
                                 <div class="col-md-4 d-flex align-items-center">
@@ -191,9 +204,9 @@
                                             </td>
                                         </tr>  
                                         <tr>
-                                            <th>Freight </th>
+                                            <th>Shipping</th>
                                             <td>
-                                                <input type="number" name="shipping" class="form-control text-end"  autocomplete="off">
+                                                <input type="number" name="shipping" value="0" class="form-control text-end" >
                                             </td>
                                         </tr>
 
@@ -237,83 +250,7 @@
          </div>
     </div>
 
-
-
-     <!-- Add Item -->
-     <div class="modal fade" id="add-item">
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <div class="page-wrapper-new p-0">
-                    <div class="content">
-                        <div class="modal-header border-0 custom-modal-header">
-                            <div class="page-title">
-                                <h4>Create Item</h4>
-                            </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                
-                            </button>
-                        </div>
-                        <div class="modal-body custom-modal-body">
-                            <form id="item-store" enctype="multipart/form-data">
-                                @csrf
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label class="form-label">Types</label>
-                                            <select name="type" class="form-select" style="width:100%">
-                                                <option value="">Choose...</option>
-                                                @foreach ($itemTypes as $type)
-                                                    <option value="{{ $type }}">{{ $type }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>                                            
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label  class="form-label">Item Code</label>
-                                            <input name="code" type="text" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label  class="form-label">Item Name</label>
-                                            <input name="name" type="text" class="form-control">
-                                        </div>
-                                    </div>
-                                    
-                                   
-                                    
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label  class="form-label">Low Stock Alert Qunatity</label>
-                                            <input type="number" name="stock_alert_qty" class="form-control">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12 d-none">
-                                        <div class="mb-3">
-                                            <label class="form-label">Status</label>
-                                            <select name="is_active" id="is_active" class="form-select form-control" style="width:100%">
-                                                <option selected value="1" >Active</option>
-                                                <option value="0">Inactive</option>
-                                            
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            
-                                <div class="modal-footer-btn">
-                                    <button type="button" class="btn btn-cancel me-2 btn-dark" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" id="submit-item-store" class="btn btn-submit btn-primary">Create Item</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-<!-- /Add Item -->
+    
 
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="{{ asset('/assets/js/tinymce1.min.js') }}"></script>
@@ -332,104 +269,74 @@
 
 
 <script>
-$(document).ready(function () {
-        // Event listener for the select2:open event
-        $('#table').on('select2:open', '.item-dropdown-list', function(e) {
-        e.preventDefault();
+    //  Detect Enter key in input fields
+    $('#purchase-order-store').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+        e.preventDefault(); // Prevent the default behavior (form submission)
+        }
+    });
+    $(document).on('keydown', '#party_id', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission
+            // Move to the first select in the first table row
+            $('#vehicle_no').focus(); // Focus on the Select2 container
+            
+        }
+    });
+    $(document).on('keydown', '#vehicle_no', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission
+            // Move to the first select in the first table row
+            $('#sortable-table tr:first .item-dropdown-list').focus().select2('open'); // Focus on the Select2 container
+            
+        }
+    });
+   
+    $(document).on('keydown', '.select2-container', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            
+            let $select = $(this).prev('select'); // Get the original select element
+            let $row = $(this).closest('tr'); // Use $ to denote jQuery object
 
-        let itemDropdown = $(this); // Reference to the clicked dropdown
-
-        // Only fetch items if the dropdown is empty
-        if (itemDropdown.children('option').length === 0) {
-            $.ajax({
-                url: '{{ route('items.getAll') }}',
-                type: 'GET',
-                beforeSend: function() {
-                    itemDropdown.append('<option value="">Loading...</option>');
-                },
-                success: function(data) {
-                    itemDropdown.empty(); // Clear current options
-                    console.log(data);
-
-                    itemDropdown.append('<option selected value="">Choose...</option>');
-                    
-                    // Check if data is empty
-                    if (data.length === 0) {
-                        itemDropdown.append('<option disabled>No records found</option>');
-                    } else {
-                        // Append the new items
-                        $.each(data, function(index, item) {
-                            itemDropdown.append(new Option(item.name, item.id));
-                        });
-                    }
-
-                    // Close the dropdown
-                    itemDropdown.select2('close');
-                    // Notify select2 about the change
-                    itemDropdown.trigger('change');
-                    itemDropdown.select2('open');
-                },
-                error: function(xhr, status, error) {
-                    console.error("AJAX Error: ", status, error);
-                    alert('Failed to load items. Please try again.'); // Optional user feedback
-                }
-            });
+            // Check if an option is selected
+            if ($select.val() !== null) {
+                $row.find('.item-gross-weight').focus(); // Move to the next input
+            }
         }
     });
 
+    // Handling the actual select event
+    $(document).on('select2:select', '.item-dropdown-list', function(e) {
+        let $row = $(this).closest('tr'); 
+        $row.find('.item-gross-weight').focus(); // Move to the next input
+    });
 
-});
+    $(document).on('keydown', '.item-gross-weight, .item-total-quantity, .item-per-package-weight, .item-per-unit-price', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            let $row = $(this).closest('tr'); // Use $ to denote jQuery object
+
+            // Check the class to determine the next field to focus on
+            if ($(this).hasClass('item-dropdown-list')) {
+                $row.find('.item-gross-weight').focus(); 
+            } 
+            else if ($(this).hasClass('item-gross-weight')) {
+                $row.find('.item-total-quantity').focus();
+            } 
+            else if ($(this).hasClass('item-total-quantity')) {
+                $row.find('.item-per-package-weight').focus();
+            } 
+            else if ($(this).hasClass('item-per-package-weight')) {
+                $row.find('.item-per-unit-price').focus();
+            }
+            else if ($(this).hasClass('item-per-unit-price')) {
+                appendNewRow(); // This should only happen when the last input is focused
+
+            }
+        }
+    });
 </script>
-{{-- <script>
-$(document).ready(function () {
-        // Event listener for the select2:open event
-        $('#table').on('select2:open', '.item-dropdown-list', function(e) {
-        e.preventDefault();
-
-        let itemDropdown = $(this); // Reference to the clicked dropdown
-
-        // Only fetch items if the dropdown is empty
-        if (itemDropdown.children('option').length === 0) {
-            $.ajax({
-                url: '{{ route('items.getAll') }}',
-                type: 'GET',
-                beforeSend: function() {
-                    itemDropdown.append('<option value="">Loading...</option>');
-                },
-                success: function(data) {
-                    itemDropdown.empty(); // Clear current options
-                    console.log(data);
-
-                    itemDropdown.append('<option selected value="">Choose...</option>');
-                    
-                    // Check if data is empty
-                    if (data.length === 0) {
-                        itemDropdown.append('<option disabled>No records found</option>');
-                    } else {
-                        // Append the new items
-                        $.each(data, function(index, item) {
-                            itemDropdown.append(new Option(item.name, item.id));
-                        });
-                    }
-
-                    // Close the dropdown
-                    itemDropdown.select2('close');
-                    // Notify select2 about the change
-                    itemDropdown.trigger('change');
-                    itemDropdown.select2('open');
-                },
-                error: function(xhr, status, error) {
-                    console.error("AJAX Error: ", status, error);
-                    alert('Failed to load items. Please try again.'); // Optional user feedback
-                }
-            });
-        }
-    });
-
-
-});
-</script> --}}
-
 
 <script>  
     $(document).ready(function () {
@@ -438,12 +345,6 @@ $(document).ready(function () {
 
     });
 
-       //  Detect Enter key in input fields
-    $('#purchase-order-store').on('keydown', function(e) {
-        if (e.key === 'Enter') {
-        e.preventDefault(); // Prevent the default behavior (form submission)
-        }
-    });
 
     $(document).on('change', '.unit-dropdown-list, .item-discount-type, .item-tax-dropdown', function(e){
     
@@ -568,66 +469,70 @@ $(document).ready(function () {
     function appendNewRow(){
         let tableBody = $('#table tbody');
 
-        let row = 
-        `<tr>
-            <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
-            <td> 
-                <select  name="item_id[]" class="form-control select2 item-dropdown-list" style="width:150px">                                                
-                   
+        let row = `
+             <tr>
+                <td><a href=""><i style="font-size:25px" class="bx bx-menu handle text-dark"></i></a> </td>
+                <td> 
+                    <select  name="item_id[]" class="form-control select2 item-dropdown-list" style="width:100%">                                                
+                        <option >Choose...</option>
+                        @foreach ($items as $item)
+                            <option value="{{$item->id}}"  data-unit-id="{{ $item->unit_id }}"  >{{ $item->name }}</option>
+                        @endforeach
+                        
+                    </select>
                     
-                </select>
+                </td>  
+            
+                <td class="text-end"> 
+                    <input  type="number" name="gross_weight[]" step="0.01" class="form-control item-gross-weight">  
+                </td>
+
+                <td class="text-center"> 
+                    <input class="form-check-input cut-checkbox" type="checkbox">
+                </td>
+                <td> 
+                    <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage d-none">  
+                </td>
+                <td> 
+                    <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value d-none text-end" readonly>  
+                </td>
+                <td> 
+                    <input type="number" name="after_cut_total_weight[]" step="0.01" class="form-control item-after-cut-total-weight d-none text-end" readonly>  
+                </td>
+
+
+
+                <td> 
+                    <input type="number" name="total_quantity[]" value="0" step="0.01" class="form-control item-total-quantity">  
+                </td>
+                <td> 
+                    <input type="number" name="per_package_weight[]" value="0" step="0.01" class="form-control item-per-package-weight">  
+                </td>
+                <td> 
+                    <input type="number" name="total_package_weight[]" value="0" step="0.01" class="form-control item-total-package-weight text-end" readonly>  
+                </td>
+                <td> 
+                    <input type="number" name="net_weight[]" value="0" step="0.01" class="form-control item-net-weight text-end" readonly>  
+                </td>
                 
-            </td>  
-        
-            <td class="text-end"> 
-                <input  type="number" name="gross_weight[]" step="0.01" class="form-control item-gross-weight"  autocomplete="off">  
-            </td>
-
-            <td class="text-center"> 
-                <input class="form-check-input cut-checkbox" type="checkbox">
-            </td>
-            <td> 
-                <input type="number" name="cut_percentage[]"  step="0.01" class="form-control item-cut-percentage d-none"  autocomplete="off">  
-            </td>
-            <td> 
-                <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value d-none text-end" readonly>  
-            </td>
-            <td> 
-                <input type="number" name="after_cut_total_weight[]" step="0.01" class="form-control item-after-cut-total-weight d-none text-end" readonly>  
-            </td>
 
 
+                <td> 
+                    <input type="number" name="per_unit_price[]" step="0.01" class="form-control item-per-unit-price">  
+                </td>
+                
 
-            <td> 
-                <input type="number" name="total_quantity[]" step="0.01" class="form-control item-total-quantity"  autocomplete="off">  
-            </td>
-            <td> 
-                <input type="number" name="per_package_weight[]" step="0.01" class="form-control item-per-package-weight"  autocomplete="off">  
-            </td>
-            <td> 
-                <input type="number" name="total_package_weight[]" value="0" step="0.01" class="form-control item-total-package-weight text-end" readonly>  
-            </td>
-            <td> 
-                <input type="number" name="net_weight[]" value="0" step="0.01" class="form-control item-net-weight text-end" readonly>  
-            </td>
-            
+                <td > 
+                    <input type="number" name="total_price[]" step="0.01" class="form-control item-total-price text-end" readonly>  
+                </td>
 
 
-            <td> 
-                <input type="number" name="per_unit_price[]" step="0.01" class="form-control item-per-unit-price"  autocomplete="off">  
-            </td>
-            
+                <td class="text-center">  
+                    <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
+                </td>
 
-            <td > 
-                <input type="number" name="total_price[]" step="0.01" class="form-control item-total-price text-end" readonly>  
-            </td>
-
-
-            <td class="text-center">  
-                <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
-            </td>
-
-        </tr>`;
+            </tr>
+        `;
         tableBody.append(row);
         $('.select2', 'table').select2();
 
@@ -710,57 +615,7 @@ $(document).ready(function () {
     });
             
 </script>
-<script>
-    $(document).ready(function () {
-        $('#item-store').on('submit', function(e) {
-                e.preventDefault();
-                var submit_btn = $('#submit-item-store');
-                let createformData = new FormData(this);
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('item.store') }}",
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    cache: false,
-                    data: createformData,
-                    enctype: "multipart/form-data",
-                    beforeSend: function() {
-                        submit_btn.prop('disabled', true);
-                        submit_btn.html('Processing');
-                    },
-                    success: function(response) {
-                        
-                        submit_btn.prop('disabled', false).html('Create Item');  
-
-                        if(response.success == true){
-                            $('#add-item').modal('hide'); 
-                            $('#item-store')[0].reset();  // Reset all form data
-                        
-                            notyf.success({
-                                message: response.message, 
-                                duration: 3000
-                            });
-                        }else{
-                            notyf.error({
-                                message: response.message,
-                                duration: 5000
-                            });
-                        }   
-                    },
-                    error: function(e) {
-                        submit_btn.prop('disabled', false).html('Create Item');
-                    
-                        notyf.error({
-                            message: e.responseJSON.message,
-                            duration: 5000
-                        });
-                    }
-                });
-            });
-    });
-</script>
-
+    
 
 
 @endsection

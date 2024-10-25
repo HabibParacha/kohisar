@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Variation;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use App\Models\InvoiceDetail;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
@@ -41,20 +42,6 @@ class ItemController extends Controller
                 return Datatables::of($data)
                     ->addIndexColumn()
                     // Status toggle column
-
-                    ->addColumn('category_name', function ($row) {
-                        return $row->category->name ?? 'N/A';
-                    })
-                    ->addColumn('brand_name', function ($row) {
-                        return $row->brand->name ?? 'N/A';
-                    })
-                    ->addColumn('tax_name', function ($row) {
-                        return $row->tax->name ?? 'N/A';
-                    })
-                    ->addColumn('unit', function ($row) {
-                        return $row->unit->base_unit.' , '.$row->unit->child_unit  ?? 'N/A';
-                    })
-                   
 
                     ->addColumn('action', function ($row) {
                         $btn = '
@@ -109,19 +96,10 @@ class ItemController extends Controller
 
             // Validate the request data
             $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'code' => 'nullable',
                 'type' => 'required',
-                'sell_price' => 'nullable', 
-                'purchase_price' => 'nullable', 
+                'code' => 'required|unique:items,code', 
+                'name' => 'required',
                 'stock_alert_qty' => 'nullable',
-                
-                'category_id' => 'nullable',
-                'brand_id' => 'nullable', 
-                'unit_id' => 'required', 
-                'tax_id' => 'nullable', 
-                'warehouse_id' => 'nullable', 
-
                 'is_active' => 'nullable',
             ]);
 
@@ -194,22 +172,15 @@ class ItemController extends Controller
     public function update(Request $request, $id)
     {
         DB::beginTransaction();
-        
+
+        $item = Item::findOrFail($id);
+
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'name' => 'nullable',
-            'code' => 'nullable',
-            'type' => 'nullable',
-            'sell_price' => 'nullable', 
-            'purchase_price' => 'nullable', 
+            'type' => 'required',
+            'code' => 'required|unique:items,code,'.$item->id,
+            'name' => 'required',
             'stock_alert_qty' => 'nullable',
-            
-            'category_id' => 'nullable',
-            'brand_id' => 'nullable', 
-            'unit_id' => 'nullable', 
-            'tax_id' => 'nullable', 
-            'warehouse_id' => 'nullable', 
-
             'is_active' => 'nullable',
 
         ]);
@@ -270,12 +241,22 @@ class ItemController extends Controller
    
     public function destroy($id)
     {
-
+        
 
         DB::beginTransaction();// Start a transaction
 
         try {
             $item = Item::find($id);
+
+            // Check if the item has any associated invoice details
+            $invoiceDetailExists = $item->invoiceDetails()->exists();
+
+            if ($invoiceDetailExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Item record exists in an invoice detail and cannot be deleted.'
+                ], 409);
+            }
 
             $item->delete();// Delete the item record
 
@@ -306,6 +287,11 @@ class ItemController extends Controller
         ];
 
         return $data;
+    }
+
+    public function getAllItems(){
+        $items = Item::all();
+        return response()->json($items);
     }
 
 

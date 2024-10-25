@@ -61,13 +61,13 @@
                                     <div class="mb-3">
                                         <label class="form-label">Supplier</label>
                                         <select name="party_id"  class="select2 form-select">                                                
-                                            <option selected="">Choose...</option>
+                                            <option value="">Choose...</option>
                                             @foreach ($suppliers as $supplier)
                                                 <option 
                                                 
                                                     @if($supplier->id ==  $invoice_master->party_id ) selected @endif 
                                                     
-                                                    value="{{$supplier->id}}"> {{ $supplier->business_name }}
+                                                    value="{{$supplier->id}}"> {{ $supplier->id .'-'.$supplier->business_name }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -89,7 +89,7 @@
                                         <label class="form-label">Vehicle No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bxs-truck" ></span> </div>
-                                            <input type="text" name="vehicle_no" value="{{ $invoice_master->vehicle_no }}" class="form-control">
+                                            <input type="text" name="vehicle_no" value="{{ $invoice_master->vehicle_no }}" class="form-control" autocomplete="off">
                                         </div> 
                                     </div> 
                                 </div>
@@ -186,19 +186,19 @@
                                     <tbody id="sortable-table">
                                       @foreach ($invoice_detail as $detail)
                                       <tr>
-                                        <td><a href=""><i style="font-size:25px" class="bx bx-menu handle text-dark"></i></a> </td>
+                                        <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
                                         <td> 
-                                            <select name="item_id[]" class="form-control select2 item-dropdown-list" style="width:100%">                                                
-                                                <option>Choose...</option>
+                                            <select name="item_id[]" class="form-control select2 item-dropdown-list" style="width:150px">                                                
+                                                <option value="">Choose...</option>
                                                 @foreach ($items as $item)
                                                     <option 
                                                     @if($detail->item_id == $item->id ) selected @endif
-                                                    value="{{ $item->id }}"  data-unit-id="{{ $item->unit_id }}">{{ $item->name }}</option>
+                                                    value="{{ $item->id }}"  data-unit-id="{{ $item->unit_id }}">{{ $item->code.'-'. $item->name }}</option>
                                                 @endforeach
                                             </select>
                                         </td>  
                                         <td> 
-                                            <input type="number" name="gross_weight[]" value="{{ $detail->gross_weight }}" step="0.01" class="form-control item-gross-weight">  
+                                            <input type="number" name="gross_weight[]" value="{{ $detail->gross_weight }}" step="0.01" class="form-control item-gross-weight"  autocomplete="off">  
                                         </td>
                                     
                                         @if($detail->cut_percentage > 0)
@@ -206,7 +206,7 @@
                                                 <input class="form-check-input cut-checkbox" type="checkbox" checked>
                                             </td>
                                             <td> 
-                                                <input type="number" name="cut_percentage[]" value="{{ $detail->cut_percentage }}" step="0.01" class="form-control item-cut-percentage">  
+                                                <input type="number" name="cut_percentage[]" value="{{ $detail->cut_percentage }}" step="0.01" class="form-control item-cut-percentage"  autocomplete="off">  
                                             </td>
                                             <td> 
                                                 <input type="number" name="cut_value[]" value="{{ $detail->cut_value }}" step="0.01" class="form-control item-cut-value text-end" readonly>  
@@ -219,7 +219,7 @@
                                                 <input class="form-check-input cut-checkbox" type="checkbox">
                                             </td>
                                             <td> 
-                                                <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage d-none">  
+                                                <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage d-none"  autocomplete="off">  
                                             </td>
                                             <td> 
                                                 <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value d-none text-end" readonly>  
@@ -230,10 +230,10 @@
                                         @endif
                                     
                                         <td> 
-                                            <input type="number" name="total_quantity[]" value="{{ $detail->total_quantity }}" step="0.01" class="form-control item-total-quantity">  
+                                            <input type="number" name="total_quantity[]" value="{{ $detail->total_quantity }}" step="0.01" class="form-control item-total-quantity"  autocomplete="off">  
                                         </td>
                                         <td> 
-                                            <input type="number" name="per_package_weight[]" value="{{ $detail->per_package_weight }}" step="0.01" class="form-control item-per-package-weight">  
+                                            <input type="number" name="per_package_weight[]" value="{{ $detail->per_package_weight }}" step="0.01" class="form-control item-per-package-weight"  autocomplete="off">  
                                         </td>
                                         <td> 
                                             <input type="number" name="total_package_weight[]" value="{{ $detail->total_package_weight }}" step="0.01" class="form-control item-total-package-weight text-end" readonly>  
@@ -242,7 +242,7 @@
                                             <input type="number" name="net_weight[]" value="{{ $detail->net_weight }}" step="0.01" class="form-control item-net-weight text-end" readonly>  
                                         </td>
                                         <td> 
-                                            <input type="number" name="per_unit_price[]" value="{{ $detail->per_unit_price }}" step="0.01" class="form-control item-per-unit-price">  
+                                            <input type="number" name="per_unit_price[]" value="{{ $detail->per_unit_price }}" step="0.01" class="form-control item-per-unit-price"  autocomplete="off">  
                                             <input type="hidden" name="per_unit_price_old_value[]" value="{{ $detail->per_unit_price }}" step="0.01" class="form-control">  
                                         
                                         </td>
@@ -278,7 +278,7 @@
                                             </td>
                                         </tr>  
                                         <tr>
-                                            <th>Shipping</th>
+                                            <th>Freight </th>
                                             <td>
                                                 <input type="number" name="shipping" value="{{ $invoice_master->shipping }}" class="form-control text-end" >
                                             </td>
@@ -342,7 +342,12 @@
     </script>
 
 <script>  
-   
+    //  // Detect Enter key in input fields
+     $('#purchase-order-update').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+        e.preventDefault(); // Prevent the default behavior (form submission)
+        }
+    });
 
     $(document).on('change', '.unit-dropdown-list, .item-discount-type, .item-tax-dropdown', function(e){
     
@@ -468,12 +473,12 @@
 
         let row = `
              <tr>
-                <td><a href=""><i style="font-size:25px" class="bx bx-menu handle text-dark"></i></a> </td>
+                <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-warning"></i></a> </td>
                 <td> 
-                    <select name="item_id[]" class="form-control select2 item-dropdown-list" style="width:100%">                                                
-                        <option >Choose...</option>
+                    <select name="item_id[]" class="form-control select2 item-dropdown-list" style="width:150px">                                                
+                        <option value="">Choose...</option>
                         @foreach ($items as $item)
-                            <option value="{{$item->id}}"  data-unit-id="{{ $item->unit_id }}"  >{{ $item->name }}</option>
+                            <option value="{{$item->id}}"  data-unit-id="{{ $item->unit_id }}" >{{ $item->code.'-'. $item->name }}</option>
                         @endforeach
                         
                     </select>
@@ -481,14 +486,14 @@
                 </td>  
             
                 <td class="text-end"> 
-                    <input type="number" name="gross_weight[]" step="0.01" class="form-control item-gross-weight">  
+                    <input type="number" name="gross_weight[]" step="0.01" class="form-control item-gross-weight"  autocomplete="off">  
                 </td>
 
                 <td class="text-center"> 
                     <input class="form-check-input cut-checkbox" type="checkbox">
                 </td>
                 <td> 
-                    <input type="number" name="cut_percentage[]" value="0" step="0.01" class="form-control item-cut-percentage d-none">  
+                    <input type="number" name="cut_percentage[]" step="0.01" class="form-control item-cut-percentage d-none"  autocomplete="off">  
                 </td>
                 <td> 
                     <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value d-none text-end" readonly>  
@@ -500,10 +505,10 @@
 
 
                 <td> 
-                    <input type="number" name="total_quantity[]" value="0" step="0.01" class="form-control item-total-quantity">  
+                    <input type="number" name="total_quantity[]" step="0.01" class="form-control item-total-quantity"  autocomplete="off">  
                 </td>
                 <td> 
-                    <input type="number" name="per_package_weight[]" value="0" step="0.01" class="form-control item-per-package-weight">  
+                    <input type="number" name="per_package_weight[]"  step="0.01" class="form-control item-per-package-weight"  autocomplete="off">  
                 </td>
                 <td> 
                     <input type="number" name="total_package_weight[]" value="0" step="0.01" class="form-control item-total-package-weight text-end" readonly>  
@@ -515,7 +520,7 @@
 
 
                 <td> 
-                    <input type="number" name="per_unit_price[]" step="0.01" class="form-control item-per-unit-price">  
+                    <input type="number" name="per_unit_price[]" step="0.01" class="form-control item-per-unit-price"  autocomplete="off">  
                     <input type="hidden" name="per_unit_price_old_value[]" value="" step="0.01" class="form-control">  
 
                 </td>
@@ -617,3 +622,5 @@
     
 
 @endsection
+
+

@@ -10,13 +10,13 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                            <h3 class="mb-sm-0 font-size-18">All Contacts</h3>
+                            <h3 class="mb-sm-0 font-size-18">All {{ ucfirst($type) }}</h3>
 
                             <div class="page-title-right d-flex">
 
                                 <div class="page-btn">
                                     <a href="#" class="btn btn-added btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#add-party"><i class="me-2"></i>Add New <span class="text-capitalize">{{ $type }}</span></a>
+                                        data-bs-target="#add-party"><i class="me-2 bx bx-plus"></i><span class="text-capitalize">{{ $type }}</span></a>
                                 </div>
                             </div>
 
@@ -57,10 +57,6 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Business Name</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Tax Number</th>
-                                            <th>Opening Balance</th>
                                             <th>Mobile</th>
                                             <th>Status</th>
                                             <th>Action</th>
@@ -84,7 +80,7 @@
                     <div class="content">
                         <div class="modal-header border-0 custom-modal-header">
                             <div class="page-title">
-                                <h4>Create Party</h4>
+                                <h4>Create {{ ucfirst($type) }}</h4>
                             </div>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
@@ -99,7 +95,7 @@
                                     <button type="button" class="btn btn-cancel me-2 btn-dark"
                                         data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" id="submit-party-store" class="btn btn-submit btn-primary">Create
-                                        Party</button>
+                                        {{ ucfirst($type) }}</button>
                                 </div>
                             </form>
                         </div>
@@ -118,7 +114,7 @@
                     <div class="content">
                         <div class="modal-header border-0 custom-modal-header">
                             <div class="page-title">
-                                <h4>Edit Party</h4>
+                                <h4>Edit {{ ucfirst($type) }}</h4>
                             </div>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
@@ -132,11 +128,11 @@
                                 <!-- Hidden field to store the party ID -->
                                 @include('parties.edit_modal_fields')
 
-                                <div class="modal-footer-btn">
-                                    <button type="button" class="btn btn-cancel me-2 btn-dark"
+                                <div class="modal-footer-btn text-end">
+                                    <button type="button" class="btn btn-cancel me-2 btn-dark "
                                         data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" id="submit-party-update"
-                                        class="btn btn-submit btn-primary">Update Party</button>
+                                        class="btn btn-submit btn-primary">Update {{ ucfirst($type) }}</button>
                                 </div>
                             </form>
                         </div>
@@ -155,7 +151,7 @@
                     <div class="content">
                         <div class="modal-header border-0 custom-modal-header">
                             <div class="page-title">
-                                <h4>Delete Party</h4>
+                                <h4>Delete {{ ucfirst($type) }}</h4>
                             </div>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
@@ -163,7 +159,7 @@
                         </div>
 
                         <div class="modal-body custom-modal-body pt-3 pb-0">
-                            <p class="text-center">Are you sure you want to delete this party?</p>
+                            <p class="text-center">Are you sure you want to delete this {{ $type }}?</p>
                         </div>
                         <div class="modal-footer-btn p-3 mt-2">
                             <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
@@ -228,7 +224,7 @@
     <script>
         $(document).ready(function() {
 
-            var type = "{{ $type }}"; // Retrieve the type value passed to the view
+            var type = "{{ $type }}"; // Retrieve the type value passed to the view (supplier or customer)
 
             var table = $('#table').DataTable({
                 processing: true,
@@ -245,18 +241,6 @@
                         data: 'business_name'
                     },
                     {
-                        data: 'name'
-                    },
-                    {
-                        data: 'email'
-                    },
-                    {
-                        data: 'tax_number'
-                    },
-                    {
-                        data: 'opening_balance'
-                    },
-                    {
                         data: 'mobile'
                     },
                     {
@@ -270,7 +254,6 @@
                                 return '<span class="badge bg-danger font-size-12">Inactive</span>';
 
                         }
-
                     },
                     {
                         data: 'action',
@@ -281,6 +264,25 @@
                 order: [
                     [0, 'desc']
                 ],
+
+                dom: 'Bfrtip', // "B" enables buttons at the top
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="fas fa-file-excel"></i> Export to Excel', // Add icon with text
+                        title: type+' list',// supplier or customer list 
+                        className: 'btn btn-success btn-sm mx-2', // Custom Bootstrap classes
+                        
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        title:  type+' list',
+                        text: '<i class="fas fa-file-pdf"></i> Export to PDF',
+                        className: 'btn btn-danger btn-sm',
+
+
+                    }
+                ]
             });
 
             $('#party-store').on('submit', function(e) {

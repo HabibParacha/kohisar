@@ -20,6 +20,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{route('receipe.index')}}" class="waves-effect">
+                        <i class=" bx bx-receipt mb-0"></i>
+                        <span key="t-dashboards"> Receipe</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{route('party-index','supplier')}}" class="waves-effect">
                         <i class=" bx bxs-user mb-0"></i>
                         <span key="t-dashboards">Suppliers</span>

@@ -11,6 +11,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\PartyController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReceipeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\WarehouseController;
@@ -51,8 +52,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('warehouse', WarehouseController::class);
     Route::resource('unit', UnitController::class);
     Route::resource('product', ProductController::class);
+
+    Route::get('items/get-all', [ItemController::class, 'getAllItems'])->name('items.getAll');
     Route::resource('item', ItemController::class);
     Route::resource('purchase-order', PurchaseOrderController::class);
+    Route::resource('receipe', ReceipeController::class);
 
     Route::get('party/{type?}', [PartyController::class, 'index'])->name('party-index');
     Route::resource('party', PartyController::class);
