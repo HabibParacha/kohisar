@@ -637,14 +637,6 @@
                 $('#edit_is_active').val(response.is_active).trigger('change');              
 
                 
-
-
-
-
-
-
-edit_purchase_price
-edit_is_active
                 $('#edit-item').modal('show');
             }).fail(function(xhr) {
                 alert('Error fetching item details: ' + xhr.responseText);

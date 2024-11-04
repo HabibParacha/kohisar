@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\ReceipeDetail;
+use App\Models\RecipeDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Receipe extends Model
+class Recipe extends Model
 {
     use HasFactory;
 
@@ -16,8 +16,8 @@ class Receipe extends Model
         'user_id',
         'is_active',
     ];
-    public function receipeDetails()
+    public function recipeDetails()
     {
-        return $this->hasMany(ReceipeDetail::class);
+        return $this->hasMany(RecipeDetail::class);
     }
 }

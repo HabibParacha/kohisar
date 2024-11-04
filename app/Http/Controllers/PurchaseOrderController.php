@@ -107,7 +107,8 @@ class PurchaseOrderController extends Controller
         $units = Unit::all();
 
         $paymentTerms = $this->paymentTerms();
-        $newInvoiceNo = $this->generateInvoiceNo('PR','receipt');
+        $newInvoiceNo = InvoiceMaster::generateInvoiceNo('PR','receipt');
+ 
         
 
         $itemController = new ItemController;
@@ -156,7 +157,7 @@ class PurchaseOrderController extends Controller
        
         try {
 
-            $newInvoiceNo = $this->generateInvoiceNo('PR','receipt');
+            $newInvoiceNo = InvoiceMaster::generateInvoiceNo('PR','receipt');// defined in model
 
 
             $invoice_master = [
@@ -202,6 +203,7 @@ class PurchaseOrderController extends Controller
                     'invoice_master_id' => $invoice_master_id,
                     'date' => $request->input('date'),
                     'invoice_no' => $newInvoiceNo,
+                    'type' => 'receipt',
                     'item_id' => $request->item_id[$i],
                     'gross_weight' => $request->gross_weight[$i],
                     'cut_percentage' => $request->cut_percentage[$i],
@@ -393,6 +395,7 @@ class PurchaseOrderController extends Controller
                     'invoice_master_id' => $invoiceMaster->id,
                     'date' => $request->input('date'),
                     'invoice_no' => $invoiceMaster->invoice_no,
+                    'type' => $invoiceMaster->type,
                     'item_id' => $request->item_id[$i],
                     'gross_weight' => $request->gross_weight[$i],
                     'cut_percentage' => $request->cut_percentage[$i],
@@ -490,32 +493,7 @@ class PurchaseOrderController extends Controller
     }
 
    
-    public function generateInvoiceNo($prefix,$type){
-        
-        $max_invoice_no = DB::table('invoice_master')
-        ->where('type',$type)
-        ->max('invoice_no');
-        
-        
-        //if record exist
-        if($max_invoice_no)
-        {
-            // Split by '-' and get the second part (the numeric part) +1
-            $get_invoice_digits = (int)  explode('-', $max_invoice_no)[1] + 1;
-
-            $new_invoice_no =  $prefix.'-'.$get_invoice_digits;
-
-            return $new_invoice_no;
-        }
-        else{ 
-            
-            $new_invoice_no = $prefix.'-'.'1';
-
-            return $new_invoice_no;// first invoice no
-
-        }
-          
-    }
+    
 
 
   

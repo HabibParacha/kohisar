@@ -58,6 +58,9 @@
                                             <th>Code</th>
                                             <th>Type</th>
                                             <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Unit</th>
+                                            <th>Tax</th> 
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -93,7 +96,7 @@
                                             <div class="col-md-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Types</label>
-                                                    <select name="type" class="form-select" style="width:100%">
+                                                    <select name="type" id="item-type" class="form-select" style="width:100%">
                                                         <option value="">Choose...</option>
                                                         @foreach ($itemTypes as $type)
                                                             <option value="{{ $type }}">{{ $type }}</option>
@@ -113,6 +116,47 @@
                                                     <input name="name" type="text" class="form-control">
                                                 </div>
                                             </div>
+                                            <div class="col-md-12  type-good-field d-none">
+                                                <div class="mb-3">
+                                                    <label  class="form-label">Unit Weight</label>
+                                                    <input name="unit_weight" type="number" step="0.01" class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12 type-good-field d-none">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Category</label>
+                                                    <select name="category_id"  class="select2 form-select" style="width:100%">
+                                                        <option value="" >Choose...</option>
+                                                        @foreach ($categories as $category)
+                                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>                                        
+                                            </div>
+                                            <div class="col-md-12 type-good-field d-none">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Unit</label>
+                                                    <select name="unit_id"  class="select2 form-select" style="width:100%">
+                                                        <option value="" >Choose...</option>
+                                                        @foreach ($units as $unit)
+                                                            <option value="{{$unit->id}}">{{ "Purchase: ".$unit->base_unit." | Sale: " .$unit->child_unit}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>                                        
+                                            </div>
+                                            <div class="col-md-12 type-good-field d-none">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tax</label>
+                                                    <select id="tax-select" name="tax_id"  class="select2 form-select" style="width:100%">                                                
+                                                        <option value="" >Choose...</option>
+                                                        @foreach ($taxes as $tax)
+                                                            <option value="{{ $tax->id }}">{{ $tax->name."[".$tax->rate."]" }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>                                        
+                                            </div>
+                                           
                                             
                                            
                                             
@@ -148,7 +192,7 @@
             </div>
         <!-- /Add Item -->
 
-         <!-- Edit Item -->
+        <!-- Edit Item -->
             <div class="modal fade" id="edit-item">
                 <div class="modal-dialog modal-md">
                     <div class="modal-content">
@@ -173,7 +217,7 @@
                                             <div class="col-md-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Types</label>
-                                                    <select name="type" id="edit_type" class="form-select" style="width:100%">
+                                                    <select disabled name="type" id="edit_type" class="form-select" style="width:100%">
                                                         @foreach ($itemTypes as $type)
                                                             <option value="{{ $type }}">{{ $type }}</option>
                                                         @endforeach
@@ -182,15 +226,58 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="mb-3">
-                                                    <label  class="form-label">Item Name</label>
-                                                    <input name="name" id="edit_name" type="text" class="form-control">
+                                                    <label  class="form-label">Item Code</label>
+                                                    <input name="code" id="edit_code" type="text" class="form-control">
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="mb-3">
-                                                    <label  class="form-label">Item Code</label>
-                                                    <input name="code" id="edit_code" type="text" class="form-control">
+                                                    <label  class="form-label">Item Name</label>
+                                                    <input name="name" id="edit_name" type="text" class="form-control">
                                                 </div>
+                                            </div>
+                                          
+                                            <div class="col-md-12">
+                                                <div class="mb-3">
+                                                    <label  class="form-label">Unit Weight</label>
+                                                    <input name="unit_weight" id="edit_unit_weight" type="number" step="0.01" class="form-control">
+                                                </div>
+                                            </div>
+
+                                          
+                                            <div class="col-md-12 type-good-field d-none">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Category</label>
+                                                    <select name="category_id" id="edit_category_id"  class="select2 form-select" style="width:100%">
+                                                        <option value="" >Choose...</option>
+                                                        @foreach ($categories as $category)
+                                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>                                        
+                                            </div>
+                                           
+                                            <div class="col-md-12 type-good-field d-none">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Unit</label>
+                                                    <select name="unit_id" id="edit_unit_id" class="select2 form-select" style="width:100%">
+                                                        <option value="" >Choose...</option>
+                                                        @foreach ($units as $unit)
+                                                            <option value="{{$unit->id}}">{{ "Purchase: ".$unit->base_unit." | Sale: " .$unit->child_unit}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>                                        
+                                            </div>
+                                            <div class="col-md-12 type-good-field d-none">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tax</label>
+                                                    <select id="edit_tax_id" name="tax_id"  class="select2 form-select" style="width:100%">                                                
+                                                        <option value="" >Choose...</option>
+                                                        @foreach ($taxes as $tax)
+                                                            <option value="{{ $tax->id }}">{{ $tax->name."[".$tax->rate."]" }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>                                        
                                             </div>
                                            
                                             <div class="col-md-12">
@@ -273,6 +360,23 @@
         });
     </script>
 
+    <script>
+        $('#item-type').on('change', function(e){
+            e.preventDefault();
+            let item_type = $(this).val();
+            if(item_type == 'Raw')
+            {
+                $('.type-good-field').addClass('d-none');
+                // Reset the values of the fields
+                $('.type-good-field').find('select').val('').trigger('change');// For select inputs
+                $('.type-good-field').find('input').val('');// For select inputs
+            }else{
+                $('.type-good-field').removeClass('d-none');
+            }
+            
+        })
+    </script>
+
 
     <script>
 
@@ -286,6 +390,9 @@
                     { data: 'code' },
                     { data: 'type' },
                     { data: 'name' },
+                    { data: 'category_name' },
+                    { data: 'unit' },
+                    { data: 'tax_name' },
                     { 
                         data: 'is_active',
                         className: 'text-center', // This applies the text-center class to the entire column
@@ -459,10 +566,21 @@
                 $('#edit_name').val(response.name);
                 $('#edit_code').val(response.code);
                 $('#edit_type').val(response.type).trigger('change');
+
+                if(response.type == "Good"){
+                    $('.type-good-field').removeClass('d-none');
+                    $('#edit_category_id').val(response.category_id).trigger('change');
+                    $('#edit_unit_id').val(response.unit_id).trigger('change');
+                    $('#edit_tax_id').val(response.tax_id).trigger('change');
+                }
+
+              
                 $('#edit_stock_alert_qty').val(response.stock_alert_qty);
+                $('#edit_unit_weight').val(response.unit_weight);
                 $('#edit_is_active').val(response.is_active).trigger('change');              
 
                 $('#edit-item').modal('show');
+                
             }).fail(function(xhr) {
                 alert('Error fetching item details: ' + xhr.responseText);
             });

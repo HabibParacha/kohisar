@@ -27,7 +27,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
     
-       
+       $types = $this->userTypes();
         try{
             if ($request->ajax()) {
                 $data = User::all();
@@ -78,7 +78,7 @@ class UserController extends Controller
                     ->make(true);
             }
     
-            return view('users.index');
+            return view('users.index',compact('types'));
 
         }catch (\Exception $e){
 
@@ -203,28 +203,7 @@ class UserController extends Controller
             ]);
         }
 
-        //check if user is busy in
-        $user = User::where('id',$id)
-        ->whereIn('id', function ($query) {
-            $query->select('driver_id')
-                  ->from('vehicle_assignments')
-                  ->where('status', 1);
-        })->first();
-
-
-        // if user is busy you can't update the status
-        if($user)
-        {
-            return response()->json([
-                'success' => false,
-                'message' => 'User is busy can\'t update the status.',
-            ],200);
-        }
-        
-
       
-      
-
        try {
            $user = User::findOrFail($id);
 
@@ -307,6 +286,17 @@ class UserController extends Controller
             ], 500);
         }
         
+    }
+
+    public function userTypes()
+    {
+        $data = [
+            'admin',
+            'user',
+            'saleman',
+        ];
+
+        return $data;
     }
 
 

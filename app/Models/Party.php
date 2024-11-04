@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\PartyWarehouse;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Party extends Model
 {
@@ -36,5 +37,11 @@ class Party extends Model
         'is_active',
         'is_default'
     ];
+
+   
+    public function partyWarehouses()
+    {
+        return $this->hasMany(PartyWarehouse::class);
+    }
     
 }

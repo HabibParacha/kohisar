@@ -46,14 +46,14 @@
         <div class="page-content">
             <div class="container-fluid">
                 <!-- start page title -->
-                <form id="receipe-update" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="receipe_id" id="receipe_id" value="{{  $receipe->id }}"> <!-- Hidden field to store the brand ID -->
+                <form id="recipe-update" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="recipe_id" id="recipe_id" value="{{  $recipe->id }}"> <!-- Hidden field to store the brand ID -->
                     @method('PUT')
                     @csrf
                     <div class="card">
                         <div class="card-body">
                             {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
-                            <h4 class="card-title mb-4">Receipe</h4>
+                            <h4 class="card-title mb-4">Recipe</h4>
 
                             <div class="row">
                                
@@ -63,8 +63,8 @@
                                     <div class="mb-3">
                                         <label class="form-label">Name</label>
                                         <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bxs-truck" ></span> </div>
-                                            <input type="text" name="name" value="{{ $receipe->name }}" class="form-control" autocomplete="off">
+                                            <div class="input-group-text"><span class="bx bx-cube" ></span> </div>
+                                            <input type="text" name="name" value="{{ $recipe->name }}" class="form-control" autocomplete="off">
                                         </div> 
                                     </div> 
                                 </div>
@@ -72,8 +72,8 @@
                                     <div class="mb-3">
                                         <label class="form-label">Description</label>
                                         <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bxs-truck" ></span> </div>
-                                            <input type="text" name="description" value="{{ $receipe->description }}" class="form-control" autocomplete="off">
+                                            <div class="input-group-text"><span class="bx bx-message-square-dots" ></span> </div>
+                                            <input type="text" name="description" value="{{ $recipe->description }}" class="form-control" autocomplete="off">
                                         </div> 
                                     </div> 
                                 </div>
@@ -86,7 +86,7 @@
                     <div class="card">
                       
                         <div class="card-body">
-                            <h4 class="card-title mb-4">Receipe Details</h4>
+                            <h4 class="card-title mb-4">Recipe Details</h4>
                             <div class="table-responsive">
                                 <table id="table" class="table table-border" style="border-collapse:collapse;">
                                     <thead>
@@ -100,7 +100,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="sortable-table">
-                                        @foreach ( $receipeDetails  as $detail)
+                                        @foreach ( $recipeDetails  as $detail)
                                             <tr>
                                                 <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
                                     
@@ -146,8 +146,8 @@
                     <div class="row  mt-2">
                        
                         <div class="col-md-12 text-end">
-                            <button type="submit" id="submit-receipe-update" class="btn btn-success w-md">Save</button>
-                            <a href="{{ route('receipe.index') }}"class="btn btn-secondary w-md ">Cancel</a>
+                            <button type="submit" id="submit-recipe-update" class="btn btn-success w-md">Save</button>
+                            <a href="{{ route('recipe.index') }}"class="btn btn-secondary w-md ">Cancel</a>
         
                         </div>
 
@@ -191,7 +191,7 @@
     });
 
 
-    $('#receipe-update').on('keydown', function(e) {
+    $('#recipe-update').on('keydown', function(e) {
         if (e.key === 'Enter') {
         e.preventDefault(); // Prevent the default behavior (form submission)
         }
@@ -288,15 +288,15 @@
 
 
 <script>
-    $('#receipe-update').on('submit', function(e) {
+    $('#recipe-update').on('submit', function(e) {
         e.preventDefault();
-        var submit_btn = $('#submit-receipe-update');
-        let receipe_id = $('#receipe_id').val(); // Get the ID of the receipe being edited
+        var submit_btn = $('#submit-recipe-update');
+        let recipe_id = $('#recipe_id').val(); // Get the ID of the recipe being edited
 
         let editFormData = new FormData(this);
         $.ajax({
             type: "POST",
-            url: "{{ route('receipe.update', ':id') }}".replace(':id', receipe_id), // Using route name
+            url: "{{ route('recipe.update', ':id') }}".replace(':id', recipe_id), // Using route name
             dataType: 'json',
             contentType: false,
             processData: false,
@@ -312,7 +312,7 @@
                 submit_btn.prop('disabled', false).html('Update');  
 
                 if(response.success == true){
-                    $('#receipe-update')[0].reset();  // Reset all form data
+                    $('#recipe-update')[0].reset();  // Reset all form data
                 
                     notyf.success({
                         message: response.message, 
@@ -321,7 +321,7 @@
 
                         // Redirect after success notification
                 setTimeout(function() {
-                    window.location.href = '{{ route("receipe.index") }}';
+                    window.location.href = '{{ route("recipe.index") }}';
                 }, 200); // Redirect after 3 seconds (same as notification duration)
                 }else{
                     notyf.error({

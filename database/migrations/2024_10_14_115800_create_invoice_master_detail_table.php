@@ -19,11 +19,18 @@ return new class extends Migration
             $table->id();
             $table->date('date')->nullable();
             $table->date('due_date')->nullable();
+            $table->date('expiry_date')->nullable();
+
             $table->string('invoice_no')->unique();
+            $table->string('reference_no')->nullable();
+            $table->string('batch_no')->nullable();
             $table->string('vehicle_no')->nullable();
             $table->string('status')->nullable();
             $table->string('type')->nullable();
+            $table->unsignedBigInteger('recipe_id')->nullable();
             $table->unsignedBigInteger('party_id')->nullable();
+            $table->unsignedBigInteger('saleman_id')->nullable();// user table type saleman
+            $table->unsignedBigInteger('party_warehouse_id')->nullable();
             $table->decimal('item_total', 14, 2)->nullable();
             $table->decimal('shipping', 14, 2)->nullable();
             $table->decimal('sub_total', 14, 2)->nullable();
@@ -31,9 +38,14 @@ return new class extends Migration
             $table->decimal('discount_value', 14, 2)->nullable();
             $table->decimal('discount_amount', 14, 2)->nullable();
             $table->decimal('total', 14, 2)->nullable();
+            $table->decimal('production_material_tons', 14, 4)->nullable();
             $table->string('tax_type')->nullable();
             $table->decimal('tax_rate', 5, 2)->nullable();
             $table->decimal('grand_total', 14, 2)->nullable();
+
+            $table->unsignedBigInteger('creator_id')->nullable();// who created the record
+
+            
 
             $table->longText('description')->nullable();
             $table->string('attachment')->nullable();
@@ -48,8 +60,11 @@ return new class extends Migration
             $table->unsignedBigInteger('invoice_master_id');
             $table->date('date')->nullable();
             $table->string('invoice_no')->nullable();
+            $table->string('type')->nullable();
+
             $table->unsignedBigInteger('item_id')->nullable();
 
+            $table->decimal('unit_weight',15,2)->nullable();
             $table->decimal('gross_weight',15,2)->nullable();
             $table->decimal('cut_percentage',15,2)->nullable();
             $table->decimal('cut_value',15,2)->nullable();

@@ -170,7 +170,7 @@
                     </div>
                 </div>
             </div>
-    <!-- /Edit Brand -->
+        <!-- /Edit Brand -->
 
      <!-- Delete Brand -->
         <div class="modal fade" id="delete-brand">

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('sell_price', 20, 2)->nullable();
             $table->decimal('purchase_price', 20, 2)->nullable();
             $table->decimal('stock_alert_qty', 20, 2)->nullable();
+            $table->decimal('unit_weight', 20, 2)->nullable();
             
             $table->unsignedBigInteger('category_id')->nullable();
             $table->unsignedBigInteger('brand_id')->nullable();

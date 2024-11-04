@@ -20,9 +20,27 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{route('receipe.index')}}" class="waves-effect">
-                        <i class=" bx bx-receipt mb-0"></i>
-                        <span key="t-dashboards"> Receipe</span>
+                    <a href="{{route('recipe.index')}}" class="waves-effect">
+                        <i class=" fas fa-utensils mb-0"></i>
+                        <span key="t-dashboards"> Recipe</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('production.index')}}" class="waves-effect">
+                        <i class=" fas fa-industry mb-0"></i>
+                        <span key="t-dashboards"> Production</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('sale-order.index')}}" class="waves-effect">
+                        <i class=" bx bx-file mb-0"></i>
+                        <span key="t-dashboards"> Sale Order</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('sale-invoice.index')}}" class="waves-effect">
+                        <i class=" fas fa-file-invoice-dollar mb-0"></i>
+                        <span key="t-dashboards"> Sale Invoice</span>
                     </a>
                 </li>
                 <li>
@@ -33,8 +51,14 @@
                 </li>
                 <li>
                     <a href="{{route('party-index','customer')}}" class="waves-effect">
-                        <i class=" bx bxs-user mb-0"></i>
+                        <i class=" fas fa-users mb-0"></i>
                         <span key="t-dashboards">Customer</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('chart-of-account.index')}}" class="waves-effect">
+                        <i class=" fas fa-users mb-0"></i>
+                        <span key="t-dashboards">Chart of Accounts</span>
                     </a>
                 </li>
               

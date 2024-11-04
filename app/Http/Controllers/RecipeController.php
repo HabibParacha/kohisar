@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Unit;
-use App\Models\Receipe;
+use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
-class ReceipeController extends Controller
+class RecipeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,11 +21,10 @@ class ReceipeController extends Controller
 
     public function index(Request $request)
     {
-        
 
         try{
             if ($request->ajax()) {
-                $data = Receipe::all();
+                $data = Recipe::all();
     
                 return Datatables::of($data)
                     ->addIndexColumn()
@@ -41,17 +40,17 @@ class ReceipeController extends Controller
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li>
-                                            <a href="'. route('receipe.show', $row->id) .'"  class="dropdown-item">
+                                            <a href="'. route('recipe.show', $row->id) .'"  class="dropdown-item">
                                                 <i class="bx bx-show font-size-16 text-primary me-1"></i> Show
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="'.route('receipe.edit', $row->id).'" class="dropdown-item">
+                                            <a href="'.route('recipe.edit', $row->id).'" class="dropdown-item">
                                                 <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="javascript:void(0)" onclick="deleteReceipe(' . $row->id . ')" class="dropdown-item">
+                                            <a href="javascript:void(0)" onclick="deleteRecipe(' . $row->id . ')" class="dropdown-item">
                                                 <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
                                             </a>
                                         </li>
@@ -73,7 +72,7 @@ class ReceipeController extends Controller
                     ->make(true);
             }
     
-            return view('receipes.index');
+            return view('recipes.index');
 
         }catch (\Exception $e){
 
@@ -88,7 +87,7 @@ class ReceipeController extends Controller
         $items  = Item::all();
         $units = Unit::all();
 
-        return view('receipes.create', compact('items','units'));
+        return view('recipes.create', compact('items','units'));
     }
 
     public function store(Request $request)
@@ -116,25 +115,25 @@ class ReceipeController extends Controller
             }
 
 
-            $receipe = [
+            $recipe = [
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'user_id' => Auth::id(),
             ];
 
-            $receipe_id = DB::table('receipes')->insertGetId($receipe);
+            $recipe_id = DB::table('recipes')->insertGetId($recipe);
 
 
             for($i=0; $i < count($request->item_id); $i++)
             {
-                $receipeDetail = [
-                    'receipe_id' => $receipe_id,
+                $recipeDetail = [
+                    'recipe_id' => $recipe_id,
                     'item_id'    => $request->item_id[$i],
                     'unit_id'    => $request->unit_id[$i],
                     'quantity'   => $request->quantity[$i],
                 ];
 
-                DB::table('receipe_detail')->insert($receipeDetail);
+                DB::table('recipe_detail')->insert($recipeDetail);
                 
             }
 
@@ -143,7 +142,7 @@ class ReceipeController extends Controller
             // Return a JSON response with a success message
             return response()->json([
                 'success' => true,
-                'message' => 'Receipe added successfully.',
+                'message' => 'Recipe added successfully.',
             ],200);
         
 
@@ -168,9 +167,9 @@ class ReceipeController extends Controller
         $items  = Item::all();
         $units = Unit::all();
         try {
-            $receipe = Receipe::findOrFail($id);
-            $receipeDetails = $receipe->receipeDetails;
-            return view('receipes.show', compact('receipe','receipeDetails','items','units'));
+            $recipe = Recipe::findOrFail($id);
+            $recipeDetails = $recipe->recipeDetails;
+            return view('recipes.show', compact('recipe','recipeDetails','items','units'));
 
         } catch (\Exception $e) {
             // Return a JSON response with an error message
@@ -186,9 +185,9 @@ class ReceipeController extends Controller
         $items  = Item::all();
         $units = Unit::all();
         try {
-            $receipe = Receipe::findOrFail($id);
-            $receipeDetails = $receipe->receipeDetails;
-            return view('receipes.edit', compact('receipe','receipeDetails','items','units'));
+            $recipe = Recipe::findOrFail($id);
+            $recipeDetails = $recipe->recipeDetails;
+            return view('recipes.edit', compact('recipe','recipeDetails','items','units'));
 
         } catch (\Exception $e) {
             // Return a JSON response with an error message
@@ -228,26 +227,26 @@ class ReceipeController extends Controller
         
 
        try {
-            $receipe = [
+            $recipe = [
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'user_id' => Auth::id(),
             ];
 
-          DB::table('receipes')->where('id',$id)->update($receipe);
-          DB::table('receipe_detail')->where('receipe_id',$id)->delete();
+          DB::table('recipes')->where('id',$id)->update($recipe);
+          DB::table('recipe_detail')->where('recipe_id',$id)->delete();
 
 
             for($i=0; $i < count($request->item_id); $i++)
             {
-                $receipeDetail = [
-                    'receipe_id' => $id,
+                $recipeDetail = [
+                    'recipe_id' => $id,
                     'item_id'    => $request->item_id[$i],
                     'unit_id'    => $request->unit_id[$i],
                     'quantity'   => $request->quantity[$i],
                 ];
 
-                DB::table('receipe_detail')->insert($receipeDetail);
+                DB::table('recipe_detail')->insert($recipeDetail);
                 
             }
 
@@ -256,7 +255,7 @@ class ReceipeController extends Controller
            // Return a JSON response with a success message
            return response()->json([
                'success' => true,
-               'message' => 'Receipe Update successfully.',
+               'message' => 'Recipe Update successfully.',
                ],200);
 
 
@@ -282,17 +281,17 @@ class ReceipeController extends Controller
         DB::beginTransaction();// Start a transaction
 
         try {
-            $receipe = Receipe::find($id);
+            $recipe = Recipe::find($id);
 
-            DB::table('receipe_detail')->where('receipe_id',$id)->delete();
+            DB::table('recipe_detail')->where('recipe_id',$id)->delete();
 
-            $receipe->delete();// Delete the receipe record
+            $recipe->delete();// Delete the recipe record
 
             DB::commit();// Commit the transaction
             
             return response()->json([
                 'success' => true,
-                'message' => 'Receipe Delete successfully.',
+                'message' => 'Recipe Delete successfully.',
                 ],200);
                 
         } catch (\Exception $e) {
@@ -305,6 +304,28 @@ class ReceipeController extends Controller
             ], 500);
         }
         
+    }
+
+
+    public function getRecipeDetailWithStock($id)
+    {
+     
+        try {
+            $recipe = Recipe::findOrFail($id);
+            $recipeDetails = DB::table('v_recipe_detail_stock')->where('recipe_id',$id)->get();
+
+            return response()->json([
+                'recipe' => $recipe,
+                'recipeDetails' => $recipeDetails,
+            ]);
+
+        } catch (\Exception $e) {
+            // Return a JSON response with an error message
+            return response()->json([
+                'message' => $e->getMessage(),
+                'success' => false,
+            ], 500);
+        }
     }
 
 

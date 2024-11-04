@@ -9,13 +9,18 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\PartyController;
+use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ReceipeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SaleOrderController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\SaleInvoiceController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\ChartOfAccountController;
+use App\Http\Controllers\PartyWarehouseController;
 
 
 /*
@@ -28,6 +33,7 @@ use App\Http\Controllers\PurchaseOrderController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -52,16 +58,30 @@ Route::middleware('auth')->group(function () {
     Route::resource('warehouse', WarehouseController::class);
     Route::resource('unit', UnitController::class);
     Route::resource('product', ProductController::class);
+    Route::resource('production', ProductionController::class);
+   
+    Route::resource('sale-order', SaleOrderController::class);
+
+    Route::resource('chart-of-account', ChartOfAccountController::class);
+
+    // create1 name because create was resource controller function and create do mot accept $id parameter 
+    Route::get('sale-order/{id}/create-sale-invoice', [SaleInvoiceController::class, 'createFromSaleOrder'])->name('sale-invoice.createFromSaleOrder');
+    Route::resource('sale-invoice', SaleInvoiceController::class);
 
     Route::get('items/get-all', [ItemController::class, 'getAllItems'])->name('items.getAll');
     Route::resource('item', ItemController::class);
     Route::resource('purchase-order', PurchaseOrderController::class);
-    Route::resource('receipe', ReceipeController::class);
 
-    Route::get('party/{type?}', [PartyController::class, 'index'])->name('party-index');
+
+    Route::get('/recipes/{id}/detail-with-stock', [RecipeController::class, 'getRecipeDetailWithStock'])->name('getRecipeDetailWithStock');
+    Route::resource('recipe', RecipeController::class);
+
+
+    Route::get('party-index/{type?}', [PartyController::class, 'index'])->name('party-index');
     Route::resource('party', PartyController::class);
     
-    
+    Route::get('party-warehouse/fetch-list/{party_id}', [PartyWarehouseController::class, 'fetchList'])->name('party-warehouse.fetchList');
+    Route::resource('party-warehouse', PartyWarehouseController::class);
     
     
     

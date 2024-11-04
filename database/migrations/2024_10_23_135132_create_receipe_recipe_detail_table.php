@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        Schema::create('receipes', function (Blueprint $table) {
+        Schema::create('recipes', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
             $table->longText('description')->nullable();
@@ -25,14 +25,14 @@ return new class extends Migration
         });
 
 
-        Schema::create('receipe_detail', function (Blueprint $table) {
+        Schema::create('recipe_detail', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('receipe_id');
+            $table->unsignedBigInteger('recipe_id');
             $table->unsignedBigInteger('item_id');
             $table->unsignedBigInteger('unit_id');
             $table->decimal('quantity', 15, 4)->nullable();
 
-            $table->foreign('receipe_id')->references('id')->on('receipes')->onDelete('cascade');
+            $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
 
 
             $table->timestamps();
@@ -49,7 +49,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('receipe_detail');
-        Schema::dropIfExists('receipes');
+        Schema::dropIfExists('recipe_detail');
+        Schema::dropIfExists('recipes');
     }
 };

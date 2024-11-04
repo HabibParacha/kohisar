@@ -46,12 +46,12 @@
         <div class="page-content">
             <div class="container-fluid">
                 <!-- start page title -->
-                <form id="receipe-store" method="POST" enctype="multipart/form-data">
+                <form id="recipe-store" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="card">
                         <div class="card-body">
                             {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
-                            <h4 class="card-title mb-4">Receipe</h4>
+                            <h4 class="card-title mb-4">Recipe</h4>
 
                             <div class="row">
                                
@@ -61,7 +61,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Name</label>
                                         <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bxs-truck" ></span> </div>
+                                            <div class="input-group-text"><span class="bx bx-cube" ></span> </div>
                                             <input type="text" name="name"  class="form-control" autocomplete="off">
                                         </div> 
                                     </div> 
@@ -70,7 +70,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Description</label>
                                         <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bxs-truck" ></span> </div>
+                                            <div class="input-group-text"><span class="bx bx-message-square-dots" ></span> </div>
                                             <input type="text" name="description"  class="form-control" autocomplete="off">
                                         </div> 
                                     </div> 
@@ -84,7 +84,7 @@
                     <div class="card">
                       
                         <div class="card-body">
-                            <h4 class="card-title mb-4">Receipe Details</h4>
+                            <h4 class="card-title mb-4">Recipe Details</h4>
                             <div class="table-responsive">
                                 <table id="table" class="table table-border" style="border-collapse:collapse;">
                                     <thead>
@@ -114,8 +114,8 @@
                     <div class="row  mt-2">
                        
                         <div class="col-md-12 text-end">
-                            <button type="submit" id="submit-receipe-store" class="btn btn-success w-md">Save</button>
-                            <a href="{{ route('receipe.index') }}"class="btn btn-secondary w-md ">Cancel</a>
+                            <button type="submit" id="submit-recipe-store" class="btn btn-success w-md">Save</button>
+                            <a href="{{ route('recipe.index') }}"class="btn btn-secondary w-md ">Cancel</a>
         
                         </div>
 
@@ -163,7 +163,7 @@
     });
 
 
-    $('#receipe-store').on('keydown', function(e) {
+    $('#recipe-store').on('keydown', function(e) {
         if (e.key === 'Enter') {
         e.preventDefault(); // Prevent the default behavior (form submission)
         }
@@ -262,13 +262,13 @@
 
 
 <script>
-    $('#receipe-store').on('submit', function(e) {
+    $('#recipe-store').on('submit', function(e) {
         e.preventDefault();
-        var submit_btn = $('#submit-receipe-store');
+        var submit_btn = $('#submit-recipe-store');
         let createformData = new FormData(this);
         $.ajax({
             type: "POST",
-            url: "{{ route('receipe.store') }}",
+            url: "{{ route('recipe.store') }}",
             dataType: 'json',
             contentType: false,
             processData: false,
@@ -284,7 +284,7 @@
                 submit_btn.prop('disabled', false).html('Save');  
 
                 if(response.success == true){
-                    $('#receipe-store')[0].reset();  // Reset all form data
+                    $('#recipe-store')[0].reset();  // Reset all form data
                 
                     notyf.success({
                         message: response.message, 
@@ -293,7 +293,7 @@
 
                     // Redirect after success notification
                     setTimeout(function() {
-                        window.location.href = '{{ route("receipe.index") }}';
+                        window.location.href = '{{ route("recipe.index") }}';
                     }, 200); // Redirect after 3 seconds (same as notification duration)
 
 

@@ -4,25 +4,25 @@ namespace App\Models;
 
 use App\Models\Item;
 use App\Models\Unit;
-use App\Models\Receipe;
+use App\Models\Recipe;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ReceipeDetail extends Model
+class RecipeDetail extends Model
 {
     use HasFactory;
-    protected $table = 'receipe_detail';
+    protected $table = 'recipe_detail';
 
     protected $fillable = [
-        'receipe_master_id',
+        'recipe_master_id',
         'item_id',
         'unit_id',
         'quantity',
     ];
 
-    public function receipe()
+    public function recipe()
     {
-        return $this->belongsTo(Receipe::class);
+        return $this->belongsTo(Recipe::class);
     }
 
     public function item()

@@ -49,6 +49,11 @@ class PartyController extends Controller
                                                 <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
                                             </a>
                                         </li>
+                                        <li>
+                                            <a href="'.route('party.show', $row->id).'" class="dropdown-item">
+                                                <i class="mdi mdi-eye font-size-16 text-secondary me-1"></i> View
+                                            </a>
+                                        </li>
                                        
                                     </ul>
                                 </div>
@@ -146,7 +151,12 @@ class PartyController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        $party = Party::with('partyWarehouses')->find($id);
 
+        return view('parties.show', compact('party'));
+    }
 
     /**
      * Show the form for editing the specified resource.

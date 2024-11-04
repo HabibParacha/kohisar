@@ -43,6 +43,17 @@ class ItemController extends Controller
                     ->addIndexColumn()
                     // Status toggle column
 
+                    ->addColumn('category_name', function ($row) {
+                        return ($row->category_id) ? $row->category->name : '-';
+                    })
+                    ->addColumn('tax_name', function ($row) {
+                        return ($row->tax_id) ?  $row->tax->name : '-';
+                    })
+                    ->addColumn('unit', function ($row) {
+                        return ($row->unit_id) ? $row->unit->base_unit.' , '.$row->unit->child_unit : '-';
+                        
+                    })
+
                     ->addColumn('action', function ($row) {
                         $btn = '
                             <div class="d-flex align-items-center col-actions">
@@ -103,6 +114,18 @@ class ItemController extends Controller
                 'is_active' => 'nullable',
             ]);
 
+            if($request->type == "Good")
+            {
+                $validator = Validator::make($request->all(), [
+                    'category_id' => 'required',
+                    'unit_id' => 'required', 
+                    'tax_id' => 'required', 
+                    'unit_weight' => 'required',
+                ]);
+            }
+            // Validate the request data
+           
+
 
 
             if ($validator->fails()) {
@@ -113,13 +136,6 @@ class ItemController extends Controller
             }
 
             $data = $request->all();// storing request data in array
-
-             // Handle the image upload
-            if ($request->hasFile('image')) {
-                $imageName = time() . '.' . $request->image->extension();
-                $request->image->move(public_path('build/img/item'), $imageName);
-                $data['image'] = $imageName; // Save the image name in the data array
-            }
 
             Item::create($data);
 
@@ -177,10 +193,14 @@ class ItemController extends Controller
 
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'type' => 'required',
+            // 'type' => 'required', // making type disable in update, type can't be changed
             'code' => 'required|unique:items,code,'.$item->id,
             'name' => 'required',
+            'category_id' => 'nullable',
+            'unit_id' => 'required', 
+            'tax_id' => 'nullable', 
             'stock_alert_qty' => 'nullable',
+            'unit_weight' => 'nullable',
             'is_active' => 'nullable',
 
         ]);
@@ -198,19 +218,6 @@ class ItemController extends Controller
 
        try {
            $item = Item::findOrFail($id);
-
-           // Handle the image upload
-           if ($request->hasFile('image')) {
-               // Delete old image if it exists
-               if ($item->image && $item->image != 'default.jpg') {
-                   unlink(public_path('build/img/item/' . $item->image));
-               }
-
-               $imageName = time() . '.' . $request->image->extension();
-               $request->image->move(public_path('build/img/item'), $imageName);
-               $data['image'] = $imageName; // Save the image name in the data array
-           }
-
 
            $item->update($data);
 
@@ -250,11 +257,12 @@ class ItemController extends Controller
 
             // Check if the item has any associated invoice details
             $invoiceDetailExists = $item->invoiceDetails()->exists();
-
-            if ($invoiceDetailExists) {
+            $recipeDetailExists = $item->recipeDetails()->exists();
+            
+            if ($invoiceDetailExists || $recipeDetailExists) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Item record exists in an invoice detail and cannot be deleted.'
+                    'message' => 'Item cannot be deleted due to links with existing invoices or recipes'
                 ], 409);
             }
 
@@ -283,7 +291,7 @@ class ItemController extends Controller
     {
         $data = [
             'Raw',
-            'Product',
+            'Good',
         ];
 
         return $data;

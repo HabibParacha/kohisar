@@ -119,8 +119,11 @@
                                             <label class="col-form-label">Type</label>
                                             <select name="type" id="type" class="form-select form-control" style="width:100%">
                                                 <option value="">Select Type</option>
-                                                <option value="admin">Admin</option>
-                                                <option value="driver">Driver</option>
+                                                @foreach ($types as $type)
+
+                                                    <option value="{{ $type }}">{{ $type }}</option>
+
+                                                @endforeach
                                                
                                             </select>
                                         </div>
@@ -181,7 +184,21 @@
                                             <label class="form-label">Image</label>
                                             <input type="file" name="image" id="edit_image" class="form-control" style="width: 100%;">
                                         </div>
+
                                         <div class="mb-3 ">
+                                            <label class="col-form-label">Type</label>
+                                            <select name="type" id="edit_type" class="form-select form-control" style="width:100%">
+                                                <option value="">Select Type</option>
+                                                @foreach ($types as $type)
+
+                                                    <option value="{{ $type }}">{{ $type }}</option>
+
+                                                @endforeach
+                                               
+                                            </select>
+                                        </div>
+
+                                        {{-- <div class="mb-3 ">
                                             <label class="col-form-label">Type</label>
                                             <select name="type" id="edit_type" class="form-select form-control" style="width:100%">
                                                 <option value="">Select Type</option>
@@ -189,7 +206,7 @@
                                                 <option value="driver">Driver</option>
                                                
                                             </select>
-                                        </div>
+                                        </div> --}}
             
                                       
                                         <div class="modal-footer-btn">

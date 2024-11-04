@@ -10,12 +10,12 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                            <h3 class="mb-sm-0 font-size-18">All Receipes</h3>
+                            <h3 class="mb-sm-0 font-size-18">All Recipes</h3>
 
                             <div class="page-title-right d-flex">
 
                                 <div class="page-btn">
-                                    <a href="{{ route('receipe.create') }}" class="btn btn-added btn-primary"><i class="me-2 bx bx-plus"></i>Receipe</a>
+                                    <a href="{{ route('recipe.create') }}" class="btn btn-added btn-primary"><i class="me-2 bx bx-plus"></i>Recipe</a>
                                 </div>  
                             </div>
 
@@ -73,15 +73,15 @@
     </div>
 
 
-     <!-- Delete Receipe -->
-        <div class="modal fade" id="delete-receipe">
+     <!-- Delete Recipe -->
+        <div class="modal fade" id="delete-recipe">
             <div class="modal-dialog custom-modal-two">
                 <div class="modal-content">
                     <div class="page-wrapper-new p-0">
                         <div class="content">
                             <div class="modal-header border-0 custom-modal-header">
                                 <div class="page-title">
-                                    <h4>Delete Receipe</h4>
+                                    <h4>Delete Recipe</h4>
                                 </div>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                                     
@@ -89,11 +89,11 @@
                             </div>
                             
                                 <div class="modal-body custom-modal-body pt-3 pb-0">
-                                    <p class="text-center">Are you sure you want to delete this receipe?</p>
+                                    <p class="text-center">Are you sure you want to delete this recipe?</p>
                                 </div>
                                 <div class="modal-footer-btn p-3 mt-2">
                                     <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-submit shadow-sm btn-danger" id="submit-receipe-destroy">Delete</button>
+                                    <button type="button" class="btn btn-submit shadow-sm btn-danger" id="submit-recipe-destroy">Delete</button>
                                 </div>
                                 
                         </div>
@@ -102,7 +102,7 @@
             </div>
         </div>
      
-    <!-- /Delete Receipe -->
+    <!-- /Delete Recipe -->
 
 
  
@@ -129,7 +129,7 @@
             var table = $('#table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('receipe.index') }}",
+                ajax: "{{ route('recipe.index') }}",
                 columns: [
                     { data: 'id' },
                     { data: 'name' },
@@ -153,13 +153,13 @@
             });
 
 
-            $('#submit-receipe-destroy').click(function() {
-                let receipe_id = $(this).data('id');
-                var submit_btn = $('#submit-receipe-destroy');
+            $('#submit-recipe-destroy').click(function() {
+                let recipe_id = $(this).data('id');
+                var submit_btn = $('#submit-recipe-destroy');
 
                 $.ajax({
                     type: 'DELETE',
-                    url: "{{ route('receipe.destroy', ':id') }}".replace(':id', receipe_id), // Using route name
+                    url: "{{ route('recipe.destroy', ':id') }}".replace(':id', recipe_id), // Using route name
                     data: {
                         _token: "{{ csrf_token() }}" // Add CSRF token
                     },
@@ -169,10 +169,10 @@
                         },
                     success: function(response) {
                         
-                        submit_btn.prop('disabled', false).html('Delete Receipe');  
+                        submit_btn.prop('disabled', false).html('Delete Recipe');  
 
                         if(response.success == true){
-                            $('#delete-receipe').modal('hide'); 
+                            $('#delete-recipe').modal('hide'); 
                             table.ajax.reload();
                         
                             notyf.success({
@@ -187,7 +187,7 @@
                         }   
                     },
                     error: function(e) {
-                        submit_btn.prop('disabled', false).html('Delete Receipe');
+                        submit_btn.prop('disabled', false).html('Delete Recipe');
                     
                         notyf.error({
                             message: e.responseJSON.message,
@@ -201,9 +201,9 @@
 
         // Handle the delete button click
 
-        function deleteReceipe(id) {
-            $('#submit-receipe-destroy').data('id', id);
-            $('#delete-receipe').modal('show');
+        function deleteRecipe(id) {
+            $('#submit-recipe-destroy').data('id', id);
+            $('#delete-recipe').modal('show');
         }
 
     </script>
@@ -245,12 +245,12 @@
 @endsection
 
 {{-- 
-Receipes
+Recipes
 
-receipe_id
+recipe_id
 
 editBrand
 deleteBrand
-receipe
-Receipe 
+recipe
+Recipe 
 --}}

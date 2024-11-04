@@ -47,11 +47,11 @@
             <div class="container-fluid">
                 <!-- start page title -->
                 <form>
-                    <input type="hidden" name="receipe_id" id="receipe_id" value="{{  $receipe->id }}"> <!-- Hidden field to store the brand ID -->
+                    <input type="hidden" name="recipe_id" id="recipe_id" value="{{  $recipe->id }}"> <!-- Hidden field to store the brand ID -->
                     <div class="card">
                         <div class="card-body">
                             {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
-                            <h4 class="card-title mb-4">Receipe: {{ $receipe->name }} </h4>
+                            <h4 class="card-title mb-4">Recipe: {{ $recipe->name }} </h4>
 
                             <div class="row">
                                
@@ -61,7 +61,7 @@
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Name</label>
                                         <div class="input-group">
-                                            <div>{{ $receipe->name }}</div>
+                                            <div>{{ $recipe->name }}</div>
                                         </div> 
                                     </div> 
                                 </div>
@@ -69,7 +69,7 @@
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Description</label>
                                         <div class="input-group">
-                                            <div>{{ $receipe->description }}</div>
+                                            <div>{{ $recipe->description }}</div>
                                         </div> 
                                     </div> 
                                 </div>
@@ -82,7 +82,7 @@
                     <div class="card">
                       
                         <div class="card-body">
-                            <h4 class="card-title mb-4">Receipe Details</h4>
+                            <h4 class="card-title mb-4">Recipe Details</h4>
                             <div class="table-responsive">
                                 <table id="table" class="table table-border" style="border-collapse:collapse;">
                                     <thead>
@@ -98,7 +98,7 @@
                                         @php
                                             $i=1;
                                         @endphp
-                                        @foreach ( $receipeDetails  as $detail)
+                                        @foreach ( $recipeDetails  as $detail)
                                             <tr>
                                                 <td>{{ $i++ }}</td>
                                                 <td> {{ $detail->item->code.'-'.$detail->item->name}}</td> 
@@ -121,8 +121,8 @@
                     <div class="row  mt-2">
                        
                         {{-- <div class="col-md-12 text-end">
-                            <button type="submit" id="submit-receipe-update" class="btn btn-success w-md">Save</button>
-                            <a href="{{ route('receipe.index') }}"class="btn btn-secondary w-md ">Cancel</a>
+                            <button type="submit" id="submit-recipe-update" class="btn btn-success w-md">Save</button>
+                            <a href="{{ route('recipe.index') }}"class="btn btn-secondary w-md ">Cancel</a>
         
                         </div> --}}
 

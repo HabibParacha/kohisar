@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\InvoiceDetail;
+use App\Models\RecipeDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -17,6 +18,7 @@ class Item extends Model
         'sell_price',
         'purchase_price',
         'stock_alert_qty',
+        'unit_weight',
 
         'unit_id',
         'tax_id',
@@ -61,6 +63,9 @@ class Item extends Model
 
     public function invoiceDetails(){
         return $this->hasMany(InvoiceDetail::class);
+    }
+    public function recipeDetails(){
+        return $this->hasMany(RecipeDetail::class);
     }
 
     
