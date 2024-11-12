@@ -58,26 +58,14 @@ class SaleOrderController extends Controller
                                         <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a href="'.route('sale-order.show',$row->id) .'"  class="dropdown-item">
-                                                <i class="bx bx-show font-size-16 text-primary me-1"></i> View
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="'. route('sale-order.edit', $row->id).'" class="dropdown-item">
-                                                <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
-                                            </a>
-                                        </li>
+                                       
+                                       
                                         <li>
                                             <a href="'. route('sale-invoice.createFromSaleOrder', $row->id).'" class="dropdown-item">
                                                 <i class="bx bx-plus font-size-16 text-secondary me-1"></i> Sale Invoice
                                             </a>
                                         </li>
-                                         <li>
-                                            <a href="javascript:void(0)" onclick="deletePurchaseOrder(' . $row->id . ')" class="dropdown-item">
-                                                <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
-                                            </a>
-                                        </li>
+                                       
                                        
                                        
                                     </ul>
@@ -86,6 +74,21 @@ class SaleOrderController extends Controller
     
                    
                     return $btn;
+                    // <li>
+                    //     <a href="'.route('sale-order.show',$row->id) .'"  class="dropdown-item">
+                    //         <i class="bx bx-show font-size-16 text-primary me-1"></i> View
+                    //     </a>
+                    // </li>
+                    // <li>
+                    //     <a href="'. route('sale-order.edit', $row->id).'" class="dropdown-item">
+                    //         <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
+                    //     </a>
+                    // </li>
+                    // <li>
+                    //     <a href="javascript:void(0)" onclick="deletePurchaseOrder(' . $row->id . ')" class="dropdown-item">
+                    //         <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
+                    //     </a>
+                    // </li>
                    
                     })
     
@@ -129,13 +132,13 @@ class SaleOrderController extends Controller
             'party_id' => 'required',
             'item_id.*' =>'required',
             'total_quantity.*' =>'required',
-            'per_unit_price.*' =>'required',
+            // 'per_unit_price.*' =>'required',
         ],
         [
             'party_id.required' => 'The Supplier is required.',
             'item_id.*.required' => 'Each item is required.',
             'total_quantity.*.required' => 'Quantity is required for all items.',
-            'per_unit_price.*.required' => 'Per Kg price is required for each item.',
+            // 'per_unit_price.*.required' => 'Per Kg price is required for each item.',
         ]);
     
 

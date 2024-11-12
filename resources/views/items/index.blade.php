@@ -55,8 +55,9 @@
                                 <table id="table" class="table table-striped table-sm " style="width:100%">
                                     <thead>
                                         <tr>
-                                            <th>Code</th>
+                                            <th>#</th>
                                             <th>Type</th>
+                                            <th>Code</th>
                                             <th>Name</th>
                                             <th>Category</th>
                                             <th>Unit</th>
@@ -97,7 +98,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Types</label>
                                                     <select name="type" id="item-type" class="form-select" style="width:100%">
-                                                        <option value="">Choose...</option>
+                                                        <option selected value="">Choose...</option>
                                                         @foreach ($itemTypes as $type)
                                                             <option value="{{ $type }}">{{ $type }}</option>
                                                         @endforeach
@@ -127,7 +128,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Category</label>
                                                     <select name="category_id"  class="select2 form-select" style="width:100%">
-                                                        <option value="" >Choose...</option>
+                                                        <option  selected value="" >Choose...</option>
                                                         @foreach ($categories as $category)
                                                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                                                         @endforeach
@@ -138,7 +139,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Unit</label>
                                                     <select name="unit_id"  class="select2 form-select" style="width:100%">
-                                                        <option value="" >Choose...</option>
+                                                        <option selected value="" >Choose...</option>
                                                         @foreach ($units as $unit)
                                                             <option value="{{$unit->id}}">{{ "Purchase: ".$unit->base_unit." | Sale: " .$unit->child_unit}}</option>
                                                         @endforeach
@@ -149,7 +150,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Tax</label>
                                                     <select id="tax-select" name="tax_id"  class="select2 form-select" style="width:100%">                                                
-                                                        <option value="" >Choose...</option>
+                                                        <option selected value="" >Choose...</option>
                                                         @foreach ($taxes as $tax)
                                                             <option value="{{ $tax->id }}">{{ $tax->name."[".$tax->rate."]" }}</option>
                                                         @endforeach
@@ -387,8 +388,9 @@
                 ajax: "{{ route('item.index') }}",
                 columns: [
 
-                    { data: 'code' },
+                    { data: 'id' },
                     { data: 'type' },
+                    { data: 'code' },
                     { data: 'name' },
                     { data: 'category_name' },
                     { data: 'unit' },
@@ -436,6 +438,8 @@
                         if(response.success == true){
                             $('#add-item').modal('hide'); 
                             $('#item-store')[0].reset();  // Reset all form data
+                            // Reset only Select2 fields inside #item-store
+                            $('#item-store .select2').val(null).trigger('change');
                             table.ajax.reload();
                         
                             notyf.success({

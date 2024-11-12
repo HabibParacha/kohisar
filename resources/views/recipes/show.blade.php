@@ -44,7 +44,7 @@
 </style>
     <div class="main-content">
         <div class="page-content">
-            <div class="container-fluid">
+            <div class="container-fluid col-md-6">
                 <!-- start page title -->
                 <form>
                     <input type="hidden" name="recipe_id" id="recipe_id" value="{{  $recipe->id }}"> <!-- Hidden field to store the brand ID -->
@@ -90,7 +90,7 @@
                                             <th ></th>
                                             <th >Material Name</th> 
                                             <th >Unit</th> 
-                                            <th >QTY</th> 
+                                            <th class="text-center">QTY <sub>KG's</sub></th> 
                                         
                                         </tr>
                                     </thead>
@@ -103,10 +103,16 @@
                                                 <td>{{ $i++ }}</td>
                                                 <td> {{ $detail->item->code.'-'.$detail->item->name}}</td> 
                                                 <td> {{$detail->unit->base_unit}}</td> 
-                                                <td> {{ $detail->quantity   }} </td>
+                                                <td class="text-end"> {{ $detail->quantity   }} </td>
                                               
                                             </tr>
                                         @endforeach
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="text-end fw-bold">{{ $recipe->total_quantity }}</td>
+                                        </tr>
                                        
                                     </tbody> 
                                 </table>

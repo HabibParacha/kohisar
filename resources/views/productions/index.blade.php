@@ -16,7 +16,7 @@
                             <div class="page-title-right d-flex">
 
                                 <div class="page-btn">
-                                    <a href="{{ route('production.create') }}" class="btn btn-added btn-primary"><i class="me-2 bx bx-plus"></i>Production </a>
+                                    <a href="{{ route('production.create') }}" class="btn btn-added btn-primary"><i class="me-2 bx bx-plus"></i>Production Plan</a>
                                 </div>  
                             </div>
 
@@ -24,6 +24,59 @@
 
                         </div>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="filterRow">
+                                   <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Start Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
+                                                    <input type="date" name="start_date" id="start_date" class="form-control" value="">
+                                                </div>
+                                            
+                                            </div> 
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">End Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
+                                                    <input type="date" name="end_date" id="end_date" class="form-control" value="">
+                                                </div>
+                                            
+                                            </div> 
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Recipes</label>
+                                                <select name="recipe_id" id="recipe_id" class="select2 form-control" autofocus>                                                
+                                                    <option value="">Choose...</option>
+                                                    @foreach ($recipes as $recipe)
+                                                        <option value="{{$recipe->id}}">{{ $recipe->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>                                        
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <button type="button" class="btn btn-danger  mt-4" id="filter-btn">
+                                                <i class="mdi mdi-filter"></i> Filter
+                                            </button>
+                                            <button type="button" class="btn btn-primary  mt-4" id="reset-filter-btn">
+                                                <i class="fas fa-sync-alt"></i> Reset
+                                            </button>
+                                        </div>  
+                                    </div>
+                                   </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>              
                 </div>
                 <div class="row">
                     <div class="col-12">
@@ -39,8 +92,11 @@
                                             <th>Date</th>
                                             <th>Recipe</th>
                                             <th>Production No</th>
-                                            <th>batch No</th>
-                                            <th>Total Tons</th>
+                                            {{-- <th>batch No</th> --}}
+                                            <th>Batches</th>
+                                            <th>Production <sub>QTY</sub> </th>
+                                            <th>Output <sub>QTY</sub> </th>
+                                            <th>Surplus <sub>QTY</sub> </th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -93,18 +149,58 @@
             var table = $('#table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('production.index') }}",
+                ajax: {
+                    url: "{{ route('production.index') }}",
+                    data: function (d) {
+                        d.start_date = $('#start_date').val();
+                        d.end_date = $('#end_date').val();
+                        d.recipe_id = $('#recipe_id').val();
+                    }
+                },
                 columns: [
                     { data: 'date' },
                     { data: 'recipe_name' },
                     { data: 'invoice_no' },
-                    { data: 'batch_no' },
-                    { data: 'production_material_tons' },
+                    { 
+                        data: 'production_material_tons',
+                        render:function(data, type,row)
+                        {
+                            return data ? Math.round(data) : data;
+                        }
+                     },
+                    // { data: 'batch_no' },
+                    { data: 'production_qty' },
+                    { data: 'output_qty' },
+                    { data: 'surplus_qty' },
+                   
                    
                     { data: 'action', orderable: false, searchable: false },
                 ],
                 order: [[0, 'desc']],
             });
+
+            $('#filter-btn').on('click', function(){
+                table.draw();
+            });
+            $('#reset-filter-btn').on('click', function(){
+                $('#start_date').val('');
+                $('#end_date').val('');
+                $('#recipe_id').val('').trigger('change');
+                table.draw();
+            });
+            $('#start_date').on('change', function() {
+                let startDate = $(this).val();
+                
+                // Set the end date to the start date if it's empty or less than the start date
+                let endDate = $('#end_date').val();
+                if (!endDate || endDate < startDate) {
+                    $('#end_date').val(startDate);
+                }
+                
+                // Set the min attribute of the end date to the start date
+                $('#end_date').attr('min', startDate);
+            });
+            
 
             $('#submit-production-destroy').click(function() {
                 let invoice_master_id = $(this).data('id');

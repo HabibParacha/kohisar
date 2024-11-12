@@ -16,6 +16,7 @@ class ChartOfAccount extends Model
         'level',
         'parent_id',
         'type',
+        'category',
         'is_lock',
         'is_active',
     ];

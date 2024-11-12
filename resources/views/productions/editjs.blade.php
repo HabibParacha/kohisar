@@ -122,6 +122,9 @@
                 $('#progressModal').modal('hide'); // Hide the progress bar after the request completes
                 $('#production_material_tons').focus();
 
+
+                
+
             }).fail(function(xhr) {
                 alert('Error fetching brand details: ' + xhr.responseText);
             });

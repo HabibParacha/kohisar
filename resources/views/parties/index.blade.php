@@ -10,13 +10,13 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                            <h3 class="mb-sm-0 font-size-18">All {{ ucfirst($type) }}</h3>
+                            <h3 class="mb-sm-0 font-size-18">All {{ ($type) ? ucfirst($type) : 'Party' }}</h3>
 
                             <div class="page-title-right d-flex">
 
                                 <div class="page-btn">
                                     <a href="#" class="btn btn-added btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#add-party"><i class="me-2 bx bx-plus"></i><span class="text-capitalize">{{ $type }}</span></a>
+                                        data-bs-target="#add-party"><i class="me-2 bx bx-plus"></i><span class="text-capitalize">{{ ($type) ? ucfirst($type) : 'Party' }}</span></a>
                                 </div>
                             </div>
 
@@ -80,7 +80,7 @@
                     <div class="content">
                         <div class="modal-header border-0 custom-modal-header">
                             <div class="page-title">
-                                <h4>Create {{ ucfirst($type) }}</h4>
+                                <h4>Create {{ ($type) ? ucfirst($type) : 'Party' }}</h4>
                             </div>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
@@ -95,7 +95,7 @@
                                     <button type="button" class="btn btn-cancel me-2 btn-dark"
                                         data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" id="submit-party-store" class="btn btn-submit btn-primary">Create
-                                        {{ ucfirst($type) }}</button>
+                                        {{ ($type) ? ucfirst($type) : 'Party' }}</button>
                                 </div>
                             </form>
                         </div>
@@ -114,7 +114,7 @@
                     <div class="content">
                         <div class="modal-header border-0 custom-modal-header">
                             <div class="page-title">
-                                <h4>Edit {{ ucfirst($type) }}</h4>
+                                <h4>Edit {{ ($type) ? ucfirst($type) : 'Party' }}</h4>
                             </div>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
@@ -132,9 +132,11 @@
                                     <button type="button" class="btn btn-cancel me-2 btn-dark "
                                         data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" id="submit-party-update"
-                                        class="btn btn-submit btn-primary">Update {{ ucfirst($type) }}</button>
+                                        class="btn btn-submit btn-primary">Update {{ ($type) ? ucfirst($type) : 'Party' }}</button>
                                 </div>
                             </form>
+
+                          
                         </div>
                     </div>
                 </div>
@@ -151,7 +153,7 @@
                     <div class="content">
                         <div class="modal-header border-0 custom-modal-header">
                             <div class="page-title">
-                                <h4>Delete {{ ucfirst($type) }}</h4>
+                                <h4>Delete {{ ($type) ? ucfirst($type) : 'Party' }}</h4>
                             </div>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 
@@ -304,7 +306,7 @@
                     },
                     success: function(response) {
 
-                        submit_btn.prop('disabled', false).html('Create Party');
+                        submit_btn.prop('disabled', false).html('Create');
 
                         if (response.success == true) {
                             $('#add-party').modal('hide');
@@ -323,7 +325,7 @@
                         }
                     },
                     error: function(e) {
-                        submit_btn.prop('disabled', false).html('Create Party');
+                        submit_btn.prop('disabled', false).html('Create');
 
                         notyf.error({
                             message: e.responseJSON.message,
@@ -355,7 +357,7 @@
                     },
                     success: function(response) {
 
-                        submit_btn.prop('disabled', false).html('Update Party');
+                        submit_btn.prop('disabled', false).html('Update');
 
                         if (response.success == true) {
                             $('#edit-party').modal('hide');
@@ -374,7 +376,7 @@
                         }
                     },
                     error: function(e) {
-                        submit_btn.prop('disabled', false).html('Update Party');
+                        submit_btn.prop('disabled', false).html('Update');
 
                         notyf.error({
                             message: e.responseJSON.message,
@@ -442,7 +444,7 @@
         function editParty(id) {
             $.get("{{ route('party.edit', ':id') }}".replace(':id', id), function(response) {
                 $('#party_id').val(response.id);
-                $('#edit_party_type').val(response.party_type);
+                $('#edit_party_type').val(response.party_type).trigger('change');
                 $('#edit_business_name').val(response.business_name);
                 $('#edit_prefix').val(response.prefix);
                 $('#edit_first_name').val(response.first_name);

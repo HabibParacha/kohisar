@@ -10,8 +10,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\PartyController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SaleOrderController;
@@ -59,9 +61,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('unit', UnitController::class);
     Route::resource('product', ProductController::class);
     Route::resource('production', ProductionController::class);
+    Route::resource('expense', ExpenseController::class);
+
    
     Route::resource('sale-order', SaleOrderController::class);
 
+    Route::get('chart-of-account/get-by-category/{id}', [ChartOfAccountController::class, 'getByCategory'])->name('chart-of-account.getByCategory');
     Route::resource('chart-of-account', ChartOfAccountController::class);
 
     // create1 name because create was resource controller function and create do mot accept $id parameter 
@@ -91,6 +96,10 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/admin-dashboard', AdminDashboard::class)->name('admin-dashboard');
     // Route::get('/driver-dashboard', DriverDashboard::class)->name('driver-dashboard');
+
+
+
+    Route::resource('voucher', VoucherController::class);
     
     
   

@@ -118,7 +118,8 @@ class RecipeController extends Controller
             $recipe = [
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
-                'user_id' => Auth::id(),
+                'total_quantity' => $request->input('total_quantity'),
+                'creator_id' => Auth::id(),
             ];
 
             $recipe_id = DB::table('recipes')->insertGetId($recipe);
@@ -230,7 +231,7 @@ class RecipeController extends Controller
             $recipe = [
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
-                'user_id' => Auth::id(),
+                'total_quantity' => $request->input('total_quantity'),
             ];
 
           DB::table('recipes')->where('id',$id)->update($recipe);

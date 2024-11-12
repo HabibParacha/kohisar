@@ -53,7 +53,7 @@ class SaleInvoiceController extends Controller
                     })
                     ->addColumn('date', function($row){
                         return date('d-m-Y', strtotime($row->date));
-                    })
+                    }) 
                    
 
                     ->addColumn('action', function ($row) {
@@ -69,17 +69,7 @@ class SaleInvoiceController extends Controller
                                                 <i class="bx bx-show font-size-16 text-primary me-1"></i> View
                                             </a>
                                         </li>
-                                        <li>
-                                            <a href="'. route('sale-invoice.edit', $row->id).'" class="dropdown-item">
-                                                <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
-                                            </a>
-                                        </li>
-                                       
-                                         <li>
-                                            <a href="javascript:void(0)" onclick="deletePurchaseOrder(' . $row->id . ')" class="dropdown-item">
-                                                <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
-                                            </a>
-                                        </li>
+                                        
                                        
                                        
                                     </ul>
@@ -88,7 +78,17 @@ class SaleInvoiceController extends Controller
     
                    
                     return $btn;
-                   
+                    // <li>
+                    //     <a href="'. route('sale-invoice.edit', $row->id).'" class="dropdown-item">
+                    //         <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
+                    //     </a>
+                    // </li>
+               
+                    // <li>
+                    //     <a href="javascript:void(0)" onclick="deletePurchaseOrder(' . $row->id . ')" class="dropdown-item">
+                    //         <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
+                    //     </a>
+                    // </li>
                     })
     
                     ->rawColumns(['action']) // Mark these columns as raw HTML
@@ -140,10 +140,14 @@ class SaleInvoiceController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'party_id' =>'required',
+            'party_warehouse_id' =>'required',
             'total_quantity.*' =>'required',
             'per_unit_price.*' =>'required',
         ],
         [
+            'party_id.required' => 'Party is required.',
+            'party_warehouse_id.required' => 'Party Farm /  Warehouse in required.',
             'total_quantity.*.required' => 'Quantity is required for all items.',
             'per_unit_price.*.required' => 'Unit price is required for each item.',
         ]);
@@ -176,6 +180,9 @@ class SaleInvoiceController extends Controller
               'reference_no' => $request->input('reference_no'),
               'vehicle_no' => $request->input('vehicle_no'),
               'sub_total' => $request->input('sub_total'),
+            //   'discount_type' => 'item rate'
+            
+              'shipping' => $request->input('shipping'),
               'grand_total' => $request->input('grand_total'),
               'description' => $request->input('description'),
           ];
@@ -206,11 +213,17 @@ class SaleInvoiceController extends Controller
                   'unit_weight' => $request->unit_weight[$i],
                   'total_quantity' => $request->total_quantity[$i],
                   'net_weight' => $request->net_weight[$i],
-
+                  
                   'per_unit_price' => $request->per_unit_price[$i],
-
                   'total_price' => $request->total_price[$i],
-                  'grand_total' => $request->total_price[$i],
+
+
+                  'discount_type' =>  $request->discount_type[$i],
+                  'discount_value' => $request->discount_unit_price[$i],// this discount is on rate
+                  'discount_amount' => $request->discount_amount[$i],
+                  'after_discount_total_price' => $request->after_discount_total_price[$i],
+
+                  'grand_total' => $request->after_discount_total_price[$i],
               ];
 
 
@@ -231,7 +244,7 @@ class SaleInvoiceController extends Controller
       } catch (\Exception $e) {
           
           DB::rollBack();// Rollback the transaction if there's an error
-
+            dd($e);
           // Return a JSON response with an error message
           return response()->json([
               'success' => false,

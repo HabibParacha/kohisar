@@ -59,6 +59,9 @@
                 <!-- start page title -->
                 <form id="production-store" method="POST" enctype="multipart/form-data">
                     @csrf
+                    @method('PUT') <!-- For PUT method -->
+                    <input type="hidden" name="id" id="invoice_master_id" value="{{ $production->id }}"> <!-- Hidden field to ID -->
+
                     <div class="card">
                         <div class="card-body">
                             {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
@@ -71,7 +74,7 @@
                                         <label class="form-label">Production  No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-receipt"></span> </div>
-                                            <input type="text" name="invoice_no"  class="form-control" value="{{ $newInvoiceNo }}" readonly>
+                                            <input type="text" name="invoice_no"  class="form-control" value="{{ $production->invoice_no }}" readonly>
                                         </div> 
                                     </div> 
                                 </div>
@@ -80,7 +83,7 @@
                                         <label class="form-label">batch No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-barcode" ></span> </div>
-                                            <input type="text" name="batch_no"  class="form-control" autocomplete="off">
+                                            <input type="text" name="batch_no" value="{{ $production->batch_no }}" class="form-control" autocomplete="off">
                                         </div> 
                                     </div> 
                                 </div>
@@ -90,7 +93,8 @@
                                         <select name="recipe_id" id="recipe_id" class="select2 form-control" autofocus>                                                
                                             <option value="">Choose...</option>
                                             @foreach ($recipes as $recipe)
-                                                <option value="{{$recipe->id}}">{{ $recipe->name }}</option>
+                                                <option @if( $recipe->id == $production->recipe_id) selected @endif 
+                                                    value="{{$recipe->id}}">{{ $recipe->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>                                        
@@ -113,9 +117,8 @@
                                         <label class="form-label">Total Tons</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="mdi mdi-weight"></span> </div>
-                                            <input type="number" name="production_material_tons" id="production_material_tons" step="0.0001" class="form-control" disabled>
+                                            <input type="number" name="production_material_tons" value="{{ number_format($production->production_material_tons,0) }}"  id="production_material_tons" step="0.0001" class="form-control">
                                         </div> 
-                                        <span id="production_material_tons_message" class="text-danger">Please Select Recipe</span>
                                     </div> 
                                 </div>
 
@@ -210,7 +213,50 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="sortable-table">
-                                                
+                                                @foreach ($production->outputDetails as $detail)
+                                                    <tr>
+                                                        <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
+                                                        <td class="text-center"> 
+                                                            <input class="form-check-input surplus-checkbox" type="checkbox" @if($detail->is_surplus == 1) checked @endif>
+                                                            <input name="is_surplus[]" class="is-surplus-value" type="hidden" value="{{ ($detail->is_surplus == 1)? 1 : 0 }}">
+                                                        </td>
+                                                        <td> 
+                                                            <select  name="output_item_id[]" class="form-control select2 output-item-dropdown" style="width:100%" >                                                
+                                                                <option value="" >Choose...</option>
+                                                                @foreach ($goodItems as $item)
+                                                                    <option 
+                                                                    @if($item->id == $detail->item_id) selected @endif
+                                                                    value="{{$item->id}}" data-unit-id="{{ $item->unit_id }}"  data-unit-weight="{{ $item->unit_weight }}">{{ $item->code.'-'.$item->category->name .'-'.$item->name }}</option>
+                                                                @endforeach
+                                        
+                                                            </select>
+                                        
+                                                        </td>
+                                                            
+                                                        <td class="d-none"> 
+                                                            <select name="output_unit_id[]"  class="form-control select2 output-item-unit-dropdown" style="width:100%">                                                
+                                                                <option>Choose...</option>
+                                                                @foreach ($units as $unit)
+                                                                    <option value="{{$unit->id}}" data-base-unit-value="{{ $unit->base_unit_value }}" >{{ $unit->base_unit }}</option>
+                                                                @endforeach
+                                                            </select>
+                                        
+                                                        </td> 
+                                        
+                                                        <td>
+                                                            <input type="number" name="output_unit_weight[]" value="{{ $detail->unit_weight }}" step="0.0001" class="form-control output-unit-weight" readonly>  
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="output_quantity[]" value="{{ $detail->total_quantity }}" step="0.0001" class="form-control output-quantity">  
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="output_quantity_weight[]" value="{{ $detail->net_weight }}" step="0.0001" class="form-control output-quantity-weight" readonly>  
+                                                        </td>
+                                                        <td class="text-center">  
+                                                            <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach    
                                                
                                             </tbody> 
                                         </table>
@@ -359,7 +405,6 @@
     
 <script>
      $(document).ready(function () {
-       
         // appendNewRow();
     });
 
@@ -384,38 +429,115 @@
 
 @include('productions.js')
 
+
 <script>
+    $(document).ready(function () {
+
     
+        let recipe_id = $('#recipe_id option:selected').val();
+
+        let tons = parseFloat($('#production_material_tons').val());
+
+        getRecipeDetailWithStockEdit(recipe_id);
+
+        
+    });
+
+
+
+
+    function getRecipeDetailWithStockEdit(id) {
+            $.get("{{ route('getRecipeDetailWithStock', ':id') }}".replace(':id', id), {
+                beforeSend: function() {
+                }
+            }).done(function(response) {
+                $('#material-table tbody').empty();
+                
+                let tons = parseFloat($('#production_material_tons').val());
+                // Loop through the response data and append rows to the table
+                response.recipeDetails.forEach(function(detail) {
+
+                    let prodcution_qty = parseFloat(((detail.quantity) * tons));
+                    let balance_val = parseFloat(detail.balance);
+                    let stock_val = balance_val+prodcution_qty;
+                    
+
+                    $('#material-table tbody').append(
+                        `<tr>
+                            <td class="text-start">
+                                <input type="hidden" name="production_item_id[]" value="${detail.item_id}" readonly>
+                                <input type="text" value="${detail.name}" readonly>
+                            </td>
+                            <td class="d-none">
+                                <input type="text" name="production_unit_id[]" value="${detail.base_unit}" readonly>
+                            </td>    
+                            <td class="text-end">
+                                <input type="number" name="" step="0.0001" class="recipe-quantity text-end" value="${detail.quantity}" readonly>
+                            </td>
+                            <td class="text-end">
+                                <input type="number" name="production_quantity_weight[]" value="${prodcution_qty}" step="0.0001" class="production-quantity-weight text-end" readonly>
+                            </td>
+                            <td class="text-center">
+                                <input type="number" name="" step="0.0001" class="stock-quantity text-end" value="${stock_val.toFixed(2)}" readonly>
+                            </td> 
+                           
+                            <td class="text-center">
+                                <span class="stock-status-tick  bx bxs-check-circle text-success    fs-4"></span>
+                                <span class="stock-status-cross bx bxs-x-circle     text-danger     fs-4 d-none"></span>
+                            </td>
+                        </tr>`
+                    );
+                });
+
+                $('#production_material_tons').focus();
+                checkStockQuantity();// check stock and production quantity
+                summaryCalculation();
+
+                
+
+            }).fail(function(xhr) {
+                alert('Error fetching brand details: ' + xhr.responseText);
+            })
+            .always(function() {
+                $('#progressModal').modal('hide'); // Hide the progress bar after the request completes or fails
+            });
+
+        }
+
+
+
+
+
+
     
     $('#submit-production-store').on('click', function(e){
 
-        storeProduction();
 
-    //     e.preventDefault();
+        e.preventDefault();
 
-    //    let prodcution_weight =  parseFloat($('#production-sub-total-weight').val()) || 0;
-    //    let output_weight =  parseFloat($('#output-sub-total-weight').val()) || 0;
-    //    let difference = output_weight - prodcution_weight;
+       let prodcution_weight =  parseFloat($('#production-sub-total-weight').val()) || 0;
+       let output_weight =  parseFloat($('#output-sub-total-weight').val()) || 0;
+       let difference = output_weight - prodcution_weight;
 
-    //    if(prodcution_weight == 0)
-    //    {
-    //         alert("Add Total Tons Value");
-    //         return;
+       if(prodcution_weight == 0)
+       {
+            alert("Add Total Tons Value");
+            return;
             
-    //    }
+       }
     
 
-    //    $('#productionQty').text(prodcution_weight.toFixed(2));
-    //    $('#outputQty').text(output_weight.toFixed(2));
-    //    $('#quantityDifference').text(difference.toFixed(2));
+       $('#productionQty').text(prodcution_weight.toFixed(2));
+       $('#outputQty').text(output_weight.toFixed(2));
+       $('#quantityDifference').text(difference.toFixed(2));
 
-    //    if(prodcution_weight != output_weight)
-    //    {
-    //     $('#quantityMismatchModal').modal('show');   
-    //    }
-    //    else{
-    //     storeProduction();
-    //    }
+       if(prodcution_weight != output_weight)
+       {
+        $('#quantityMismatchModal').modal('show');   
+       }
+       else{
+        storeProduction();
+       }
  
     });
     $('#yes-proceed-btn').on('click',function(e){
@@ -437,9 +559,11 @@
        
         var submit_btn = $('#submit-production-store');
         let createformData = new FormData($('#production-store')[0]);
+        let invoice_master_id = $('#invoice_master_id').val(); // Get the ID of the brand being edited
+
         $.ajax({
             type: "POST",
-            url: "{{ route('production.store') }}",
+            url: "{{ route('production.update', ':id') }}".replace(':id', invoice_master_id), // Using route name
             dataType: 'json',
             contentType: false,
             processData: false,
@@ -464,7 +588,7 @@
 
                     // Redirect after success notification
                     setTimeout(function() {
-                        window.location.href = '{{ route("production.create") }}';
+                        window.location.href = '{{ route("production.index") }}';
                     }, 200); // Redirect after 3 seconds (same as notification duration)
 
 
@@ -486,60 +610,10 @@
         });
     
     }
-    // $('#production-store').on('submit', function(e) {
-    //     e.preventDefault();
-    //     var submit_btn = $('#submit-production-store');
-    //     let createformData = new FormData($('#production-store')[0]);
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "{{ route('production.store') }}",
-    //         dataType: 'json',
-    //         contentType: false,
-    //         processData: false,
-    //         cache: false,
-    //         data: createformData,
-    //         enctype: "multipart/form-data",
-    //         beforeSend: function() {
-    //             submit_btn.prop('disabled', true);
-    //             submit_btn.html('Processing');
-    //         },
-    //         success: function(response) {
-                
-    //             submit_btn.prop('disabled', false).html('Save');  
-
-    //             if(response.success == true){
-    //                 $('#production-store')[0].reset();  // Reset all form data
-                
-    //                 notyf.success({
-    //                     message: response.message, 
-    //                     duration: 3000
-    //                 });
-
-    //                 // Redirect after success notification
-    //                 setTimeout(function() {
-    //                     window.location.href = '{{ route("production.index") }}';
-    //                 }, 200); // Redirect after 3 seconds (same as notification duration)
-
-
-    //             }else{
-    //                 notyf.error({
-    //                     message: response.message,
-    //                     duration: 5000
-    //                 });
-    //             }   
-    //         },
-    //         error: function(e) {
-    //             submit_btn.prop('disabled', false).html('Save');
-            
-    //             notyf.error({
-    //                 message: e.responseJSON.message,
-    //                 duration: 5000
-    //             });
-    //         }
-    //     });
-    // });
+   
             
 </script>
+
 {{-- END:: Store Data using AJAX --}}
 
 

@@ -23,13 +23,25 @@ class ProductionController extends Controller
      */
     public function index(Request $request)
     {
+        $recipes = Recipe::all();
         try{
             if ($request->ajax()) {
-                $data = InvoiceMaster::where('type','production')
-                ->orderBy('id','desc')
-                ->orderBy('date','desc')
-                ->get();
+                $query = InvoiceMaster::where('type', 'production')
+                ->orderBy('id', 'desc')
+                ->orderBy('date', 'desc');
+
+                if ($request->recipe_id) {
+                    $query->where('recipe_id', $request->recipe_id );
+                }
     
+                if ($request->start_date && $request->end_date) {
+                    $query->whereBetween('date', [$request->start_date, $request->end_date]);
+                }
+
+
+                $data = $query->get();
+
+
                 return Datatables::of($data)
                     ->addIndexColumn()
                     // Status toggle column
@@ -56,16 +68,12 @@ class ProductionController extends Controller
                                                 <i class="bx bx-show font-size-16 text-primary me-1"></i> View
                                             </a>
                                         </li>
-                                        <li>
+                                         <li>
                                             <a href="'. route('production.edit', $row->id).'" class="dropdown-item">
                                                 <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
                                             </a>
                                         </li>
-                                         <li>
-                                            <a href="javascript:void(0)" onclick="deleteProduction(' . $row->id . ')" class="dropdown-item">
-                                                <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
-                                            </a>
-                                        </li>
+                                       
                                        
                                        
                                     </ul>
@@ -74,6 +82,13 @@ class ProductionController extends Controller
     
                    
                     return $btn;
+
+                    
+                    //  <li>
+                    //     <a href="javascript:void(0)" onclick="deleteProduction(' . $row->id . ')" class="dropdown-item">
+                    //         <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
+                    //     </a>
+                    // </li>
                    
                     })
     
@@ -81,7 +96,7 @@ class ProductionController extends Controller
                     ->make(true);
             }
     
-            return view('productions.index');
+            return view('productions.index', compact('recipes'));
 
         }catch (\Exception $e){
             dd($e);
@@ -113,6 +128,7 @@ class ProductionController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         // Start a transaction
         DB::beginTransaction();
 
@@ -121,7 +137,6 @@ class ProductionController extends Controller
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'recipe_id' => 'required',
-                'batch_no' => 'required',
                 'production_material_tons' => 'required',
                 
             ]);
@@ -146,10 +161,14 @@ class ProductionController extends Controller
                 'recipe_id' => $request->input('recipe_id'),
                 'production_material_tons' => $request->input('production_material_tons'),
                 'description' => $request->input('description'),
+                'production_qty' => $request->production_sub_total_weight,
+                'output_qty' => $request->output_sub_total_weight,
+                'surplus_qty' => $request->surplus_sub_total_weight,
             ];
 
             $invoice_master_id  = DB::table('invoice_master')->insertGetId($invoice_master);
 
+            //production
             for($i=0; $i < count($request->production_item_id); $i++)
             {
                  $invoice_detail = [
@@ -165,6 +184,37 @@ class ProductionController extends Controller
                  DB::table('invoice_detail')->insertGetId($invoice_detail);
  
             }
+
+
+            //output
+            if($request->has('output_item_id'))
+            {
+
+                
+                for($i=0; $i < count($request->output_item_id); $i++)
+                {
+                    
+                   
+
+
+                    $invoice_detail = [
+                        'invoice_master_id' => $invoice_master_id,
+                        'date' => $request->input('date'),
+                        'invoice_no' => $newInvoiceNo,
+                        'type' => 'output',
+                        'item_id' => $request->output_item_id[$i],
+                        'unit_weight' => $request->output_unit_weight[$i],
+                        'total_quantity' => $request->output_quantity[$i],
+                        'net_weight' => $request->output_quantity_weight[$i],
+                        'is_surplus' =>  $request->is_surplus[$i],
+                    ];
+    
+    
+                    DB::table('invoice_detail')->insertGetId($invoice_detail);
+    
+                }
+            }
+               
 
             DB::commit();// Commit the transaction
 
@@ -193,10 +243,21 @@ class ProductionController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
-     */
+    */
     public function show($id)
     {
-        //
+        try {
+            $production = InvoiceMaster::with(['productionDetails','outputDetails'])->find($id);
+        
+            return view('productions.show', compact('production'));
+
+        } catch (\Exception $e) {
+            // Return a JSON response with an error message
+            return response()->json([
+                'message' => $e->getMessage(),
+                'success' => false,
+            ], 500);
+        }
     }
 
     /**
@@ -207,7 +268,21 @@ class ProductionController extends Controller
      */
     public function edit($id)
     {
-        //
+        $goodItems  = Item::where('type','Good')->get();
+        $units = Unit::all();
+        $recipes = Recipe::all();
+        
+        try {
+            $production = InvoiceMaster::with(['productionDetails','outputDetails'])->find($id);
+            return view('productions.edit', compact('production','goodItems','units','recipes'));
+
+        } catch (\Exception $e) {
+            // Return a JSON response with an error message
+            return response()->json([
+                'message' => $e->getMessage(),
+                'success' => false,
+            ], 500);
+        }
     }
 
     /**
@@ -219,7 +294,106 @@ class ProductionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // dd($request->all());
+        // Start a transaction
+        DB::beginTransaction();
+
+        try {
+
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'recipe_id' => 'required',
+                'production_material_tons' => 'required',
+                
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first()
+                ]);
+            }
+            
+            $production = InvoiceMaster::find($id);
+
+            $invoice_master = [
+                'date' => $request->input('date'),
+                'expiry_date' => $request->input('expiry_date'),
+                'batch_no' => $request->input('batch_no'),
+                'type' => 'production',
+                'recipe_id' => $request->input('recipe_id'),
+                'production_material_tons' => $request->input('production_material_tons'),
+                'description' => $request->input('description'),
+                'production_qty' => $request->production_sub_total_weight,
+                'output_qty' => $request->output_sub_total_weight,
+                'surplus_qty' => $request->surplus_sub_total_weight,
+            ];
+
+            DB::table('invoice_master')->where('id', $production->id)->update($invoice_master);
+            
+            DB::table('invoice_detail')->where('invoice_master_id',$production->id)->delete();
+
+            $invoice_master_id = $production->id;
+            $invoice_no = $production->invoice_no;
+
+            //production
+            for($i=0; $i < count($request->production_item_id); $i++)
+            {
+                $invoice_detail = [
+                    'invoice_master_id' => $invoice_master_id,
+                    'date' => $request->input('date'),
+                    'invoice_no' => $invoice_no,
+                    'type' => 'production',
+                    'item_id' => $request->production_item_id[$i],
+                    'net_weight' => $request->production_quantity_weight[$i],
+                ];
+                DB::table('invoice_detail')->insertGetId($invoice_detail);
+            }
+
+
+            //output
+            if($request->has('output_item_id'))
+            {       
+                for($i=0; $i < count($request->output_item_id); $i++)
+                {
+                    $invoice_detail = [
+                        'invoice_master_id' => $invoice_master_id,
+                        'date' => $request->input('date'),
+                        'invoice_no' => $invoice_no,
+                        'type' => 'output',
+                        'item_id' => $request->output_item_id[$i],
+                        'unit_weight' => $request->output_unit_weight[$i],
+                        'total_quantity' => $request->output_quantity[$i],
+                        'net_weight' => $request->output_quantity_weight[$i],
+                        'is_surplus' =>  $request->is_surplus[$i],
+                    ];
+    
+                    DB::table('invoice_detail')->insertGetId($invoice_detail);
+    
+                }
+            }
+               
+
+            DB::commit();// Commit the transaction
+
+            // Return a JSON response with a success message
+            return response()->json([
+                'success' => true,
+                'message' => 'Production update successfully.',
+            ],200);
+        
+
+            
+        } catch (\Exception $e) {
+            
+            DB::rollBack();// Rollback the transaction if there's an error
+
+            // Return a JSON response with an error message
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

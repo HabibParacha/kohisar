@@ -13,4 +13,12 @@ change v_estimate_master
 
 
 ---------------------------------------------System updated--------------------------------------------
+ALTER TABLE `invoice_detail` ADD `is_surplus` INT NULL DEFAULT '0' AFTER `net_weight`;
+---------------------------------------------System updated--------------------------------------------
+
+ALTER TABLE `invoice_master` ADD `production_qty` DECIMAL(15,2) NULL DEFAULT NULL COMMENT 'in kgs' AFTER `grand_total`, ADD `output_qty` DECIMAL(15,2) NULL DEFAULT NULL COMMENT 'in kgs' AFTER `production_qty`, ADD `surplus_qty` DECIMAL(15,2) NULL DEFAULT NULL COMMENT 'in kgs' AFTER `output_qty`;
+---------------------------------------------System updated--------------------------------------------
+
+
+voucher_type table seeder
 

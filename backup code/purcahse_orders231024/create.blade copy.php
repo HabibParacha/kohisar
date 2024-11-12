@@ -246,19 +246,8 @@
                                         
 
 
-                                            <td>
-                                                <input type="number" name="discount_value[]" value="0" step="0.01" class="form-control item-discount-value" >
-                                            </td>
-                                            <td>
-                                                <select name="discount_type[]"  class="form-select item-discount-type">                                                
-                                                    <option selected value="fixed">Fixed</option>
-                                                    <option value="percentage">%</option>
-                                                </select>
-                                            </td>
-
-                                            <td> 
-                                                <input type="number" name="after_discount[]" class="form-control item-after-discount" readonly>  
-                                            </td>
+                                          
+                                            
                                             <td> 
                                                 <select name="tax_id[]"  class="form-control select2 item-tax-dropdown" style="width:100%">                                                
                                                     @foreach ($taxes as $tax)

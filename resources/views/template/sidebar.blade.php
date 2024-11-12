@@ -13,6 +13,18 @@
                     </a>
 
                 </li>
+                <li class="">
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="bx bx-cog"></i>
+                        <span key="t-ecommerce">Accounting</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                      
+                        <li> <a href="{{ route('voucher.create','CP') }}" key="t-products">Cash payemnt</a></li>
+                       
+
+                    </ul>
+                </li>
                 <li>
                     <a href="{{route('purchase-order.index')}}" class="waves-effect">
                         <i class=" bx bx-receipt mb-0"></i>
@@ -27,7 +39,7 @@
                 </li>
                 <li>
                     <a href="{{route('production.index')}}" class="waves-effect">
-                        <i class=" fas fa-industry mb-0"></i>
+                        <i class=" fas fa-cubes mb-0"></i>
                         <span key="t-dashboards"> Production</span>
                     </a>
                 </li>
@@ -41,6 +53,12 @@
                     <a href="{{route('sale-invoice.index')}}" class="waves-effect">
                         <i class=" fas fa-file-invoice-dollar mb-0"></i>
                         <span key="t-dashboards"> Sale Invoice</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('expense.index')}}" class="waves-effect">
+                        <i class="fas fa-money-check-alt mb-0"></i>
+                        <span key="t-dashboards"> Expense</span>
                     </a>
                 </li>
                 <li>
@@ -76,6 +94,7 @@
 
                     </ul>
                 </li>
+               
          
                 <li class="">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">

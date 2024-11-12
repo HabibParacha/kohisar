@@ -19,8 +19,10 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->longText('description')->nullable();
-            $table->unsignedBigInteger('user_id');
+            $table->decimal('total_quantity',15,4)->nullable();
             $table->boolean('is_active')->default(1);
+            $table->unsignedBigInteger('creator_id')->nullable();
+
             $table->timestamps();
         });
 

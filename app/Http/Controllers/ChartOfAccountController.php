@@ -273,4 +273,25 @@ class ChartOfAccountController extends Controller
     {
         //
     }
+
+    public function getByCategory($type)
+    {
+
+        if ($type == "BR") {
+            $data = ChartOfAccount::where('level', 4)->whereIn('category', ['bank', 'card'])->get();
+        } elseif ($type == "BP") {
+            $data = ChartOfAccount::where('level', 4)->whereIn('category', ['bank', 'card'])->get();
+        } elseif ($type == "CR") {
+            $data = ChartOfAccount::where('level', 4)->where('category', 'cash')->get();
+        } elseif ($type == "CP") {
+            $data = ChartOfAccount::where('level', 4)->where('category', 'cash')->get();
+        }else {
+            $data = ChartOfAccount::where('level', 4)->get();
+            
+        }
+       return response()->json($data);
+    }
+
+   
+
 }

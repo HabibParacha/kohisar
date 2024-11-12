@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('level');                  // Account level (e.g., 1, 2, 3, or 4)
             $table->unsignedBigInteger('parent_id')->nullable(); // Reference to parent account
             $table->enum('type', ['asset', 'liability', 'equity', 'revenue', 'expense']); // Account type
+            $table->string('category')->nullable();
             $table->boolean('is_lock')->default(1);
             $table->boolean('is_active')->default(1);
 
@@ -28,6 +29,9 @@ return new class extends Migration
             $table->timestamps();
             
         });
+        Artisan::call('db:seed', [
+            '--class' => ChartOfAccountSeeder::class
+        ]);
     }
 
     /**

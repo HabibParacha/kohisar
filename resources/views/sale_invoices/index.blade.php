@@ -57,7 +57,7 @@
                                             <th>Receipt No</th>
                                             <th>Customer Name</th>
                                             <th>Saleman Name</th>
-                                            <th>Warehouse Name</th>
+                                            <th>Farm / Warehouse</th>
                                             <th>Reference No</th>
                                             <th>Total Amount</th>
                                            
@@ -125,7 +125,7 @@
                    
                     { data: 'action', orderable: false, searchable: false },
                 ],
-                invoice: [[0, 'desc']],
+                order: [[0, 'desc']],
             });
 
             $('#submit-sale-invoice-destroy').click(function() {

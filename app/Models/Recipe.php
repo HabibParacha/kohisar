@@ -13,7 +13,8 @@ class Recipe extends Model
     protected $fillable = [
         'name',
         'description',
-        'user_id',
+        'total_quantity',
+        'creator_id',
         'is_active',
     ];
     public function recipeDetails()

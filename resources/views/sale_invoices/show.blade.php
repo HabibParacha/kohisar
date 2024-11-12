@@ -28,19 +28,20 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <address>
-                                    <strong>Billed To:</strong><br>
-                                    {{ $saleInvoice->party->business_name }}<br>
-                                    {{ $saleInvoice->party->mobile}}<br>
-                                    {{  $saleInvoice->party->city  }}<br>
-                                   {{  $saleInvoice->party->address_line_1 }}
+                                    <h5>Billed To:</h5><br>
+                                   <span class="fw-bold">Customer: </span>  {{ $saleInvoice->party->business_name }}<br>
+                                   <span class="fw-bold">Contact: </span> {{ $saleInvoice->party->mobile}}<br>
+                                   <span class="fw-bold">City: </span> {{  $saleInvoice->party->city  }}<br>
+                                   <span class="fw-bold">Address: </span>{{  $saleInvoice->party->address_line_1 }}
                                 </address>
                             </div>
                             <div class="col-sm-6 text-sm-end">
                                 <address class="mt-2 mt-sm-0">
-                                    <strong>Shipped To:</strong><br>
-                                    {{ $saleInvoice->partyWarehouse->city }}<br>
-                                   {{ $saleInvoice->partyWarehouse->name }}<br>
-                                    {{ $saleInvoice->partyWarehouse->location }}
+                                   
+                                    <h5>Shipped To:</h5><br>
+                                    <span class="fw-bold">City: </span> {{ $saleInvoice->partyWarehouse->city }}<br>
+                                    <span class="fw-bold">Farm: </span> {{ $saleInvoice->partyWarehouse->name }}<br>
+                                    <span class="fw-bold">Address: </span>{{ $saleInvoice->partyWarehouse->location }}
                                 </address>
                             </div>
                         </div>
@@ -72,7 +73,10 @@
                                         <th style="width: 70px;" class="text-end">Qty</th>
                                         <th style="width: 70px;" class="text-end">Total Weight</th>
                                         <th style="width: 70px;" class="text-end">Unit Price</th>
-                                        <th style="width: 70px;" class="text-end">Total Price</th>
+                                        <th style="width: 70px;" class="text-end">Discout Price</th>
+                                        <th style="width: 70px;" class="text-end">Before Discount</th>
+                                        <th style="width: 70px;" class="text-end">After Discount</th>
+                                        <th style="width: 70px;" class="text-end">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -82,12 +86,15 @@
                                     @foreach ($saleInvoice->invoiceDetails as $detail)
                                         <tr>
                                             <td>{{ $i++ }}</td>
-                                            <td>{{ $detail->item->name }}</td>
+                                            <td>{{ $detail->item->category->name.'-'.$detail->item->name }}</td>
                                             <td class="text-end">{{ $detail->unit_weight }}</td>
                                             <td class="text-end">{{ $detail->total_quantity }}</td>
                                             <td class="text-end">{{ $detail->net_weight }}</td>
                                             <td class="text-end">{{ $detail->per_unit_price }}</td> 
-                                            <td class="text-end">{{ $detail->grand_total }}</td>
+                                            <td class="text-end">{{ $detail->discount_value }}</td> 
+                                            <td class="text-end">{{ $detail->total_price }}</td>
+                                            <td class="text-end">{{ $detail->after_discount_total_price }}</td> 
+                                            <td class="text-end">{{ $detail->after_discount_total_price }}</td> 
                                         </tr>
                                     @endforeach
 
@@ -101,7 +108,7 @@
                                         <td style="text-align: right">
                                             <b>{{ number_format($saleInvoice->invoiceDetails->sum('net_weight'),2) }}</b>
                                         </td>
-                                        <td colspan="1" ></td>
+                                        <td colspan="4" ></td>
                                        
                                         <td style="text-align: right">
                                             <b>{{ number_format($saleInvoice->invoiceDetails->sum('grand_total'),2) }}</b>
@@ -111,8 +118,12 @@
                                    
 
                                     <tr>
-                                        <td colspan="6" class="text-end">Sub Total</td>
-                                        <td class="text-end">{{ number_format($saleInvoice->invoiceDetails->sum('grand_total'),2) }}</td>
+                                        <td colspan="9" class="text-end">Sub Total</td>
+                                        <td class="text-end">{{ number_format($saleInvoice->invoiceDetails->sum('total_price'),2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="9" class="text-end">Discount (-)</td>
+                                        <td class="text-end">{{ number_format($saleInvoice->invoiceDetails->sum('discount_amount'),2) }}</td>
                                     </tr>
                                     {{-- <tr>
                                         <td colspan="2" class="border-0 text-end">
@@ -120,7 +131,7 @@
                                         <td class="border-0 text-end">$13.00</td>
                                     </tr> --}}
                                     <tr>
-                                        <td colspan="6" class="border-0 text-end">
+                                        <td colspan="9" class="border-0 text-end">
                                             <strong>Total</strong></td>
                                         <td class="border-0 text-end"><h4 class="m-0">{{ number_format($saleInvoice->invoiceDetails->sum('grand_total'),2) }}</h4></td>
                                     </tr>

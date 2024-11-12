@@ -4,9 +4,10 @@
             <div class="mb-3">
                 <label class="form-label">Party Type</label>
                 <select name="party_type" id="party_type" class="form-control select2" style="width: 100%">
+                    <option selected value="">Choose...</option>
                     <option @if($type == 'supplier') selected @endif value="supplier">Supplier</option>
                     <option @if($type == 'customer') selected @endif value="customer">Customer</option>
-                    <option value="both">Both (Supplier & Customer)</option>
+                    {{-- <option value="both">Both (Supplier & Customer)</option> --}}
                 </select>
             </div>
         </div>

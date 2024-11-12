@@ -141,6 +141,21 @@
 
                           
                         </div>
+                        <div class="row mt-3">
+                            <div class="col-md-8">
+                            </div>
+                            
+                            <div class="col-md-4 d-flex align-items-center">
+                                <table id="summary-table" class="table">
+                                    <tr>
+                                        <th width="50%">Total Quantity KG's </th>
+                                        <td width="50%">
+                                            <input type="number" name="total_quantity" id="total_quantity" value="0" class="form-control text-end" readonly>
+                                        </td>
+                                    </tr>      
+                                </table>
+                            </div>
+                        </div>  
 
                     </div>
                     <div class="row  mt-2">
@@ -168,7 +183,9 @@
 
 
 <script>  
-   
+   $(document).ready(function () {
+    summaryCalculation();
+   });
     //  Detect Enter key in input fields
 
     $(document).on('change', '.item-dropdown-list', function(e){
@@ -201,6 +218,22 @@
         let qty = parseFloat($(this).val());
         $(this).val(qty.toFixed(4));   
     });
+
+    //Quantity Value on keyup sum the quantity
+    $(document).on('keyup', '.item-quantity', function(e){
+       
+       summaryCalculation();
+   });
+
+   function summaryCalculation()
+   {
+       let total_quantity = 0;
+       $('.item-quantity').each(function(){
+           total_quantity +=  parseFloat($(this).val()) || 0;
+       });
+
+       $('#total_quantity').val(total_quantity.toFixed(4));
+   }
 
     $('#btn-add-more').on('click', function(e){
         e.preventDefault();

@@ -84,7 +84,7 @@
                                 
                                 <div class="col-md-3">
                                     <div class="mb-3">
-                                        <label class="form-label">Receipt No</label>
+                                        <label class="form-label">Order No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-receipt"></span> </div>
                                             <input type="text" name="invoice_no" id="invoice_no" class="form-control" value="{{ $newInvoiceNo }}" readonly>
@@ -119,17 +119,17 @@
                                 <table id="table" class="table table-border" style="border-collapse:collapse;">
                                     <thead>
                                         <tr>
-                                            <th class="text-center" width="50"></th>
-                                            <th class="text-center" width="150">Item</th> 
-                                            <th class="text-center" width="150">Unit</th> 
-                                            <th class="text-center" width="150">Unit Weight</th> 
-                                            <th class="text-center" width="150">Qty</th> 
-                                            <th class="text-center" width="150">Total Weight</th> 
-                                            <th class="text-center" width="150">Unit Price</th> 
-                                            <th class="text-center" width="150">Total Price</th> 
+                                            <th  width="50"  class="text-center" ></th>
+                                            <th  width="200"  class="text-center">Item</th> 
+                                            <th  width="50"  class="d-none">Unit</th> 
+                                            <th  width="50"  class="text-center">Unit Weight</th> 
+                                            <th  width="50"  class="text-center">Qty</th> 
+                                            <th  width="50"  class="text-center">Total Weight</th> 
+                                            <th  width="50"  class="d-none">Unit Price</th> 
+                                            <th  width="50"  class="d-none">Total Price</th> 
                                             
                                 
-                                            <th class="text-center" width="50"></th>
+                                            <th  width="50" class="text-center" ></th>
                                         
                                         </tr>
                                     </thead>
@@ -150,20 +150,15 @@
                                 
                                 <div class="col-md-4 d-flex align-items-center">
                                     <table id="summary-table" class="table">
-                                        <tr>
+                                        <tr class="d-none">
                                             <th width="50%">Sub Total</th>
                                             <td width="50%">
                                                 <input type="number" name="sub_total" id="sub-total" value="0" class="form-control text-end" readonly>
                                             </td>
                                         </tr>  
-                                        <tr>
-                                            <th>Freight </th>
-                                            <td>
-                                                <input type="number" name="shipping" class="form-control text-end"  autocomplete="off">
-                                            </td>
-                                        </tr>
+                                       
 
-                                        <tr class="">
+                                        <tr class="d-none">
                                             <th width="50%">Grand Total</th>
                                             <td width="50%">
                                                 <input type="number" name="grand_total" id="grand-total" value="0" class="form-control text-end" readonly>
@@ -340,7 +335,7 @@
                 </select>
 
             </td> 
-            <td> 
+            <td class="d-none"> 
                 <select name="unit_id[]"  class="form-control select2 item-unit-dropdown" style="width:100%">                                                
                     <option>Choose...</option>
                     @foreach ($units as $unit)
@@ -358,10 +353,10 @@
             <td>
                 <input type="number" name="net_weight[]" step="0.0001" class="form-control item-net-weight" readonly>  
             </td>
-            <td>
+            <td class="d-none">
                 <input type="number" name="per_unit_price[]" step="0.0001" class="form-control item-per-unit-price">  
             </td>
-            <td>
+            <td class="d-none">
                 <input type="number" name="total_price[]" step="0.0001" class="form-control item-total-price" readonly>  
             </td>
             

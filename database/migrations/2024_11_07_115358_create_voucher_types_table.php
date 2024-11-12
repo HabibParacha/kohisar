@@ -13,12 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('expenses', function (Blueprint $table) {
+        Schema::create('voucher_types', function (Blueprint $table) {
             $table->id();
-
-            
+            $table->string('code')->nullable();
+            $table->string('name')->nullable();
             $table->timestamps();
         });
+        Artisan::call('db:seed', [
+            '--class' => VoucherTypeSeeder::class
+        ]);
+
+
     }
 
     /**
@@ -28,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('expenses');
+        Schema::dropIfExists('voucher_types');
     }
 };

@@ -42,6 +42,10 @@ return new class extends Migration
             $table->string('tax_type')->nullable();
             $table->decimal('tax_rate', 5, 2)->nullable();
             $table->decimal('grand_total', 14, 2)->nullable();
+            $table->decimal('production_qty', 15, 2)->nullable()->comment('in kgs');
+            $table->decimal('output_qty', 15, 2)->nullable()->comment('in kgs');
+            $table->decimal('surplus_qty', 15, 2)->nullable()->comment('in kgs');
+
 
             $table->unsignedBigInteger('creator_id')->nullable();// who created the record
 
@@ -73,7 +77,9 @@ return new class extends Migration
             $table->decimal('per_package_weight',15,2)->nullable();
             $table->decimal('total_package_weight',15,2)->nullable();
             $table->decimal('net_weight',15,2)->nullable();
+            $table->integer('is_surplus')->nullable()->default(0);
 
+            
             $table->decimal('per_unit_price',15,2)->nullable();
             $table->decimal('per_unit_price_old_value',15,2)->nullable();// to detect change
             $table->decimal('per_unit_price_new_value',15,2)->nullable();// to detect change

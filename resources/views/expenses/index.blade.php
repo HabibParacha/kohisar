@@ -10,12 +10,12 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                            <h3 class="mb-sm-0 font-size-18">All Recipes</h3>
+                            <h3 class="mb-sm-0 font-size-18">All Expenses</h3>
 
                             <div class="page-title-right d-flex">
 
                                 <div class="page-btn">
-                                    <a href="{{ route('recipe.create') }}" class="btn btn-added btn-primary"><i class="me-2 bx bx-plus"></i>Recipe</a>
+                                    <a href="{{ route('expense.create') }}" class="btn btn-added btn-primary"><i class="me-2 mdi mdi-plus"></i>Expense</a>
                                 </div>  
                             </div>
 
@@ -24,7 +24,6 @@
                         </div>
                     </div>
                 </div>
-               
                 <div class="row">
                     <div class="col-12">
 
@@ -57,9 +56,14 @@
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Name</th>
-                                            <th>Description</th>
-                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Expense No</th>
+                                            <th>Supplier</th>
+                                            <th>Account</th>
+                                            <th>description</th>
+                                            <th>Total Before Tax </th>
+                                            <th>{{ __('tax.name') }}</th>
+                                            <th>Total After Tax </th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -74,15 +78,15 @@
     </div>
 
 
-     <!-- Delete Recipe -->
-        <div class="modal fade" id="delete-recipe">
+    <!-- Delete Expense -->
+        <div class="modal fade" id="delete-expense">
             <div class="modal-dialog custom-modal-two">
                 <div class="modal-content">
                     <div class="page-wrapper-new p-0">
                         <div class="content">
                             <div class="modal-header border-0 custom-modal-header">
                                 <div class="page-title">
-                                    <h4>Delete Recipe</h4>
+                                    <h4>Delete Expense</h4>
                                 </div>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                                     
@@ -90,11 +94,11 @@
                             </div>
                             
                                 <div class="modal-body custom-modal-body pt-3 pb-0">
-                                    <p class="text-center">Are you sure you want to delete this recipe?</p>
+                                    <p class="text-center">Are you sure you want to delete this expense?</p>
                                 </div>
                                 <div class="modal-footer-btn p-3 mt-2">
                                     <button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-submit shadow-sm btn-danger" id="submit-recipe-destroy">Delete</button>
+                                    <button type="button" class="btn btn-submit shadow-sm btn-danger" id="submit-expense-destroy">Delete</button>
                                 </div>
                                 
                         </div>
@@ -102,8 +106,8 @@
                 </div>
             </div>
         </div>
-     
-    <!-- /Delete Recipe -->
+    
+    <!-- /Delete Expense -->
 
 
  
@@ -130,37 +134,33 @@
             var table = $('#table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('recipe.index') }}",
+                ajax: "{{ route('expense.index') }}",
                 columns: [
                     { data: 'id' },
-                    { data: 'name' },
+                    { data: 'date' },
+                    { data: 'expense_no' },
+                    { data: 'party_name' },
+                    { data: 'COA_name' },
                     { data: 'description' },
-                    { 
-                        data: 'is_active',
-                        className: 'text-center', // This applies the text-center class to the entire column
-                        render: function(data,type,row){
-                            
-                            if(data == 1)
-                                return '<span class="badge bg-success font-size-12 text-center">Active</span>';
-                            else
-                                return '<span class="badge bg-danger font-size-12">Inactive</span>';
+                    { data: 'amount_exclusive_tax' },
+                    { data: 'calculated_tax_amount' },
+                    { data: 'amount_inclusive_tax' },
                     
-                        }
-                    
-                     },
                     { data: 'action', orderable: false, searchable: false },
                 ],
                 order: [[0, 'desc']],
             });
 
+          
+     
 
-            $('#submit-recipe-destroy').click(function() {
-                let recipe_id = $(this).data('id');
-                var submit_btn = $('#submit-recipe-destroy');
+            $('#submit-expense-destroy').click(function() {
+                let brand_id = $(this).data('id');
+                var submit_btn = $('#submit-expense-destroy');
 
                 $.ajax({
                     type: 'DELETE',
-                    url: "{{ route('recipe.destroy', ':id') }}".replace(':id', recipe_id), // Using route name
+                    url: "{{ route('expense.destroy', ':id') }}".replace(':id', brand_id), // Using route name
                     data: {
                         _token: "{{ csrf_token() }}" // Add CSRF token
                     },
@@ -170,10 +170,10 @@
                         },
                     success: function(response) {
                         
-                        submit_btn.prop('disabled', false).html('Delete Recipe');  
+                        submit_btn.prop('disabled', false).html('Delete Expense');  
 
                         if(response.success == true){
-                            $('#delete-recipe').modal('hide'); 
+                            $('#delete-expense').modal('hide'); 
                             table.ajax.reload();
                         
                             notyf.success({
@@ -188,7 +188,7 @@
                         }   
                     },
                     error: function(e) {
-                        submit_btn.prop('disabled', false).html('Delete Recipe');
+                        submit_btn.prop('disabled', false).html('Delete Expense');
                     
                         notyf.error({
                             message: e.responseJSON.message,
@@ -201,10 +201,24 @@
         });
 
         // Handle the delete button click
+       
 
-        function deleteRecipe(id) {
-            $('#submit-recipe-destroy').data('id', id);
-            $('#delete-recipe').modal('show');
+        function editBrand(id) {
+            $.get("{{ route('expense.edit', ':id') }}".replace(':id', id), function(response) {
+                $('#brand_id').val(response.id);
+                $('#edit_name').val(response.name);
+                $('#edit_is_active').val(response.is_active).trigger('change');              
+
+
+                $('#edit-expense').modal('show');
+            }).fail(function(xhr) {
+                alert('Error fetching expense details: ' + xhr.responseText);
+            });
+        }
+
+        function deleteBrand(id) {
+            $('#submit-expense-destroy').data('id', id);
+            $('#delete-expense').modal('show');
         }
 
     </script>
@@ -222,6 +236,9 @@
                 if (title == 'Action') {
                     $(this).hide();
                 }
+
+
+
 
 
                 $('input', this).on('keyup change', function() {
@@ -246,12 +263,12 @@
 @endsection
 
 {{-- 
-Recipes
+Brands
 
-recipe_id
+brand_id
 
 editBrand
 deleteBrand
-recipe
-Recipe 
+expense
+Expense 
 --}}

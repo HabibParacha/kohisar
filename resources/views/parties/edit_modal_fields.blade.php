@@ -4,9 +4,10 @@
             <div class="mb-3">
                 <label class="form-label">Party Type</label>
                 <select name="party_type" id="edit_party_type" class="form-control select2" style="width: 100%">
+                    <option value="">Choose...</option>
                     <option value="supplier">Supplier</option>
                     <option value="customer">Customer</option>
-                    <option value="both">Both (Supplier & Customer)</option>
+                    {{-- <option value="both">Both (Supplier & Customer)</option> --}}
                 </select>
             </div>
         </div>

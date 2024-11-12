@@ -31,18 +31,14 @@
     
     <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 
+    {{-- sortable --}}
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
 
 
-
-
-
-
-
-
-
+    
      <!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script> -->
     <!-- Responsive datatable examples -->
@@ -261,6 +257,23 @@
 
         <!-- END layout-wrapper -->
 
+                                            
+        <div id="appModal" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-top">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="appModalTitle"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="appModalDescription"></p>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+
+        
         <!-- start of footer -->
         @include('template.footer')
         <!-- end of footer -->
@@ -354,6 +367,9 @@
         <script src="{{URL('/')}}/assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
         <script src="{{URL('/')}}/assets/libs/chenfengyuan/datepicker/datepicker.min.js"></script>
   
+        {{-- sortable --}}
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
  
         <!-- toastr plugin -->
         <script src="{{URL('/')}}/assets/libs/toastr/build/toastr.min.js"></script>
@@ -366,14 +382,14 @@
 
            
 
-            function delete_confirm2(url, id) { 
-                url = '{{URL::TO('/')}}/'+url+'/'+ id;
-                jQuery('#staticBackdrop').modal('show', {
-                    backdrop: 'static'
-                });
-                document.getElementById('delete_link').setAttribute('href', url);
+            // function delete_confirm2(url, id) { 
+            //     url = '{{URL::TO('/')}}/'+url+'/'+ id';
+            //     jQuery('#staticBackdrop').modal('show', {
+            //         backdrop: 'static'
+            //     });
+            //     document.getElementById('delete_link').setAttribute('href', url);
 
-            }
+            // }
 
 
 

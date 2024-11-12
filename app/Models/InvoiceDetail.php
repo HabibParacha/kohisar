@@ -28,6 +28,7 @@ class InvoiceDetail extends Model
         'per_package_weight',
         'total_package_weight',
         'net_weight',
+        'is_surplus',
 
         'per_unit_price',
         'per_unit_price_old_value',

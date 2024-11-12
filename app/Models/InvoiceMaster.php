@@ -41,6 +41,11 @@ class InvoiceMaster extends Model
         'tax_type',
         'tax_rate',
         'grand_total',
+
+        'production_qty',
+        'output_qty',
+        'surplus_qty',
+        
         'description',
         'attachment',
         'creator_id'
@@ -56,6 +61,13 @@ class InvoiceMaster extends Model
         return $this->hasMany(InvoiceDetail::class);
     }
 
+    public function productionDetails(){
+        return $this->hasMany(InvoiceDetail::class)->where('type','production');
+    }
+    public function outputDetails(){
+        return $this->hasMany(InvoiceDetail::class)->where('type','output');
+    }
+   
     public function recipe()
     {
         return $this->belongsTo(Recipe::class);
@@ -71,6 +83,8 @@ class InvoiceMaster extends Model
     {
         return $this->belongsTo(PartyWarehouse::class);
     }
+
+    
 
 
 

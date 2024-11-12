@@ -91,7 +91,7 @@
                                         <tr>
                                             <th class="text-center" width="50"></th>
                                             <th class="text-center" width="200">Material Name</th> 
-                                            <th class="text-center" width="150">Unit</th> 
+                                            <th class="d-none" width="150">Unit</th> 
                                             <th class="text-center" width="100">QTY</th> 
                                             <th class="text-center" width="50"></th>
                                         
@@ -101,10 +101,26 @@
                                         
                                        
                                     </tbody> 
+                                    
                                 </table>
 
                                 <button id="btn-add-more" class="btn btn-primary"><span class="bx bx-plus"></span> Add More</button>
                             </div> 
+                            <div class="row mt-3">
+                                <div class="col-md-8">
+                                </div>
+                                
+                                <div class="col-md-4 d-flex align-items-center">
+                                    <table id="summary-table" class="table">
+                                        <tr>
+                                            <th width="50%">Total Quantity KG's </th>
+                                            <td width="50%">
+                                                <input type="number" name="total_quantity" id="total_quantity" value="0" class="form-control text-end" readonly>
+                                            </td>
+                                        </tr>      
+                                    </table>
+                                </div>
+                            </div>  
                            
 
                           
@@ -162,6 +178,30 @@
 
     });
 
+    
+    //Quantity Value on blur make it upto four decimal 
+    $(document).on('blur','.item-quantity', function(e){
+        e.preventDefault(); // Prevent the default behavior (form submission)
+        let qty = parseFloat($(this).val());
+        $(this).val(qty.toFixed(4));   
+    });
+
+    //Quantity Value on keyup sum the quantity
+    $(document).on('keyup', '.item-quantity', function(e){
+       
+        summaryCalculation();
+    });
+
+    function summaryCalculation()
+    {
+        let total_quantity = 0;
+        $('.item-quantity').each(function(){
+            total_quantity +=  parseFloat($(this).val()) || 0;
+        });
+
+        $('#total_quantity').val(total_quantity.toFixed(4));
+    }
+
 
     $('#recipe-store').on('keydown', function(e) {
         if (e.key === 'Enter') {
@@ -169,12 +209,6 @@
         }
     });
 
-    //Quantity Value on blur make it upto four decimal 
-    $(document).on('blur','.item-quantity', function(e){
-        e.preventDefault(); // Prevent the default behavior (form submission)
-        let qty = parseFloat($(this).val());
-        $(this).val(qty.toFixed(4));   
-    });
 
 
     $('#btn-add-more').on('click', function(e){
@@ -216,7 +250,7 @@
                 </select>
                 
             </td> 
-            <td> 
+            <td class="d-none"> 
                 <select name="unit_id[]"  class="form-control select2 unit-dropdown-list" style="width:100%">                                                
                     <option>Choose...</option>
                     @foreach ($units as $unit)

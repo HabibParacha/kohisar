@@ -13,8 +13,8 @@
 
 
                     @foreach ($accounts as $level_1)
-                        <div class="card shadow-sm">
-                            <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                    <div class="card shadow-sm" style="border-top: 2px solid rgb({{ ($level_1->id * 25) % 256 }}, {{ ($level_1->id * 60) % 256 }}, {{ ($level_1->id * 90) % 256 }});">
+                        <h5 class="card-header bg-transparent border-bottom text-uppercase">
                                 <strong>{{ $level_1->account_name }}</strong> ({{ $level_1->account_code }})</h5>
                             <div class="card-body">
                                 <table id="table" class="table table-striped table-sm " style="width:100%">

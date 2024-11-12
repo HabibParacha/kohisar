@@ -92,7 +92,7 @@
 
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label class="form-label">Warehouse</label>
+                                                <label class="form-label">Farm / Warehouse</label>
                                                 <div class="input-group">
                                                     <select name="party_warehouse_id" id="" class="form-control select2" style="width:100%">
                                                         <option value="">Choose...</option>
@@ -155,7 +155,7 @@
                                         
                                         <div class="col-md-12">
                                             <div class="mb-3">
-                                                <label class="form-label">Receipt No</label>
+                                                <label class="form-label">Sale Order No</label>
                                                 <div class="input-group">
                                                     <div class="input-group-text"><span class="bx bx-receipt"></span> </div>
                                                     <input type="text" class="form-control" value="{{ $saleOrder->invoice_no }}" readonly>
@@ -190,14 +190,20 @@
                                 <table id="table" class="table table-border" style="border-collapse:collapse;">
                                     <thead>
                                         <tr>
-                                            <th class="text-center" width="50"></th>
-                                            <th class="text-center" width="150">Item</th> 
-                                            <th class="text-center" width="150">Unit</th> 
-                                            <th class="text-center" width="150">Unit Weight</th> 
-                                            <th class="text-center" width="150">Qty</th> 
-                                            <th class="text-center" width="150">Total Weight</th> 
-                                            <th class="text-center" width="150">Unit Price</th> 
-                                            <th class="text-center" width="150">Total Price</th> 
+                                            <th  width="10" class="text-start" ></th>
+                                            <th  width="200" class="text-start" >Item</th> 
+                                            <th  width="50" class="d-none">Unit</th> 
+                                            <th  width="50" class="text-center">Unit wgt.</th> 
+                                            <th  width="50" class="text-center">Qty</th> 
+                                            <th  width="100" class="text-center">Total  wgt.</th> 
+                                            <th  width="50" class="text-center">Unit Price</th> 
+                                            <th  width="100" class="text-center">Total Price  </th> 
+
+                                            <th  width="50" class="text-center">Discount Price </th>
+                                            <th  width="100" class="text-center">Discount Amount</th>
+                                            <th  width="100" class="text-center">Total After Discount</th>
+                                
+                                            <th class="text-center" width="20"></th>
                                             
                                 
                                         
@@ -213,22 +219,39 @@
                                             <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
                                 
                                             <td>{{ $detail->item->name }}</td> 
-                                            <td> {{ $detail->item->unit->base_unit }}</td> 
+                                            <td class="d-none" > {{ $detail->item->unit->base_unit }}</td> 
                                             <td>
                                                 <input type="number" name="unit_weight[]"  value="{{ $detail->unit_weight }}" step="0.0001" class="form-control item-unit-weight" readonly>  
                                             </td>
-                                            <td>
-                                                <input type="number" name="total_quantity[]"  step="0.0001" class="form-control item-total-quantity">  
+                                            <td class="text-end">
+                                                <input type="number" name="total_quantity[]" step="0.0001" class=" text-end form-control item-total-quantity" >  
                                             </td>
-                                            <td>
-                                                <input type="number" name="net_weight[]"   step="0.0001" class="form-control item-net-weight" readonly>  
+                                            <td class="text-end">
+                                                <input type="number" name="net_weight[]" step="0.0001" class=" text-end form-control item-net-weight" readonly>  
                                             </td>
-                                            <td>
-                                                <input type="number" name="per_unit_price[]"  step="0.01" class="form-control item-per-unit-price"  autocomplete="off">  
+                                            <td class="text-end">
+                                                <input type="number" name="per_unit_price[]" step="0.0001" class=" text-end form-control item-per-unit-price">  
+                                            </td>
+                                            <td class="text-end">
+                                                <input type="number" name="total_price[]" step="0.0001" class=" text-end form-control item-total-price" readonly>  
+                                            </td>
 
+                                            <td class="text-end">
+                                                <input type="number" name="discount_unit_price[]" value="0" step="0.01" class=" text-end form-control item-discount-unit-price" >
                                             </td>
-                                            <td>
-                                                <input type="number" name="total_price[]"  step="0.0001" class="form-control item-total-price" readonly>  
+                                           
+                                            
+                                            <td class="text-end">
+                                                <input type="number" name="discount_amount[]" value="0" step="0.01" class=" text-end form-control item-discount-amount" readonly>
+                                            </td>
+                                            <td class="text-end"> 
+                                                <input type="number" name="after_discount_total_price[]" class=" text-end form-control item-after-discount" readonly>  
+                                            </td>
+                                            
+                                            
+                                            
+                                            <td class="text-center">  
+                                                <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
                                             </td>
                                         </tr>
                                     @endforeach 
@@ -246,32 +269,30 @@
                                 
                                 <div class="col-md-4 d-flex align-items-center">
                                     <table id="summary-table" class="table">
-                                        <tr>
+                                        <tr class="">
                                             <th width="50%">Sub Total</th>
                                             <td width="50%">
                                                 <input type="number" name="sub_total" id="sub-total" value="0" class="form-control text-end" readonly>
                                             </td>
                                         </tr>  
-                                        {{-- <tr>
+                                        <tr class="">
                                             <th>Freight </th>
                                             <td>
                                                 <input type="number" name="shipping" class="form-control text-end"  autocomplete="off">
                                             </td>
-                                        </tr> --}}
+                                        </tr>
 
-                                        
+                                        <tr>
+                                            <th>Discount</th>
+                                            <td>
+                                                <input type="number" name="discount_total" id="discount-total" value="0" class="form-control text-end" readonly>
+                                            </td>
+                                        </tr>
 
                                         <tr class="">
                                             <th width="50%">Grand Total</th>
                                             <td width="50%">
                                                 <input type="number" name="grand_total" id="grand-total" value="0" class="form-control text-end" readonly>
-                                            </td>
-                                        </tr>  
-
-                                        <tr class="">
-                                            <th width="50%">Total Weight KG's</th>
-                                            <td width="50%">
-                                                <input type="number" name="total_net_weight" id="total-net-weight" value="0" class="form-control text-end" readonly>
                                             </td>
                                         </tr>  
                             
@@ -356,8 +377,8 @@
         calculation(row);  
     });
 
-      //input: quantity, unit price
-    $(document).on('keyup','.item-total-quantity, .item-per-unit-price',function(){
+  
+   $(document).on('keyup','.item-total-quantity, .item-per-unit-price, .item-discount-unit-price',function(){
         let row = $(this).closest('tr');
 
         calculation(row);  
@@ -382,15 +403,43 @@
 
         //Amount: end    
 
+
+        // Discount Calculation: start
+        let discount_unit_price = parseFloat(row.find('.item-discount-unit-price').val()) || 0;
+
+        let after_discount = 0;
+        let discount_amount = 0;
+
+
+        if(discount_unit_price > 0 && discount_unit_price < per_unit_price)
+        {
+            after_discount = quantity * discount_unit_price;
+            discount_amount = total_price-after_discount;
+
+        }else{
+            after_discount = total_price;
+            discount_amount = 0;
+        }
+        if(discount_unit_price > per_unit_price)
+        {
+            alert('Wrong input: discount unit price cannot be greater than the original unit price.');
+        }
+
+        row.find('.item-discount-amount').val(discount_amount.toFixed(2));
+        row.find('.item-after-discount').val(after_discount.toFixed(2));
+
+        // Discount Calculation: end
+
         summaryCalculation();
 
-        }
+    }
 
     function summaryCalculation()
     {
         let sub_total = 0;
         let grand_total = 0;
-        let total_net_weight = 0;
+        let discount_total = 0;
+        let discount_grand_total =0;
 
         $('.item-total-price').each(function(){
             let item_total_price = parseFloat($(this).val()) || 0;
@@ -398,20 +447,21 @@
         });
         $('#sub-total').val(sub_total.toFixed(2));
 
-
-        grand_total = sub_total;
+        $('.item-after-discount').each(function(){
+            let item_discount_value = parseFloat($(this).val()) || 0;
+            grand_total+= item_discount_value;
+        });
         $('#grand-total').val(grand_total.toFixed(2));
 
-        
-        $('.item-net-weight').each(function(){
-            let item_net_weight = parseFloat($(this).val()) || 0;
-            total_net_weight+= item_net_weight;
-        });
-        $('#total-net-weight').val(total_net_weight.toFixed(2));
+
+        discount_grand_total = sub_total-grand_total;
+        if(discount_grand_total > 0){
+            $('#discount-total').val(discount_grand_total.toFixed(2));
+        }
 
 
-        
- 
+
+
     }
 
     $('#btn-add-more').on('click', function(e){
