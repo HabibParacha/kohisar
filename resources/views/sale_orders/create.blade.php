@@ -74,9 +74,11 @@
                                         <select name="saleman_id"  id="saleman_id" class="select2 form-control" >                                                
                                             <option value="">Choose...</option>
                                             @foreach ($userSalemen as $saleman)
-                                                <option value="{{$saleman->id}}">
-                                                    {{ $saleman->id .'-'.$saleman->name }}
-                                                </option>
+                                                <option 
+                                                @if(Auth::user()->id == $saleman->id)
+                                                    selected
+                                                @endif
+                                                value="{{$saleman->id}}">{{ $saleman->id .'-'.$saleman->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>                                        

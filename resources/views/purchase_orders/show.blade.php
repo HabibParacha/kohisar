@@ -34,6 +34,10 @@
                                 <td>{{ $invoice_master->vehicle_no }}</td>
                                 
                             </tr>
+                            <tr>
+                                <th>Reference No</th>
+                                <td>{{  $invoice_master->reference_no }}</td>
+                            </tr>
                           
                         </table>
                        </div>
@@ -101,20 +105,34 @@
                                             If new fields are added during record editing, the old value will be null.
                                         --}}
                                         <td class="text-end"> 
-                                            @if($detail->per_unit_price_old_value != null)
 
-                                                @if($detail->per_unit_price_old_value != $detail->per_unit_price_new_value)
-                                                
-                                                    <span class="text-danger text-decoration-line-through" >{{ $detail->per_unit_price_old_value }}</span>  
-                                                    {{ $detail->per_unit_price }}
-                                                
-                                                @else
-                                                    {{ $detail->per_unit_price }}
-                                                @endif    
+                                            @php
+                                                $current = $detail->per_unit_price;
+                                                $old = $detail->per_unit_price_old_value;
+                                                $new = $detail->per_unit_price_new_value;
+                                            @endphp
 
-                                            @else
+                                            {{-- 
+                                            
+                                                Create : new will be null
+                                                update the price: will add value in new column and old will be retain in old column
+                                                add new item in edit: old will be null
+                                            --}}
+
+                                            @if($new == NULL)
+                                                {{ $detail->per_unit_price }}
+                                            
+                                            @elseif($old == NULL)
                                                 <span class="text-warning" >{{ $detail->per_unit_price }}</span> 
+                                            
+                                            @elseif($old != $new)
+                                                <span class="text-danger text-decoration-line-through" >{{ $detail->per_unit_price_old_value }}</span>  
+                                                {{ $detail->per_unit_price }}
+                                            @else    
+                                            {{ $detail->per_unit_price }}
+
                                             @endif
+                                            
                                         </td>
 
 

@@ -13,6 +13,7 @@ use App\Models\InvoiceMaster;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,13 +27,26 @@ class SaleOrderController extends Controller
     public function index(Request $request)
     {
 
-      
+        $userSalemen = User::where('type','saleman')
+        ->when(Auth::user()->type == "saleman", function($userSalemen){
+            return $userSalemen->where('id',Auth::user()->id);
+        })
+        ->get();
       
         try{
             if ($request->ajax()) {
-                $data = InvoiceMaster::where('type','sale_order')
-                ->orderBy('id','desc')
-                ->orderBy('date','desc')
+                $data = InvoiceMaster::where('type', 'sale_order')
+                ->when(Auth::user()->type == "saleman", function ($query) {
+                    return $query->where('saleman_id', Auth::user()->id);
+                })
+                ->when($request->start_date && $request->end_date, function ($query) use ($request) {
+                    return $query->whereBetween('date', [$request->start_date, $request->end_date]);
+                })
+                ->when($request->has('saleman_id') && $request->saleman_id != NULL, function ($query) use ($request) {
+                    return $query->where('saleman_id', $request->saleman_id);
+                })
+                ->orderBy('id', 'desc')
+                ->orderBy('date', 'desc')
                 ->get();
     
                 return Datatables::of($data)
@@ -57,28 +71,35 @@ class SaleOrderController extends Controller
                                     <a class="action-set show" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="true">
                                         <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
                                     </a>
-                                    <ul class="dropdown-menu dropdown-menu-end">
+                                    <ul class="dropdown-menu dropdown-menu-end">';
+                                       
+                                       if(Auth::user()->type == "admin")
+                                       {
+                                        $btn .='   
+                                            <li>
+                                                <a href="'. route('sale-invoice.createFromSaleOrder', $row->id).'" class="dropdown-item">
+                                                    <i class="bx bx-plus font-size-16 text-secondary me-1"></i> Sale Invoice
+                                                </a>
+                                            </li> 
+                                            ';
+                                       }
+                                       $btn .='
+                                            <li>
+                                                <a href="'.route('sale-order.show',$row->id) .'"  class="dropdown-item">
+                                                    <i class="bx bx-show font-size-16 text-primary me-1"></i> View
+                                                </a>
+                                            </li>
+                                            ';
                                        
                                        
-                                        <li>
-                                            <a href="'. route('sale-invoice.createFromSaleOrder', $row->id).'" class="dropdown-item">
-                                                <i class="bx bx-plus font-size-16 text-secondary me-1"></i> Sale Invoice
-                                            </a>
-                                        </li>
                                        
-                                       
-                                       
-                                    </ul>
+                                    '</ul>
                                 </div>
                             </div>';
     
                    
                     return $btn;
-                    // <li>
-                    //     <a href="'.route('sale-order.show',$row->id) .'"  class="dropdown-item">
-                    //         <i class="bx bx-show font-size-16 text-primary me-1"></i> View
-                    //     </a>
-                    // </li>
+                    
                     // <li>
                     //     <a href="'. route('sale-order.edit', $row->id).'" class="dropdown-item">
                     //         <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
@@ -96,7 +117,7 @@ class SaleOrderController extends Controller
                     ->make(true);
             }
     
-            return view('sale_orders.index');
+            return view('sale_orders.index', compact('userSalemen'));
 
         }catch (\Exception $e){
             dd($e);
@@ -112,7 +133,13 @@ class SaleOrderController extends Controller
     public function create()
     {
         $partyCustomers = Party::whereIn('party_type',['customer','both'])->get();
-        $userSalemen = User::where('type','saleman')->get();
+        
+        $userSalemen = User::where('type','saleman')
+        ->when(Auth::user()->type == "saleman", function($userSalemen){
+            return $userSalemen->where('id',Auth::user()->id);
+        })
+        ->get();
+        
         $newInvoiceNo = InvoiceMaster::generateInvoiceNo('SO','sale_order');
         $itemGoods = Item::where('type','good')->get();
         $units = Unit::all();
@@ -238,7 +265,13 @@ class SaleOrderController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            
+            $saleOrder = InvoiceMaster::with('invoiceDetails')->find($id);
+            return view('sale_orders.show', compact('saleOrder'));
+        } catch (\Exception $e) {
+            //throw $th;
+        }
     }
 
     /**

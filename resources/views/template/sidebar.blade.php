@@ -1,4 +1,4 @@
-<div class="vertical-menu">
+{{-- <div class="vertical-menu">
     <div data-simplebar class="h-100">
         <!--- Sidemenu -->
         <div id="sidebar-menu">
@@ -15,16 +15,18 @@
                 </li>
                 <li class="">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
-                        <i class="bx bx-cog"></i>
-                        <span key="t-ecommerce">Accounting</span>
+                        <i class="mdi mdi-finance"></i>
+                        <span key="t-ecommerce">Account</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                       
-                        <li> <a href="{{ route('voucher.create','CP') }}" key="t-products">Cash payemnt</a></li>
+                        <li> <a href="{{ route('voucher.index') }}" key="t-products">Voucher</a></li>
+                        <li> <a href="{{ route('expense.index') }}" key="t-products">Expense</a></li>
                        
 
                     </ul>
                 </li>
+              
                 <li>
                     <a href="{{route('purchase-order.index')}}" class="waves-effect">
                         <i class=" bx bx-receipt mb-0"></i>
@@ -55,12 +57,7 @@
                         <span key="t-dashboards"> Sale Invoice</span>
                     </a>
                 </li>
-                <li>
-                    <a href="{{route('expense.index')}}" class="waves-effect">
-                        <i class="fas fa-money-check-alt mb-0"></i>
-                        <span key="t-dashboards"> Expense</span>
-                    </a>
-                </li>
+                
                 <li>
                     <a href="{{route('party-index','supplier')}}" class="waves-effect">
                         <i class=" bx bxs-user mb-0"></i>
@@ -80,6 +77,19 @@
                     </a>
                 </li>
               
+                <li class="">
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="bx bx-file"></i>
+                        <span key="t-ecommerce">Reports</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                      
+                        <li> <a href="{{ route('report.fetchRawMaterailStock') }}" key="t-products">Raw Material Stock</a></li>
+                        <li> <a href="{{ route('report.fetchFinishedGoodsStock') }}" key="t-products">Finshed Good Stock</a></li>
+                        
+
+                    </ul>
+                </li>
                 <li class="">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="bx bx-cog"></i>
@@ -106,13 +116,17 @@
                         <li> <a href="{{ route('user.index') }}" key="t-products">Users</a></li>
                         <li> <a href="{{ route('warehouse.index') }}" key="t-products">Warehouses</a></li>
                         <li> <a href="{{ route('tax.index') }}" key="t-products">Taxes</a></li>
-
-
+                    </ul>
+                </li>
+                <li class="">
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="bx bx-cog"></i>
+                        <span key="t-ecommerce">Opeining Balance</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                      
+                        <li> <a href="{{ route('opening-balance.finished-goods-stock.create') }}" key="t-products">Finished Goods Stock</a></li>
                        
-                    
-                       
-
-
                     </ul>
                 </li>
              
@@ -130,4 +144,4 @@
         </div>
         <!-- Sidebar -->
     </div>
-</div>
+</div> --}}

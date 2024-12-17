@@ -15,6 +15,7 @@ use App\Models\PartyWarehouse;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\ItemController;
 use Illuminate\Support\Facades\Validator;
@@ -29,7 +30,6 @@ class SaleInvoiceController extends Controller
     public function index(Request $request)
     {
 
-      
       
         try{
             if ($request->ajax()) {
@@ -108,7 +108,9 @@ class SaleInvoiceController extends Controller
         $partyCustomers = Party::whereIn('party_type',['customer','both'])->get();
         $userSalemen = User::where('type','saleman')->get();
         $newInvoiceNo = InvoiceMaster::generateInvoiceNo('INV','invoice');
-        $itemGoods = Item::where('type','good')->get();
+        // $itemGoods = Item::where('type','good')->get();
+        $itemGoods = DB::table('v_finished_goods_stock_report')->get();
+
         $units = Unit::all();
         return view('sale_invoices.create', compact('partyCustomers','newInvoiceNo','userSalemen','itemGoods','units'));
     }
@@ -125,9 +127,10 @@ class SaleInvoiceController extends Controller
         $saleOrder = InvoiceMaster::with('invoiceDetails')->find($id);
         $newInvoiceNo = InvoiceMaster::generateInvoiceNo('INV','invoice');
         $partyWarehouses = PartyWarehouse::where('party_id',$saleOrder->party_id)->get();
+        $itemGoods = DB::table('v_finished_goods_stock_report')->get();
 
 
-        return view('sale_invoices.create_from_sale_order', compact('saleOrder','partyWarehouses','newInvoiceNo'));
+        return view('sale_invoices.create_from_sale_order', compact('saleOrder','partyWarehouses','newInvoiceNo','itemGoods'));
     }
    
 
@@ -171,20 +174,37 @@ class SaleInvoiceController extends Controller
 
 
           $invoice_master = [
-              'date' => $request->input('date'),
-              'invoice_no' => $newInvoiceNo,
-              'type' => 'invoice',
-              'party_id' => $request->input('party_id'),
-              'saleman_id' => $request->input('saleman_id'),
-              'party_warehouse_id' => $request->input('party_warehouse_id'),
-              'reference_no' => $request->input('reference_no'),
-              'vehicle_no' => $request->input('vehicle_no'),
-              'sub_total' => $request->input('sub_total'),
-            //   'discount_type' => 'item rate'
+                'date' => $request->input('date'),
+                'invoice_no' => $newInvoiceNo,
+                'type' => 'invoice',
+                'party_id' => $request->input('party_id'),
+                'saleman_id' => $request->input('saleman_id'),
+                'party_warehouse_id' => $request->input('party_warehouse_id'),
+                'reference_no' => $request->input('reference_no'),
+                'vehicle_no' => $request->input('vehicle_no'),
+                'sub_total' => $request->input('sub_total'),
+                // 'discount_type' =>'on rate',
+                // 'discount_value',
+                'discount_amount' =>  $request->input('discount_total'),
+                
+                'tax_rate' => $request->input('gst_rate'),
+                'tax_amount' => $request->input('gst_amount'),
+                
+                'wth_tax_rate' => $request->input('wth_rate'),
+                'wth_tax_amount' => $request->input('wth_amount'),
+                
+                'commission_rate' => $request->input('commission_rate'),
+                'commission_amount' => $request->input('commission_amount'),
+                
+                'shipping_type' => $request->input('freight_type'),
+                'shipping' => $request->input('shipping'),
+                
+                'grand_total' => $request->input('grand_total'),
             
-              'shipping' => $request->input('shipping'),
-              'grand_total' => $request->input('grand_total'),
-              'description' => $request->input('description'),
+            
+                'description' => $request->input('description'),
+
+                'created_by' => Auth::user()->id,
           ];
 
           
@@ -208,7 +228,7 @@ class SaleInvoiceController extends Controller
                   'invoice_master_id' => $invoice_master_id,
                   'date' => $request->input('date'),
                   'invoice_no' => $newInvoiceNo,
-                  'type' => 'sale_order',
+                  'type' => 'invoice',
                   'item_id' => $request->item_id[$i],
                   'unit_weight' => $request->unit_weight[$i],
                   'total_quantity' => $request->total_quantity[$i],
@@ -230,6 +250,157 @@ class SaleInvoiceController extends Controller
               DB::table('invoice_detail')->insertGetId($invoice_detail);
 
          }
+
+         $narrationAR = 'AR @ ' . $newInvoiceNo . ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2);
+         $narrationWTH = 'WTH Tax @ ' . $newInvoiceNo . ' amount Rs: ' . number_format($request->input('wth_amount') ?? 0, 2).' ('.$request->input('wth_rate').')%';
+         $narrationGST = 'GST Tax @ ' . $newInvoiceNo . ' amount Rs: ' . number_format($request->input('gst_amount') ?? 0, 2).' ('.$request->input('gst_rate').')%';
+         $narrationCOMM = 'Commission @ ' . $newInvoiceNo . ' amount Rs: ' . number_format($request->input('commission_amount') ?? 0, 2).' ('.$request->input('commission_rate').')%';
+         $narrationShipping = 'Shipping @ ' . $newInvoiceNo . ' amount Rs: ' . number_format($request->input('shipping') ?? 0, 2);
+         $narrationInventory = 'Inventory @ ' . $newInvoiceNo . ' amount Rs: ' . number_format($request->input('inventory') ?? 0, 2);
+
+
+
+        $journalDebit = [
+            'date' => $request->input('date'),
+            'voucher_no' => $newInvoiceNo,
+            'type' => 'sale_order',
+            
+            'chart_of_account_id' => env('AR'),
+            'narration' => $narrationAR,
+            
+            'customer_id' => $request->input('party_id'),
+            'invoice_master_id' => $invoice_master_id,
+            
+            'debit' => $request->input('grand_total'),
+            'trace' => '',
+            'created_by' => Auth::user()->id,
+            'created_at' => now(),
+        ];
+        
+        DB::table('journals')->insert($journalDebit); 
+
+
+        // $journalCredit_discount = [
+        //     'date' => $request->input('date'),
+        //     'voucher_no' => $newInvoiceNo,
+        //     'type' => 'sale_order',
+            
+        //     'chart_of_account_id' => '',
+        //     'narration' => '',
+            
+        //     'customer_id' => $request->input('party_id'),
+        //     'invoice_master_id' => $invoice_master_id,
+            
+        //     'credit' => $request->input('discount_total'),
+        //     'trace' => '',
+        //     'created_by' => Auth::user()->id,
+        //     'created_at' => now(),
+        // ];
+        // DB::table('journals')->insert($journalCredit_discount); 
+
+        //wth: withholding tax
+        $journalCredit_wth_tax = [
+            'date' => $request->input('date'),
+            'voucher_no' => $newInvoiceNo,
+            'type' => 'sale_order',
+            
+            'chart_of_account_id' => env("SALE_TAX"),
+            'narration' => $narrationWTH,
+            
+            'customer_id' => $request->input('party_id'),
+            'invoice_master_id' => $invoice_master_id,
+            
+            'credit' => $request->input('wth_amount'),
+            'trace' => '',
+            'created_by' => Auth::user()->id,
+            'created_at' => now(),
+        ];
+        DB::table('journals')->insert($journalCredit_wth_tax); 
+
+
+        $journalCredit_gst_tax = [
+            'date' => $request->input('date'),
+            'voucher_no' => $newInvoiceNo,
+            'type' => 'sale_order',
+            
+            'chart_of_account_id' => env("GST_TAX"),
+            'narration' => $narrationGST,
+            
+            'customer_id' => $request->input('party_id'),
+            'invoice_master_id' => $invoice_master_id,
+            
+            'credit' => $request->input('gst_amount'),
+            'trace' => '',
+            'created_by' => Auth::user()->id,
+            'created_at' => now(),
+        ];
+        DB::table('journals')->insert($journalCredit_gst_tax); 
+
+       if($request->input('commission_amount') > 0)
+       {
+        $journalCredit_commission = [
+            'date' => $request->input('date'),
+            'voucher_no' => $newInvoiceNo,
+            'type' => 'sale_order',
+            
+            'chart_of_account_id' => env('COMMISSION'),
+            'narration' => $narrationCOMM,
+            
+            'customer_id' => $request->input('party_id'),
+            'invoice_master_id' => $invoice_master_id,
+            
+            'credit' => $request->input('commission_amount'),
+            'trace' => '',
+            'created_by' => Auth::user()->id,
+            'created_at' => now(),
+        ];
+        DB::table('journals')->insert($journalCredit_commission); 
+       }
+
+        if($request->input('freight_type') == 'inclusive')
+        {
+            $journalCredit_shipping = [
+                'date' => $request->input('date'),
+                'voucher_no' => $newInvoiceNo,
+                'type' => 'sale_order',
+                
+                'chart_of_account_id' => env("SHIPPING"),
+                'narration' => $narrationShipping,
+                
+                'customer_id' => $request->input('party_id'),
+                'invoice_master_id' => $invoice_master_id,
+                
+                'credit' => $request->input('shipping'),
+                'trace' => '',
+                'created_by' => Auth::user()->id,
+                'created_at' => now(),
+            ];
+    
+    
+            DB::table('journals')->insert($journalCredit_shipping); 
+
+        }
+         
+
+        $journalCredit_inventory = [
+            'date' => $request->input('date'),
+            'voucher_no' => $newInvoiceNo,
+            'type' => 'sale_order',
+            
+            'chart_of_account_id' => env('FINISHED_GOOD'),
+            'narration' => $narrationInventory,
+            
+            'customer_id' => $request->input('party_id'),
+            'invoice_master_id' => $invoice_master_id,
+            
+            'credit' => $request->input('inventory'),
+            'trace' => '',
+            'created_by' => Auth::user()->id,
+            'created_at' => now(),
+        ];
+        DB::table('journals')->insert($journalCredit_inventory); 
+
+
 
           DB::commit();// Commit the transaction
 

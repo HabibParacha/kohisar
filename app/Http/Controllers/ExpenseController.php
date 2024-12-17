@@ -11,6 +11,7 @@ use App\Models\ChartOfAccount;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -99,7 +100,7 @@ class ExpenseController extends Controller
     {
         $suppliers =  Party::whereIn('party_type',['supplier','both'])->get();
 
-        $accounts = ChartOfAccount::all();
+        $accounts = ChartOfAccount::where('level',4)->get();
 
         $taxes = Tax::all();
 
@@ -133,10 +134,6 @@ class ExpenseController extends Controller
         
         // Start a transaction
         DB::beginTransaction();
-        // amount_exclusive_tax
-        // tax_percentage
-        // calculated_tax_amount
-        // amount_inclusive_tax
         try {
 
             $newExpenseNo = $this->generateExpenseNo('EXP');
@@ -171,6 +168,23 @@ class ExpenseController extends Controller
 
             $expense_id  = DB::table('expenses')->insertGetId($expense_data);
 
+
+            $journalCredit = [
+                'date' => $request->input('date'),
+                'voucher_no' => $newExpenseNo,
+                'type' => 'expense',
+                'chart_of_account_id' => $request->input('paid_by_COA'),
+                'narration' => $request->input('expense_description'),
+                'supplier_id' => $request->input('supplier_id'),
+                'expense_id' =>  $expense_id,
+                'credit' => $request->total_inclusive_amount,
+                'trace' => '',
+                'created_by' => Auth::user()->id,
+                'created_at' => now(),
+            ];
+            
+            DB::table('journals')->insert($journalCredit);
+
            for($i=0; $i < count($request->COA_id); $i++)
            {
                 $expense_detail = [
@@ -185,9 +199,41 @@ class ExpenseController extends Controller
                     'calculated_tax_amount' => $request->calculated_tax_amount[$i],
                     'amount_inclusive_tax' => $request->amount_inclusive_tax[$i],
                 ];
-
-
                 DB::table('expense_details')->insertGetId($expense_detail);
+
+                $journalDebit = [
+                    'date' => $request->input('date'),
+                    'voucher_no' => $newExpenseNo,
+                    'type' => 'expense',
+                    'chart_of_account_id' => $request->COA_id[$i],
+                    'narration' => $request->description[$i],
+                    'expense_id' => $expense_id,
+                    'debit' => $request->amount_exclusive_tax[$i],
+                    'trace' => '',
+                    'created_by' => Auth::user()->id,
+                    'created_at' => now(),
+                ];
+                DB::table('journals')->insert($journalDebit);
+
+                
+                if($request->calculated_tax_amount[$i] > 0)
+                {
+                    $journalDebit = [
+                        'date' => $request->input('date'),
+                        'voucher_no' => $newExpenseNo,
+                        'type' => 'expense',
+                        'chart_of_account_id' => env('PURCHASE_TAX'),
+                        'narration' => "Purchase Tax",
+                        'expense_id' => $expense_id,
+                        'debit' => $request->calculated_tax_amount[$i],
+                        'trace' => '',
+                        'created_by' => Auth::user()->id,
+                        'created_at' => now(),
+                    ];
+                    DB::table('journals')->insert($journalDebit);
+                }
+
+
 
            }
 

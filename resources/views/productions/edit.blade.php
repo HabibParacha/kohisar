@@ -167,12 +167,14 @@
                                         <table id="material-table" class="table table-border" style="border-collapse:collapse;">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-start">Item Name</th> 
-                                                    <th class="d-none">Unit</th> 
-                                                    <th class="text-end">Recipe QTY</th> 
-                                                    <th class="text-end">Production QTY</th> 
-                                                    <th class="text-center">Stock QTY</th> 
-                                                    <th class="text-center">status</th> 
+                                                    <th width="10%" class="text-start">Item Name</th> 
+                                                    <th width="10%" class="d-none">Unit</th> 
+                                                    <th width="10%" class="text-end">Recipe QTY</th> 
+                                                    <th width="10%" class="text-end">Production QTY</th> 
+                                                    <th width="10%" class="text-end">Stock QTY</th> 
+                                                    <th width="10%" class="text-end">Unit Cost</th> 
+                                                    <th width="10%" class="text-end">Total Cost</th> 
+                                                    <th width="20%" class="text-center">status</th> 
                                                 
                                                 </tr>
                                             </thead>
@@ -180,6 +182,18 @@
                                             
                                             
                                             </tbody> 
+                                            <tfoot>
+                                                <tr class="text-end">
+                                                    <td  class="fw-bold text-start">TOTAL</td>
+                                                    <td><input type="number" id="materail_recipe_qty_total" class="fw-bold text-end" readonly></td>
+                                                    <td><input type="number" id="materail_production_qty_total" class="text-end fw-bold" readonly></td>
+                                                    <td><input type="number" id="materail_stock_qty_total" class="text-end fw-bold" readonly></td>
+                                                    <td><input type="number" id="materail_avg_unit_price" class="text-end fw-bold" readonly></td>
+                                                    <td class="text-end"><input type="number" id="materail_total_cost" class="text-end fw-bold" readonly></td>
+                                                    <td></td>
+                                                    
+                                                </tr>
+                                            </tfoot>
                                         </table>
         
                                     </div> 
@@ -206,8 +220,10 @@
                                                     <th class="text-center" width="200">Item Name</th> 
                                                     <th class="d-none" width="150">Unit Name</th> 
                                                     <th class="text-center" width="150">Unit Weight</th> 
-                                                    <th class="text-center" width="100">QTY</th> 
+                                                    <th class="text-center" width="100">Bags Qty.</th> 
                                                     <th class="text-center" width="100">QTY Weight</th> 
+                                                    <th class="text-center" width="100">Unit Cost</th> 
+                                                    <th class="text-center" width="100">Total Cost</th> 
                                                     <th class="text-center" width="50"></th>
                                                 
                                                 </tr>
@@ -252,6 +268,12 @@
                                                         <td>
                                                             <input type="number" name="output_quantity_weight[]" value="{{ $detail->net_weight }}" step="0.0001" class="form-control output-quantity-weight" readonly>  
                                                         </td>
+                                                        <td>
+                                                            <input type="number" name="output_per_unit_cost[]" value="{{ $detail->per_unit_price * $detail->unit_weight }}" step="0.0001" class="form-control output-per-unit-cost" readonly>  
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="output_total_cost[]" value="{{ $detail->grand_total }}" step="0.0001" class="form-control output-total-cost" readonly>  
+                                                        </td>
                                                         <td class="text-center">  
                                                             <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
                                                         </td>
@@ -281,10 +303,10 @@
                     <div class="row mt-3">
                         
                         <div class="col-md-6 d-flex justify-content-end offset-md-6">
-                       <div class="card">
-                           
-                           <div class="card-body">
-                                <h4 class="card-title mb-4">Summary</h4>
+                        <div class="card">
+                            
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">Summary</h4>
                                     <table id="summary-table" class="table">
                                         <tr>
                                             <th width="50%">Production <sub>KG's</sub></th>
@@ -294,23 +316,45 @@
                                         </tr>  
                                         <tr>
                                             <th width="50%">Output <sub>KG's</sub></th>
-                                            <td width="50%">
-                                                <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                            {{-- <td width="50%">
+                                            </td> --}}
+                                            <td>
+                                                <div class="input-group">
+                                                        <span class="input-group-text"> KG's</span>
+                                                        <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+
+                                                </div>
+                                                <div class="input-group ">
+                                                    <span class="input-group-text">Bags</span>
+                                                    <input type="number" name="output_bags" id="output-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                </div>
                                             </td>
                                         </tr>  
                                         <tr>
                                             <th width="50%">Surplus <sub>KG's</sub></th>
                                             <td width="50%">
-                                                <input type="number" name="surplus_sub_total_weight" id="surplus-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"> KG's</span>
+                                                    <input type="number" name="surplus_sub_total_weight" id="surplus-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+
+                                                </div>
+                                                <div class="input-group ">
+                                                    <span class="input-group-text">Bags</span>
+                                                    <input type="number" name="surplus_bags" id="surplus-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                </div>
+                                            </td>
+                                        </tr>  
+                                        <tr>
+                                            <th width="50%">Prod. Cost</th>
+                                            <td width="50%">
+                                                <input type="number" name="total_production_cost" id="total-production-cost" value="0" class="form-control text-end border-0 fw-bold" readonly>
                                             </td>
                                         </tr>  
                                     
-                            
-                                    
                                     </table>
                                 </div>
+                            </div>
                         </div>
-                       </div>
                     </div>  
 
                     
@@ -402,32 +446,10 @@
 
 
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    
-<script>
-     $(document).ready(function () {
-        // appendNewRow();
-    });
+    @include('productions.js')  
+  
 
 
-    $(document).on('select2:select','#output-item', function(e){
-        e.preventDefault();
-        let selected_item = $(this).val();
-        let table = $('#output-table tbody');
-        table.empty();// remove tbody all rows
-        appendNewRow();// add new row
-        table.find('tr:first').find('.output-item-dropdown').val(selected_item).trigger('change');
-
-        
-    });
-
-    $('#production-store').on('keydown', function(e) {
-        if (e.key === 'Enter') {
-        e.preventDefault(); // Prevent the default behavior (form submission)
-        }
-    });
-</script>    
-
-@include('productions.js')
 
 
 <script>
@@ -460,6 +482,8 @@
                     let prodcution_qty = parseFloat(((detail.quantity) * tons));
                     let balance_val = parseFloat(detail.balance);
                     let stock_val = balance_val+prodcution_qty;
+                    let total_cost = (prodcution_qty*detail.purchase_unit_price).toFixed(2);
+                    
                     
 
                     $('#material-table tbody').append(
@@ -480,6 +504,13 @@
                             <td class="text-center">
                                 <input type="number" name="" step="0.0001" class="stock-quantity text-end" value="${stock_val.toFixed(2)}" readonly>
                             </td> 
+                               </td> 
+                            <td class="text-end">
+                                <input type="number" name="production_unit_cost[]" step="0.0001" class="stock-unit-cost text-end" value="${detail.purchase_unit_price }" readonly>
+                            </td> 
+                            <td class="text-end">
+                                <input type="number" name="production_item_total_cost[]" step="0.0001" class="stock-total-cost text-end" value="${total_cost}" readonly>
+                            </td> 
                            
                             <td class="text-center">
                                 <span class="stock-status-tick  bx bxs-check-circle text-success    fs-4"></span>
@@ -493,7 +524,7 @@
                 checkStockQuantity();// check stock and production quantity
                 summaryCalculation();
 
-                
+                productionSummaryCalculation();
 
             }).fail(function(xhr) {
                 alert('Error fetching brand details: ' + xhr.responseText);

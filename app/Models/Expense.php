@@ -39,5 +39,9 @@ class Expense extends Model
     {
         return $this->belongsTo(Party::class);
     }
+    public function supplier()
+    {
+        return $this->belongsTo(Party::class)->where('party_type','supplier');
+    }
     
 }

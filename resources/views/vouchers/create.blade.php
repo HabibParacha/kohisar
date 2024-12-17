@@ -48,7 +48,7 @@
 
                 </div>
             </div>
-            <form method="post" id="">
+            <form method="post" id="voucher-store" enctype="multipart/form-data">
 
                 @csrf
 
@@ -74,7 +74,7 @@
                                                 <label class="col-form-label">Invoice#</label>
                                             </div>
                                             <div class="col-sm-9">
-                                                <input type="text" name="invoice_no" id="main_invoice" class="form-control">
+                                                <input type="text" name="invoice_no" id="invoice-no" class="form-control">
 
                                             </div>
                                         </div>
@@ -85,9 +85,9 @@
                                                 <label class="col-form-label">Voucher Type</label>
                                             </div>
                                             <div class="col-sm-9">
-                                                <select id="voucher-type" class="form-control select2">
+                                                <select name="voucher_type_code"  id="voucher-type" class="form-control select2">
                                                     <option value="">Choose..</option>
-                                                    @foreach ($voucher_types as $type)
+                                                    @foreach ($voucherTypes as $type)
                                                     <option value="{{ $type->code }}">
                                                         {{ $type->code . '-' . $type->name }}</option>
                                                     @endforeach
@@ -101,7 +101,7 @@
                                                 <label class="col-form-label">Account</label>
                                             </div>
                                             <div class="col-sm-9">
-                                                <select class="form-control select2" name="" id="main_coa_id">
+                                                <select class="form-control select2" name="chart_of_account_id_main" id="chart_of_account_id_main">
 
                                                 </select>
                                             </div>
@@ -114,7 +114,19 @@
                                             </div>
                                             <div class="col-sm-9">
                                                 <div class="input-group">
-                                                    <input type="date" name="date" class="form-control">
+                                                    <input type="date" name="date" class="form-control" value="{{ date('Y-m-d') }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="mb-1 row">
+                                            <div class="col-sm-3">
+                                                <label class="col-form-label">Attach File</label>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <input type="file" name="attachment"  class="form-control">
                                                 </div>
                                             </div>
                                         </div>
@@ -132,7 +144,7 @@
                                 <table id="table-voucher" style="border-collapse: collapse;" cellspacing="0" cellpadding="0">
                                     <thead>
                                         <tr class="bg-light borde-1 border-light " style="height: 40px;">
-                                            <th width="2%" class="p-1"><input id="check_all" type="checkbox"
+                                            <th width="2%" class="p-1"><input id="select-all-checkboxes" type="checkbox"
                                                     style="margin-left: 13px;" /></th>
                                             <th width="10%">Account</th>
                                             <th width="12%">Customer</th>
@@ -140,22 +152,21 @@
                                             <th width="10%">Narration</th>
 
 
-                                            <th width="5%">Invoice</th>
-                                            <th width="5%">Ref No</th>
+                                            <th width="5%">Reference No</th>
                                             <th width="5%">Amount</th>
 
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr class="bg-light border-1 border-light">
-                                            <td class=" bg-light border-1 border-light"><input class="case"
+                                            <td class=" bg-light border-1 border-light"><input class="item-checkbox"
                                                     type="checkbox" style="margin-left: 15px;" />
                                             </td>
                                             <td>
                                                 <select name="chart_of_account_id[]" class="form-control select2 account-dropdown">
                                                     <option value="">Select Account</option>
                                                     @foreach ($chart_of_accounts as $account )
-                                                        <option value="{{ $account->account_code }}" data-account-code="{{ $account->account_code }}" >{{ $account->account_code.'-'.$account->account_name }}</option>
+                                                        <option value="{{ $account->id }}" data-account-code="{{ $account->id }}" >{{ $account->id.'-'.$account->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </td>
@@ -183,16 +194,13 @@
                                             </td>
 
 
-                                            <td>
-                                                <input type="text" name="invoice_no[]" class=" form-control"
-                                                    autocomplete="off">
-                                            </td>
+                                           
                                             <td>
                                                 <input type="text" name="reference_no[]" class=" form-control"
                                                     autocomplete="off">
                                             </td>
                                             <td>
-                                                <input type="number" name="amount[]" step="0.001" class=" form-control"
+                                                <input type="number" name="amount[]" step="0.001" class="item-amount form-control"
                                                     autocomplete="off">
                                             </td>
 
@@ -209,9 +217,9 @@
 
 
                                             <th width="5%"> </th>
-                                            <th width="5%"> </th>
-                                            <th width="5%"><input type="text" readonly="" class=" form-control "
-                                                    id="sum_dr"> </th>
+                                            <th width="5%">
+                                                <input type="number" readonly class="form-control" name="total_amount" id="total-amount"> 
+                                            </th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -220,7 +228,7 @@
 
                         <div class="row mt-1 mb-2" style="margin-left: 29px;">
                             <div class='col-xs-5 col-sm-3 col-md-3 col-lg-3  '>
-                                <button class="btn btn-danger delete" type="button"><i
+                                <button id="bulk-delete" class="btn btn-danger" type="button"><i
                                         class="bx bx-trash align-middle font-medium-3 me-25"></i>Delete</button>
                                 <button id="btn-add-more" class="btn btn-success addmore" type="button"><i
                                         class="bx bx-list-plus align-middle font-medium-3 me-25"></i> Add
@@ -233,13 +241,16 @@
 
                         </div>
                     </div>
+
+                  
                     <div class="card-footer bg-light">
                         <div>
-                            <div class="mt-2"><button type="submit" id="submitBtn"
+                            <div class="mt-2"><button type="submit" id="submit-voucher-store"
                                     class="btn btn-primary w-lg float-right">Save</button>
 
                                 <a href="" class="btn btn-secondary w-lg float-right">Cancel</a>
 
+                              
 
                                 <div class='d-none' id="resultdiv">
                                     <div class="well text-center">
@@ -268,13 +279,13 @@
 </div>
 
 <!-- END: Content-->
+
+
+
+
 <script>
 
-    $(document).on('select2:select', '#voucher-type', function(e){
-        let code = $(this).val();
-        getAccountsByCategory(code);
-        
-    });
+   
 
 
     $(document).on('select2:select', '.customer-dropdown', function(e){
@@ -303,19 +314,36 @@
 
 
 
+    $(document).on('keyup', '.item-amount', function(e){
+        e.preventDefault();
 
-   function getAccountsByCategory(code) {
+        let total_amount = 0;
+        $('.item-amount').each(function(){
+            total_amount += parseFloat($(this).val()) || 0; 
+        });
+
+        $('#total-amount').val(total_amount.toFixed(2));
+    });
+
+
+    $(document).on('select2:select', '#voucher-type', function(e){
+        let voucherTypeCode = $(this).val();
+        getAccountsByCategory(voucherTypeCode);
+        
+    });
+
+        function getAccountsByCategory(voucherTypeCode) {
             
 
             // Make the AJAX GET request
-            $.get("{{ route('chart-of-account.getByCategory', ':code') }}".replace(':code', code))
+            $.get("{{ route('chart-of-account.getByCategory', ':code') }}".replace(':code', voucherTypeCode))
                 .done(function(response) {
-                    const $select = $('#main_coa_id');
+                    const $select = $('#chart_of_account_id_main');
                     $select.empty(); // Clear any existing options
 
                     $select.append(new Option('Choose...', ''));
                     response.forEach(account => {
-                        $select.append(new Option(account.account_name, account.id));
+                        $select.append(new Option(account.name, account.id));
                     });
 
                 })
@@ -334,15 +362,15 @@
         let tableBody = $('#table-voucher tbody');
 
         let row = `
-            <tr class="bg-light border-1 border-light">
-                <td class=" bg-light border-1 border-light"><input class="case"
+              <tr class="bg-light border-1 border-light">
+                <td class=" bg-light border-1 border-light"><input class="item-checkbox"
                         type="checkbox" style="margin-left: 15px;" />
                 </td>
                 <td>
                     <select name="chart_of_account_id[]" class="form-control select2 account-dropdown">
                         <option value="">Select Account</option>
                         @foreach ($chart_of_accounts as $account )
-                            <option value="{{ $account->account_code }}" data-account-code="{{ $account->account_code }}" >{{ $account->account_code.'-'.$account->account_name }}</option>
+                            <option value="{{ $account->id }}" data-account-code="{{ $account->id }}" >{{ $account->id.'-'.$account->name }}</option>
                         @endforeach
                     </select>
                 </td>
@@ -370,16 +398,13 @@
                 </td>
 
 
-                <td>
-                    <input type="text" name="invoice_no[]" class=" form-control"
-                        autocomplete="off">
-                </td>
+                
                 <td>
                     <input type="text" name="reference_no[]" class=" form-control"
                         autocomplete="off">
                 </td>
                 <td>
-                    <input type="number" name="amount[]" step="0.001" class=" form-control"
+                    <input type="number" name="amount[]" step="0.001" class="item-amount form-control"
                         autocomplete="off">
                 </td>
 
@@ -391,6 +416,82 @@
 
     }
 
+  
+
+</script>
+<script>
+     $('#voucher-store').on('submit', function(e) {
+                e.preventDefault();
+                var submit_btn = $('#submit-voucher-store');
+                let createformData = new FormData(this);
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('voucher.store') }}",
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    data: createformData,
+                    enctype: "multipart/form-data",
+                    beforeSend: function() {
+                        submit_btn.prop('disabled', true);
+                        submit_btn.html('Processing');
+                    },
+                    success: function(response) {
+                        
+                        submit_btn.prop('disabled', false).html('Create voucher');  
+
+                        if(response.success == true){
+                            $('#add-voucher').modal('hide'); 
+                           // Redirect after success notification
+                            setTimeout(function() {
+                                window.location.href = '{{ route("voucher.create") }}';
+                            }, 200); // Redirect after 3 seconds (same as notification duration)
+                        
+                            notyf.success({
+                                message: response.message, 
+                                duration: 3000
+                            });
+                        }else{
+                            notyf.error({
+                                message: response.message,
+                                duration: 5000
+                            });
+                        }   
+                    },
+                    error: function(e) {
+                        submit_btn.prop('disabled', false).html('Create voucher');
+                    
+                        notyf.error({
+                            message: e.responseJSON.message,
+                            duration: 5000
+                        });
+                    }
+                });
+            });
+</script>
+
+<script>
+      $('#select-all-checkboxes').on('change', function() {
+        if ($(this).prop('checked')) {
+            $('.item-checkbox').prop('checked', true);  // Check all checkboxes
+        } else {
+            $('.item-checkbox').prop('checked', false);  // Uncheck all checkboxes
+        }
+    });
+
+
+    $('#bulk-delete').on('click', function(e){
+        e.preventDefault();
+
+        $('.item-checkbox').each(function(){
+            if($(this).prop('checked'))
+            {
+                $(this).closest('tr').remove();
+            }
+        });
+        $('#select-all-checkboxes').prop('checked', false);
+    })
 </script>
 
 @endsection

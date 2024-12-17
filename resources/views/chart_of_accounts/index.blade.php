@@ -15,7 +15,7 @@
                     @foreach ($accounts as $level_1)
                     <div class="card shadow-sm" style="border-top: 2px solid rgb({{ ($level_1->id * 25) % 256 }}, {{ ($level_1->id * 60) % 256 }}, {{ ($level_1->id * 90) % 256 }});">
                         <h5 class="card-header bg-transparent border-bottom text-uppercase">
-                                <strong>{{ $level_1->account_name }}</strong> ({{ $level_1->account_code }})</h5>
+                                <strong>{{ $level_1->name }}</strong> ({{ $level_1->id }})</h5>
                             <div class="card-body">
                                 <table id="table" class="table table-striped table-sm " style="width:100%">
                                     <tr>
@@ -31,11 +31,11 @@
                                                 <td>
                                                     <a href="#" class="add-new-account-btn text-primary"
                                                         id="{{ 'level-2-account-' . $level_2->id }}"
-                                                        data-id="{{ $level_2->id }}" data-code="{{ $level_2->account_code }}"
-                                                        data-name="{{ $level_2->account_name }}">
+                                                        data-id="{{ $level_2->id }}" data-code="{{ $level_2->id }}"
+                                                        data-name="{{ $level_2->name }}">
                                                         <i class="fas fa-plus-square fs-5 pt-1"></i>
                                                     </a>
-                                                    {{ $level_2->account_name }} ({{ $level_2->account_code }})
+                                                    {{ $level_2->name }} ({{ $level_2->id }})
                                                 </td>
 
                                                 <td></td>
@@ -51,19 +51,19 @@
                                                         <td>
                                                             <a href="#" class="add-new-account-btn text-primary"
                                                                 id="{{ 'level-2-account-' . $level_3->id }}"
-                                                                data-id="{{ $level_3->id }}" data-code="{{ $level_3->account_code }}"
-                                                                data-name="{{ $level_3->account_name }}">
+                                                                data-id="{{ $level_3->id }}" data-code="{{ $level_3->id }}"
+                                                                data-name="{{ $level_3->name }}">
                                                                 <i class="fas fa-plus-square fs-5 pt-1"></i>
                                                             </a>
-                                                            {{ $level_3->account_name }} ({{ $level_3->account_code }})
+                                                            {{ $level_3->name }} ({{ $level_3->id }})
                                                         </td>
                                                         <td></td>
                                                         <td>
                                                             <a href="#" class="edit-account-btn text-warning"
                                                                 id="{{ 'level-3-account-' . $level_3->id }}"
                                                                 data-id="{{ $level_3->id }}"
-                                                                data-code="{{ $level_3->account_code }}"
-                                                                data-name="{{ $level_3->account_name }}">
+                                                                data-code="{{ $level_3->id }}"
+                                                                data-name="{{ $level_3->name }}">
                                                                 <i class=" fas fa-pencil-alt"></i>
                                                             </a>
                                                         </td>
@@ -75,13 +75,13 @@
                                                         <tr>
                                                             <td></td>
                                                             <td></td>
-                                                            <td>{{ $level_4->account_name }} ({{ $level_4->account_code }})</td>
+                                                            <td>{{ $level_4->name }} ({{ $level_4->id }})</td>
                                                             <td>
                                                                 <a href="#" class="edit-account-btn text-warning"
                                                                     id="{{ 'level-3-account-' . $level_4->id }}"
                                                                     data-id="{{ $level_4->id }}"
-                                                                    data-code="{{ $level_4->account_code }}"
-                                                                    data-name="{{ $level_4->account_name }}" >
+                                                                    data-code="{{ $level_4->id }}"
+                                                                    data-name="{{ $level_4->name }}" >
                                                                     <i class=" fas fa-pencil-alt"></i>
                                                                 </a>
                                                             </td>
@@ -168,7 +168,7 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Code</label>
-                                    <input type="text" name="parent_account_code" id="parent_account_code"
+                                    <input type="text" name="parent_account_id" id="parent_account_id"
                                         class="form-control" readonly>
                                 </div>
                                 <div class="mb-3">
@@ -272,7 +272,7 @@
                 let name = $(this).data('name');
 
                 $('#parent_id').val(id);
-                $('#parent_account_code').val(code);
+                $('#parent_account_id').val(code);
                 $('#parent_account_name').val(name);
 
                 $('#add-chart-of-account').modal('show');

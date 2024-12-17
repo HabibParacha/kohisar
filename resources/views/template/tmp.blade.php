@@ -222,6 +222,18 @@
     overflow: hidden
 }
 
+
+
+/* remove input type number arrow up and down */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number]{
+    -moz-appearance: textfield;
+}
 </style>
 
 </head>
@@ -237,12 +249,14 @@
         <!-- start of header -->
         @include('template.header')
         <!-- end of header -->
-
+        
+        {{-- @include('template.sidebar') --}}
         <!-- ========== Left Sidebar Start ========== -->
         @if(Auth::user()->type == "admin")    
-            @include('template.sidebar')
+        @include('template.sidebars.admin')
+
         @else
-            @include('template.driver_sidebar')
+        @include('template.sidebars.saleman')
 
         @endif
 
@@ -272,7 +286,25 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
 
-
+ <!-- Inactivity Modal -->
+ <div class="modal fade" id="inactivityModal" tabindex="-1" aria-labelledby="inactivityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inactivityModalLabel">Session Timeout Warning</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Your session is about to expire. Do you want to stay logged in or log out?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="stayAliveButton">Stay Live</button>
+                <button type="button" class="btn btn-danger" id="logoutButton">Log Out</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Inactivity Modal -->
         
         <!-- start of footer -->
         @include('template.footer')
@@ -289,6 +321,57 @@
                 },
             });
         </script>
+
+{{-- <script>
+    // Set up inactivity timer (15 minutes = 900,000 ms)
+    let inactivityTimer;
+    const INACTIVITY_TIME = 12000; // 15 minutes
+    const sessionWarningTime = INACTIVITY_TIME - 10000; // Show modal 10 seconds before timeout
+
+    function resetInactivityTimer() {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(showInactivityModal, sessionWarningTime);
+    }
+
+    function showInactivityModal() {
+        // Show modal after 15 minutes of inactivity
+        $('#inactivityModal').modal('show');
+    }
+
+    // Event listeners to detect user activity
+    $(document).on('mousemove keypress', function () {
+        resetInactivityTimer();
+    });
+
+    // Handle Stay Live button click
+    $('#stayAliveButton').click(function () {
+        $.ajax({
+            url: '/refresh-session',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+            },
+            success: function (data) {
+                // Reload the page or just close the modal
+                $('#inactivityModal').modal('hide');
+                resetInactivityTimer();
+            },
+            error: function () {
+                alert('Error refreshing session');
+            }
+        });
+    });
+
+    // Handle Logout button click
+    $('#logoutButton').click(function () {
+        window.location.href = '/logout';
+    });
+
+    // Initialize inactivity timer on page load
+    $(document).ready(function () {
+        resetInactivityTimer();
+    });
+</script> --}}
         
         <script>
             

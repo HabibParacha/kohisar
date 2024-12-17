@@ -42,13 +42,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function vehicleAssignments(): HasMany
-    {
-        return $this->hasMany(VehicleAssignment::class,'driver_id');
-    }
-    public function tripSheets(): HasMany
-    {
-        return $this->hasMany(TripSheet::class,'driver_id');
-    }
+    
     
 }

@@ -17,74 +17,74 @@ class ChartOfAccountController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index1()
-    {
-        $parent_id = 19;
+    // public function index1()
+    // {
+    //     $parent_id = 19;
 
 
-        $parentAccount = ChartOfAccount::where('id',$parent_id)->first();
-        $level = $parentAccount->level;
-        $code = $parentAccount->account_code;
+    //     $parentAccount = ChartOfAccount::where('id',$parent_id)->first();
+    //     $level = $parentAccount->level;
+    //     $code = $parentAccount->id;
         
-        $newCode = '';
-        $newLevel = $level+1;
-        $newName = "Equipment";
-        $newType = $parentAccount->type;
+    //     $newCode = '';
+    //     $newLevel = $level+1;
+    //     $newName = "Equipment";
+    //     $newType = $parentAccount->type;
 
 
 
-        $childAccounts = ChartOfAccount::where('parent_id',$parent_id)->get();
+    //     $childAccounts = ChartOfAccount::where('parent_id',$parent_id)->get();
 
-        if($level == 2){
+    //     if($level == 2){
 
-            if($childAccounts->isEmpty()){
-                $newCode = 1000 + $code;
-            }
-            else{
-                $maxChildCode = ChartOfAccount::where('parent_id',$parent_id)->max('account_code');
-                $newCode = $maxChildCode + 1000; 
-            }
+    //         if($childAccounts->isEmpty()){
+    //             $newCode = 1000 + $code;
+    //         }
+    //         else{
+    //             $maxChildCode = ChartOfAccount::where('parent_id',$parent_id)->max('id');
+    //             $newCode = $maxChildCode + 1000; 
+    //         }
 
-        }
-        if($level == 3){
+    //     }
+    //     if($level == 3){
 
-            if($childAccounts->isEmpty()){
-                $newCode = 1 + $code;
-            }
-            else{
-                $maxChildCode = ChartOfAccount::where('parent_id',$parent_id)->max('account_code');
-                $newCode = $maxChildCode + 1; 
-            }
+    //         if($childAccounts->isEmpty()){
+    //             $newCode = 1 + $code;
+    //         }
+    //         else{
+    //             $maxChildCode = ChartOfAccount::where('parent_id',$parent_id)->max('id');
+    //             $newCode = $maxChildCode + 1; 
+    //         }
 
-        }
-      dd( $newCode);
-       try{
+    //     }
+    //   dd( $newCode);
+    //    try{
 
-            $newAccount = new ChartOfAccount;
+    //         $newAccount = new ChartOfAccount;
 
-            $newAccount->account_code = $newCode;
-            $newAccount->account_name = $newName;
-            $newAccount->level = $newLevel;
-            $newAccount->parent_id = $parent_id;
-            $newAccount->type = $newType;
+    //         $newAccount->id = $newCode;
+    //         $newAccount->account_name = $newName;
+    //         $newAccount->level = $newLevel;
+    //         $newAccount->parent_id = $parent_id;
+    //         $newAccount->type = $newType;
 
-            $newAccount->save();
+    //         $newAccount->save();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Account added successfully.',
-            ],200);
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Account added successfully.',
+    //         ],200);
 
-       }catch(\Exception $e){
+    //    }catch(\Exception $e){
 
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $e->getMessage(),
+    //         ], 500);
 
-       }
+    //    }
 
-    }
+    // }
     public function index()
     {
        
@@ -135,7 +135,7 @@ class ChartOfAccountController extends Controller
 
         $parentAccount = ChartOfAccount::where('id',$parent_id)->first();
         $level = $parentAccount->level;
-        $code = $parentAccount->account_code;
+        $code = $parentAccount->id;
         
         $newCode = '';
         $newLevel = $level+1;
@@ -152,7 +152,7 @@ class ChartOfAccountController extends Controller
                 $newCode = 1000 + $code;
             }
             else{
-                $maxChildCode = ChartOfAccount::where('parent_id',$parent_id)->max('account_code');
+                $maxChildCode = ChartOfAccount::where('parent_id',$parent_id)->max('id');
                 $newCode = $maxChildCode + 1000; 
             }
 
@@ -164,7 +164,7 @@ class ChartOfAccountController extends Controller
                 $newCode = 1 + $code;
             }
             else{
-                $maxChildCode = ChartOfAccount::where('parent_id',$parent_id)->max('account_code');
+                $maxChildCode = ChartOfAccount::where('parent_id',$parent_id)->max('id');
                 $newCode = $maxChildCode + 1; 
             }
 
@@ -174,8 +174,8 @@ class ChartOfAccountController extends Controller
 
             $newAccount = new ChartOfAccount;
 
-            $newAccount->account_code = $newCode;
-            $newAccount->account_name = $newAccountName;
+            $newAccount->id = $newCode;
+            $newAccount->name = $newAccountName;
             $newAccount->level = $newLevel;
             $newAccount->parent_id = $parent_id;
             $newAccount->type = $newType;
@@ -243,7 +243,7 @@ class ChartOfAccountController extends Controller
         }
         try {
             $chart_of_account = ChartOfAccount::find($id);
-            $chart_of_account->account_name = $request->account_name;
+            $chart_of_account->name = $request->account_name;
             $chart_of_account->save();
 
             return response()->json([

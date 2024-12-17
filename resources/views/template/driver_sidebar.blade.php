@@ -1,3 +1,4 @@
+@include('template.sidebars.admin')
 <div class="vertical-menu">
     <div data-simplebar class="h-100">
         <!--- Sidemenu -->

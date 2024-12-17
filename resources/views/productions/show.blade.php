@@ -91,9 +91,8 @@
 
 
                 </div>
-
                 <div class="row">
-                    <div class="col-md-6 ">
+                    <div class="col-md-7 ">
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h4 class="card-title mb-4 text-primary">Output</h4>
@@ -103,13 +102,15 @@
                                     <table id="table" class="table table-hover table-striped align-middle">
                                         <thead class="table-dark">
                                             <tr>
-                                                <th>#</th>
-                                                <th>Item Name</th> 
-                                                <th>Category</th> 
-                                                <th>Unit Weight</th> 
-                                                <th></th> 
-                                                <th>QTY</th> 
-                                                <th class="text-center">Net Weight</th> 
+                                                {{-- <th width="20">#</th> --}}
+                                                <th width="5"></th> 
+                                                <th width="100">Item</th> 
+                                                <th width="100">Category</th> 
+                                                <th class="text-center" width="100">Unit wgt.</th> 
+                                                <th class="text-center" width="50">Bags Qty.</th> 
+                                                <th class="text-center" width="150" class="">Total wgt.</th> 
+                                                <th class="text-center" width="100">Unit Price</th>
+                                                <th class="text-center" width="150">Total</th>
                                                 
                                             </tr>
                                         </thead>
@@ -120,43 +121,36 @@
                                             <tbody>
                                                 @foreach ($production->outputDetails as $detail)
                                                     <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>
-                                                            {{ $detail->item->name}}
-                                                           
-                                                        </td>
-                                                        <td>{{ $detail->item->category->name }}</td>
-                                                    
-                                                        <td>{{ number_format($detail->unit_weight, 2) }}</td> 
-                                                        <td>
+                                                        {{-- <td class="text-right">{{ $loop->iteration }}</td> --}}
+                                                        <td class="text-right">
                                                             @if($detail->is_surplus == 1)
-                                                            <span class="badge rounded-pill bg-primary mx-2">surplus</span>
+                                                            <span class="badge rounded-pill bg-primary mx-2 ">S</span>
                                                             @endif  
                                                         </td>
-                                                        <td>
-                                                            {{ number_format($detail->total_quantity, 2) }}   
-                                                        </td> 
-                                                        <td class="text-end" > {{ number_format($detail->net_weight, 2) }}</td> 
-                                                        {{-- <td class="text-center" >
-                                                          
-                                                            <span class="position-relative p-0 avatar-xs rounded">
-                                                                {{ number_format($detail->net_weight, 2) }}
-                                                                <span class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-danger p-1"><span class="visually-hidden">unread messages</span></span>
-                                                            </span>
-                                                        </td>  --}}
+                                                        <td class="text-right"> {{ $detail->item->name}}</td>
+                                                        <td class="text-right">{{ $detail->item->category->name }}</td>
+                                                    
+                                                        <td class="text-center">{{ number_format($detail->unit_weight, 0) }}</td> 
+                                                       
+                                                        <td class="text-center">{{ number_format($detail->total_quantity, 0) }} </td> 
+                                                        <td class="text-center"> {{ number_format($detail->net_weight, 2) }}</td> 
+                                                        <td class="text-center"> {{ number_format($detail->per_unit_price, 2) }}</td>
+                                                        <td class="text-end"> {{ number_format($detail->grand_total, 2) }}</td>
                                                        
                                                     </tr>
                                                 @endforeach
                                                 
                                             </tbody>
                                             <tfoot>
+                                                {{-- <td></td> --}}
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td class="fw-bold text-center">{{ number_format($production->outputDetails->sum('total_quantity'),2) }}</td>
+                                                <td class="fw-bold text-center">{{ number_format($production->outputDetails->sum('net_weight'),2) }}</td>
                                                 <td></td>
-                                                <td class="fw-bold">{{ number_format($production->outputDetails->sum('total_quantity'),2) }}</td>
-                                                <td class="fw-bold text-end">{{ number_format($production->outputDetails->sum('net_weight'),2) }}</td>
+                                                <td class="fw-bold text-end">{{ number_format($production->outputDetails->sum('grand_total'),2) }}</td>
                                             </tfoot>
                                         @else
                                             <tr>
@@ -172,7 +166,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 ">
+                    <div class="col-md-5 ">
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h4 class="card-title mb-4 text-primary">Comsumption of Raw Items</h4>
@@ -184,7 +178,9 @@
                                             <tr>
                                                 <th width="20">#</th>
                                                 <th width="200">Item Name</th> 
-                                                <th width="20">Comsumed</th> 
+                                                <th width="200" class="text-center">Comsumed </th> 
+                                                <th width="200" class="text-center">Unit Cost </th> 
+                                                <th width="200" class="text-center">Total</th> 
                                                 
                                             </tr>
                                         </thead>
@@ -193,8 +189,9 @@
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $detail->item->name }}</td>
-                                                
-                                                    <td class="text-end">{{ number_format($detail->net_weight, 2) }}</td> 
+                                                    <td class="text-center">{{ number_format($detail->net_weight, 2) }}</td> 
+                                                    <td class="text-center">{{ number_format($detail->per_unit_price, 2) }}</td> 
+                                                    <td class="text-end">{{ number_format($detail->grand_total, 2) }}</td> 
                                                 
                                                 </tr>
                                             @endforeach
@@ -203,7 +200,9 @@
                                         <tfoot>
                                             <td></td>
                                             <td></td>
-                                            <td class="text-end fw-bold">{{ number_format($production->productionDetails->sum('net_weight'),2) }}</td>
+                                            <td class="text-center fw-bold">{{ number_format($production->productionDetails->sum('net_weight'),2) }}</td>
+                                            <td></td>
+                                            <td class="text-end fw-bold">{{ number_format($production->productionDetails->sum('grand_total'),2) }}</td>
                                         </tfoot>
                                         <!-- Expense Summary -->
                                         

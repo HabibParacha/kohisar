@@ -13,6 +13,7 @@ use App\Models\InvoiceMaster;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -44,6 +45,9 @@ class PurchaseOrderController extends Controller
                     })
                     ->addColumn('date', function($row){
                         return date('d-m-Y', strtotime($row->date));
+                    })
+                    ->addColumn('total_bags', function($row){
+                        return ($row->total_bags ? number_format($row->total_bags,2): '');
                     })
                    
 
@@ -164,11 +168,13 @@ class PurchaseOrderController extends Controller
                 'date' => $request->input('date'),
                 'due_date' => $request->input('due_date'),
                 'invoice_no' => $newInvoiceNo,
+                'reference_no' => $request->input('reference_no'),
                 'vehicle_no' => $request->input('vehicle_no'),
                 'status' => $request->input('status'),
                 'type' => 'receipt',
                 'party_id' => $request->input('party_id'),
                 'item_total' => $request->input('item_total'),
+                'total_bags' => $request->input('total_bags'),
                 'shipping' => $request->input('shipping'),
                 'sub_total' => $request->input('sub_total'),
                 'discount_type' => $request->input('discount_type'),
@@ -225,6 +231,43 @@ class PurchaseOrderController extends Controller
                 DB::table('invoice_detail')->insertGetId($invoice_detail);
 
            }
+
+           $journalCredit_AP = [
+               'date' =>  $request->input('date'),
+               'voucher_no' => $newInvoiceNo,
+               'type' => 'receipt',
+               'chart_of_account_id' => env('AP'),
+               'narration' => 'Raw material purchased @ '.$newInvoiceNo. ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2),
+               'supplier_id' => $request->input('party_id'),
+               'invoice_master_id' => $invoice_master_id,
+               'credit' => $request->input('grand_total'),
+               'trace' => '',
+               'created_by' => Auth::user()->id,
+               'created_at' => now(),
+           ];
+           
+           DB::table('journals')->insert($journalCredit_AP);
+
+
+           $journalDebit_Raw = [
+               'date' =>  $request->input('date'),
+               'voucher_no' => $newInvoiceNo,
+               'type' => 'receipt',
+               'chart_of_account_id' =>  env('RAW_MATERIAL'),
+               'narration' => 'Raw material purchased @ '.$newInvoiceNo. ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2),
+               'supplier_id' => $request->input('party_id'),
+               'invoice_master_id' => $invoice_master_id,
+               'debit' => $request->input('grand_total'),
+               'trace' => '',
+               'created_by' => Auth::user()->id,
+               'created_at' => now(),
+           ];
+           
+           DB::table('journals')->insert($journalDebit_Raw);
+
+
+           
+
 
             DB::commit();// Commit the transaction
 
@@ -349,8 +392,10 @@ class PurchaseOrderController extends Controller
             $invoice_master_data = [
                 'date' => $request->input('date'),
                 'vehicle_no' => $request->input('vehicle_no'),
+                'reference_no' => $request->input('reference_no'),
                 'party_id' => $request->input('party_id'),
                 'item_total' => $request->input('item_total'),
+                'total_bags' => $request->input('total_bags'),
                 'shipping' => $request->input('shipping'),
                 'sub_total' => $request->input('sub_total'),
                 'discount_type' => $request->input('discount_type'),
@@ -382,8 +427,13 @@ class PurchaseOrderController extends Controller
             // Update invoice master
             $invoiceMaster->update($invoice_master_data);
 
-            // Delete related invoice details
+            // Delete  invoice details
             DB::table('invoice_detail')
+            ->where('invoice_master_id', $invoiceMaster->id)
+            ->delete();
+
+            // Delete fro Journals
+            DB::table('journals')
             ->where('invoice_master_id', $invoiceMaster->id)
             ->delete();
 
@@ -418,6 +468,39 @@ class PurchaseOrderController extends Controller
                 DB::table('invoice_detail')->insertGetId($invoice_detail);
 
            }
+
+           $journalCredit_AP = [
+            'date' =>  $request->input('date'),
+            'voucher_no' => $invoiceMaster->invoice_no,
+            'type' => 'receipt',
+            'chart_of_account_id' => env('AP'),
+            'narration' => 'Raw material purchased @ '.$invoiceMaster->invoice_no. ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2),
+            'supplier_id' => $request->input('party_id'),
+            'invoice_master_id' => $invoiceMaster->id,
+            'credit' => $request->input('grand_total'),
+            'trace' => '',
+            'updated_by' => Auth::user()->id,
+            'updated_at' => now(),
+            ];
+        
+            DB::table('journals')->insert($journalCredit_AP);
+
+
+            $journalDebit_Raw = [
+                'date' =>  $request->input('date'),
+                'voucher_no' => $invoiceMaster->invoice_no,
+                'type' => 'receipt',
+                'chart_of_account_id' =>  env('RAW_MATERIAL'),
+                'narration' => 'Raw material purchased @ '.$invoiceMaster->invoice_no. ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2),
+                'supplier_id' => $request->input('party_id'),
+                'invoice_master_id' => $invoiceMaster->id,
+                'debit' => $request->input('grand_total'),
+                'trace' => '',
+                'updated_by' => Auth::user()->id,
+                'updated_at' => now(),
+            ];
+        
+            DB::table('journals')->insert($journalDebit_Raw);
 
             DB::commit();// Commit the transaction
 
@@ -455,6 +538,7 @@ class PurchaseOrderController extends Controller
            
              // Delete invoice details first
             DB::table('invoice_detail')->where('invoice_master_id', $id)->delete();
+            DB::table('journals')->where('invoice_master_id', $id)->delete();
 
             // Then delete the invoice master record
             DB::table('invoice_master')->where('id', $id)->delete();

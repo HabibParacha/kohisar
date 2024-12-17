@@ -1,0 +1,28 @@
+{
+    "Insert Journal Credit Entry": {
+        "prefix": "CreditJournalInsert",
+        "body": [
+            "\\$journalCredit = [",
+            "    'date' => '',",
+            "    'voucher_no' => '',",
+            "    'code' => '',",
+            "    'type' => '',",
+            "    'chart_of_account_id' => '',",
+            "    'narration' => '',",
+            "    'party_id' => '',",
+            "    'customer_id' => '',",
+            "    'supplier_id' => '',",
+            "    'voucher_id' => '',",
+            "    'invoice_master_id' => '',",
+            "    'expense_id' => '',",
+            "    'credit' => '',",
+            "    'trace' => '',",
+            "    'created_by' => Auth::user()->id,",
+            "    'created_at' => now(),",
+            "];",
+            "",
+            "DB::table('journals')->insert(\\$journalCredit);"
+        ],
+        "description": "Insert a journal credit entry into the database."
+    }
+}

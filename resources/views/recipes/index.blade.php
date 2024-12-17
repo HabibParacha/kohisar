@@ -24,43 +24,91 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="filterRow">
+                                   <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label class="form-label">Start Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
+                                                    <input type="date" name="start_date" id="start_date" class="form-control" value="">
+                                                </div>
+                                            
+                                            </div> 
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label class="form-label">End Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
+                                                    <input type="date" name="end_date" id="end_date" class="form-control" value="">
+                                                </div>
+                                            
+                                            </div> 
+                                        </div>
+
+                                      
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label class="form-label">Finished Good</label>
+                                                <select name="item_id" id="item_id" class="select2 form-control">                                                
+                                                    <option value="">Choose...</option>
+                                                    @foreach ($itemGoods as $item)
+                                                        <option value="{{$item->id}}">{{ $item->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>                                        
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label class="form-label">Status</label>
+                                                <select name="is_active" id="is_active" class="form-control form-select">
+                                                    <option value="">Select</option>
+                                                    <option value="1">Active</option>
+                                                    <option value="0">Inactive</option>
+                                                </select>
+                                            </div> 
+                                        </div>
+
+                                        <div class="col-md-2 text-center">
+                                            <button type="button" class="btn btn-danger  mt-4" id="filter-btn">
+                                                <i class="mdi mdi-filter"></i> Filter
+                                            </button>
+                                            <button type="button" class="btn btn-primary  mt-4" id="reset-filter-btn">
+                                                <i class="fas fa-sync-alt"></i> Reset
+                                            </button>
+                                        </div>  
+                                    </div>
+                                   </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>              
+                </div>
                
                 <div class="row">
                     <div class="col-12">
-
-                        @if (session('error'))
-                            <div class="alert alert-{{ Session::get('class') }} p-1" id="success-alert">
-
-                                {{ Session::get('error') }}
-                            </div>
-                        @endif
-                        @if (count($errors) > 0)
-
-                            <div>
-                                <div class="alert alert-danger pt-3 pl-0   border-3">
-                                    <p class="font-weight-bold"> There were some problems with your input.</p>
-                                    <ul>
-
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
-
-                        @endif
-
                         <div class="card">
 
                             <div class="card-body">
                                 <table id="table" class="table table-striped table-sm " style="width:100%">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Name</th>
-                                            <th>Description</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
+                                            <th width="10%">Item</th>
+                                            <th width="10%">Name</th>
+                                            <th width="15%">Description</th>
+                                            <th width="10%">Start Date</th>
+                                            <th width="10%">Start Time</th>
+                                            <th width="10%">End Date</th>
+                                            <th width="10%">End Time</th>
+                                            <th width="10%">Status</th>
+                                            <th width="10%">Action</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -111,17 +159,6 @@
 
     <!-- END: Content-->
 
-    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-    <script>
-        // Create an instance of Notyf
-        let notyf = new Notyf({
-            duration: 3000,
-            position: {
-                x: 'right',
-                y: 'top',
-            },
-        });
-    </script>
 
 
     <script>
@@ -130,11 +167,26 @@
             var table = $('#table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('recipe.index') }}",
+                ajax: {
+                    url: "{{ route('recipe.index') }}",
+                    data: function (d) {
+                        d.start_date = $('#start_date').val();
+                        d.end_date = $('#end_date').val();
+                        d.is_active = $('#is_active').val();
+                        d.item_id = $('#item_id').val();
+
+                        
+                    }
+                },
                 columns: [
-                    { data: 'id' },
+                    { data: 'item_name' },
                     { data: 'name' },
                     { data: 'description' },
+                    { data: 'start_date' },
+                    { data: 'start_time' },
+                    { data: 'end_date' },
+                    { data: 'end_time' },
+                    
                     { 
                         data: 'is_active',
                         className: 'text-center', // This applies the text-center class to the entire column
@@ -152,6 +204,32 @@
                 ],
                 order: [[0, 'desc']],
             });
+
+
+            $('#filter-btn').on('click', function(){
+                table.draw();
+            });
+            $('#reset-filter-btn').on('click', function(){
+                $('#start_date').val('');
+                $('#end_date').val('');
+                $('#is_active').val('').trigger('change');
+                $('#item_id').val('').trigger('change');
+                table.draw();
+            });
+            $('#start_date').on('change', function() {
+                let startDate = $(this).val();
+                
+                // Set the end date to the start date if it's empty or less than the start date
+                let endDate = $('#end_date').val();
+                if (!endDate || endDate < startDate) {
+                    $('#end_date').val(startDate);
+                }
+                
+                // Set the min attribute of the end date to the start date
+                $('#end_date').attr('min', startDate);
+            });
+
+
 
 
             $('#submit-recipe-destroy').click(function() {
@@ -207,6 +285,10 @@
             $('#delete-recipe').modal('show');
         }
 
+    </script>
+
+    <script>
+        
     </script>
 
     <script>

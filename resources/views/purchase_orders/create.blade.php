@@ -82,18 +82,26 @@
                                         </select>
                                     </div>                                        
                                 </div>
-                                
                                 <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Reference No</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><span class="bx bxs-receipt" ></span> </div>
+                                            <input type="text" name="reference_no" id="reference_no" class="form-control" autocomplete="off">
+                                        </div> 
+                                    </div> 
+                                </div>
+                                <div class="col-md-2">
                                     <div class="mb-3">
                                         <label class="form-label">Receipt No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-receipt"></span> </div>
-                                            <input type="text" name="invoice_no" id="invoice_no" class="form-control" value="{{ $newInvoiceNo }}" readonly>
+                                            <input type="text"  class="form-control" value="{{ $newInvoiceNo }}" readonly>
                                         </div> 
                                     </div> 
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <div class="mb-3">
                                         <label class="form-label">Vehicle No</label>
                                         <div class="input-group">
@@ -105,7 +113,7 @@
                                
 
                              
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <div class="mb-3">
                                         <label class="form-label">Date</label>
                                         <div class="input-group">
@@ -187,20 +195,27 @@
                                         <tr>
                                             <th width="50%">Sub Total</th>
                                             <td width="50%">
-                                                <input type="number" name="sub_total" id="sub-total" value="0" class="form-control text-end" readonly>
+                                                <input type="number" step="0.01" name="sub_total" id="sub-total" value="0" class="form-control text-end" readonly>
                                             </td>
                                         </tr>  
                                         <tr>
                                             <th>Freight </th>
                                             <td>
-                                                <input type="number" name="shipping" class="form-control text-end"  autocomplete="off">
+                                                <input type="number" step="0.001" name="shipping" class="form-control text-end"  autocomplete="off">
                                             </td>
                                         </tr>
 
                                         <tr class="">
                                             <th width="50%">Grand Total</th>
                                             <td width="50%">
-                                                <input type="number" name="grand_total" id="grand-total" value="0" class="form-control text-end" readonly>
+                                                <input type="number" step="0.01" name="grand_total" id="grand-total" value="0" class="form-control text-end" readonly>
+                                            </td>
+                                        </tr>  
+                            
+                                        <tr class="">
+                                            <th width="50%">Total Bags</th>
+                                            <td width="50%">
+                                                <input type="number" step="0.001" name="total_bags" id="total-bags" value="0" class="form-control text-end" readonly>
                                             </td>
                                         </tr>  
                             
@@ -380,55 +395,7 @@ $(document).ready(function () {
 
 });
 </script>
-{{-- <script>
-$(document).ready(function () {
-        // Event listener for the select2:open event
-        $('#table').on('select2:open', '.item-dropdown-list', function(e) {
-        e.preventDefault();
 
-        let itemDropdown = $(this); // Reference to the clicked dropdown
-
-        // Only fetch items if the dropdown is empty
-        if (itemDropdown.children('option').length === 0) {
-            $.ajax({
-                url: '{{ route('items.getAll') }}',
-                type: 'GET',
-                beforeSend: function() {
-                    itemDropdown.append('<option value="">Loading...</option>');
-                },
-                success: function(data) {
-                    itemDropdown.empty(); // Clear current options
-                    console.log(data);
-
-                    itemDropdown.append('<option selected value="">Choose...</option>');
-                    
-                    // Check if data is empty
-                    if (data.length === 0) {
-                        itemDropdown.append('<option disabled>No records found</option>');
-                    } else {
-                        // Append the new items
-                        $.each(data, function(index, item) {
-                            itemDropdown.append(new Option(item.name, item.id));
-                        });
-                    }
-
-                    // Close the dropdown
-                    itemDropdown.select2('close');
-                    // Notify select2 about the change
-                    itemDropdown.trigger('change');
-                    itemDropdown.select2('open');
-                },
-                error: function(xhr, status, error) {
-                    console.error("AJAX Error: ", status, error);
-                    alert('Failed to load items. Please try again.'); // Optional user feedback
-                }
-            });
-        }
-    });
-
-
-});
-</script> --}}
 
 
 <script>  
@@ -453,7 +420,7 @@ $(document).ready(function () {
 
     });
 
-    $(document).on('keyup','.item-gross-weight, .item-per-unit-price, .item-discount-value, .item-cut-percentage, .item-per-package-weight',function(){
+    $(document).on('keyup','.item-gross-weight, .item-per-unit-price, .item-discount-value, .item-cut-percentage, .item-per-package-weight, .item-total-quantity',function(){
         
         let row = $(this).closest('tr');
 
@@ -527,12 +494,20 @@ $(document).ready(function () {
         let tax_total = 0;
         let discount_total = 0;
         let grand_total = 0;
+        let total_bags = 0;
 
         $('.item-total-price').each(function(){
             let item_total_price = parseFloat($(this).val()) || 0;
             sub_total+= item_total_price;
         });
         $('#sub-total').val(sub_total.toFixed(2));
+
+
+        $('.item-total-quantity').each(function(){
+            let value = parseFloat($(this).val()) || 0;
+            total_bags+= value;
+        });
+        $('#total-bags').val(total_bags.toFixed(2));
 
 
         grand_total = sub_total;
@@ -580,46 +555,46 @@ $(document).ready(function () {
             </td>  
         
             <td class="text-end"> 
-                <input  type="number" name="gross_weight[]" step="0.01" class="form-control item-gross-weight"  autocomplete="off">  
+                <input  type="number" name="gross_weight[]" step="0.0001" class="form-control item-gross-weight"  autocomplete="off">  
             </td>
 
             <td class="text-center"> 
                 <input class="form-check-input cut-checkbox" type="checkbox">
             </td>
             <td> 
-                <input type="number" name="cut_percentage[]"  step="0.01" class="form-control item-cut-percentage d-none"  autocomplete="off">  
+                <input type="number" name="cut_percentage[]"  step="0.0001" class="form-control item-cut-percentage d-none"  autocomplete="off">  
             </td>
             <td> 
-                <input type="number" name="cut_value[]" value="0" step="0.01" class="form-control item-cut-value d-none text-end" readonly>  
+                <input type="number" name="cut_value[]" value="0" step="0.0001" class="form-control item-cut-value d-none text-end" readonly>  
             </td>
             <td> 
-                <input type="number" name="after_cut_total_weight[]" step="0.01" class="form-control item-after-cut-total-weight d-none text-end" readonly>  
+                <input type="number" name="after_cut_total_weight[]" step="0.0001" class="form-control item-after-cut-total-weight d-none text-end" readonly>  
             </td>
 
 
 
             <td> 
-                <input type="number" name="total_quantity[]" step="0.01" class="form-control item-total-quantity"  autocomplete="off">  
+                <input type="number" name="total_quantity[]" step="0.0001" class="form-control item-total-quantity"  autocomplete="off">  
             </td>
             <td> 
-                <input type="number" name="per_package_weight[]" step="0.01" class="form-control item-per-package-weight"  autocomplete="off">  
+                <input type="number" name="per_package_weight[]" step="0.0001" class="form-control item-per-package-weight"  autocomplete="off">  
             </td>
             <td> 
-                <input type="number" name="total_package_weight[]" value="0" step="0.01" class="form-control item-total-package-weight text-end" readonly>  
+                <input type="number" name="total_package_weight[]" value="0" step="0.0001" class="form-control item-total-package-weight text-end" readonly>  
             </td>
             <td> 
-                <input type="number" name="net_weight[]" value="0" step="0.01" class="form-control item-net-weight text-end" readonly>  
+                <input type="number" name="net_weight[]" value="0" step="0.0001" class="form-control item-net-weight text-end" readonly>  
             </td>
             
 
 
             <td> 
-                <input type="number" name="per_unit_price[]" step="0.01" class="form-control item-per-unit-price"  autocomplete="off">  
+                <input type="number" name="per_unit_price[]" step="0.0001" class="form-control item-per-unit-price"  autocomplete="off">  
             </td>
             
 
             <td > 
-                <input type="number" name="total_price[]" step="0.01" class="form-control item-total-price text-end" readonly>  
+                <input type="number" name="total_price[]" step="0.0001" class="form-control item-total-price text-end" readonly>  
             </td>
 
 

@@ -60,8 +60,9 @@
                                             <th>Code</th>
                                             <th>Name</th>
                                             <th>Category</th>
-                                            <th>Unit</th>
-                                            <th>Tax</th> 
+                                            <th>Retail Price</th>
+                                            {{-- <th>Unit</th> --}}
+                                            {{-- <th>Tax</th>  --}}
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -108,7 +109,7 @@
                                             <div class="col-md-12">
                                                 <div class="mb-3">
                                                     <label  class="form-label">Item Code</label>
-                                                    <input name="code" type="text" class="form-control">
+                                                    <input name="code" type="text" class="form-control" id="item-code" value="{{ $itemCode }}" readonly>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
@@ -124,7 +125,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-12 type-good-field d-none">
+                                            <div class="col-md-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Category</label>
                                                     <select name="category_id"  class="select2 form-select" style="width:100%">
@@ -135,7 +136,14 @@
                                                     </select>
                                                 </div>                                        
                                             </div>
+
                                             <div class="col-md-12 type-good-field d-none">
+                                                <div class="mb-3">
+                                                    <label  class="form-label text-danger">Retail Price</label>
+                                                    <input name="sell_price" type="number" step="0.01" class="form-control">
+                                                </div>
+                                            </div>
+                                            {{-- <div class="col-md-12 type-good-field d-none">
                                                 <div class="mb-3">
                                                     <label class="form-label">Unit</label>
                                                     <select name="unit_id"  class="select2 form-select" style="width:100%">
@@ -145,8 +153,8 @@
                                                         @endforeach
                                                     </select>
                                                 </div>                                        
-                                            </div>
-                                            <div class="col-md-12 type-good-field d-none">
+                                            </div> --}}
+                                            {{-- <div class="col-md-12 type-good-field d-none">
                                                 <div class="mb-3">
                                                     <label class="form-label">Tax</label>
                                                     <select id="tax-select" name="tax_id"  class="select2 form-select" style="width:100%">                                                
@@ -156,7 +164,7 @@
                                                         @endforeach
                                                     </select>
                                                 </div>                                        
-                                            </div>
+                                            </div> --}}
                                            
                                             
                                            
@@ -228,7 +236,7 @@
                                             <div class="col-md-12">
                                                 <div class="mb-3">
                                                     <label  class="form-label">Item Code</label>
-                                                    <input name="code" id="edit_code" type="text" class="form-control">
+                                                    <input name="code" id="edit_code" type="text" class="form-control" readonly>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
@@ -238,7 +246,7 @@
                                                 </div>
                                             </div>
                                           
-                                            <div class="col-md-12">
+                                            <div class="col-md-12 type-good-field">
                                                 <div class="mb-3">
                                                     <label  class="form-label">Unit Weight</label>
                                                     <input name="unit_weight" id="edit_unit_weight" type="number" step="0.01" class="form-control">
@@ -246,7 +254,7 @@
                                             </div>
 
                                           
-                                            <div class="col-md-12 type-good-field d-none">
+                                            <div class="col-md-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Category</label>
                                                     <select name="category_id" id="edit_category_id"  class="select2 form-select" style="width:100%">
@@ -257,8 +265,15 @@
                                                     </select>
                                                 </div>                                        
                                             </div>
+
+                                            <div class="col-md-12 type-good-field">
+                                                <div class="mb-3">
+                                                    <label  class="form-label text-danger">Retail Price</label>
+                                                    <input name="sell_price" id="edit_sell_price" type="number" step="0.01" class="form-control">
+                                                </div>
+                                            </div>
                                            
-                                            <div class="col-md-12 type-good-field d-none">
+                                            {{-- <div class="col-md-12 type-good-field d-none">
                                                 <div class="mb-3">
                                                     <label class="form-label">Unit</label>
                                                     <select name="unit_id" id="edit_unit_id" class="select2 form-select" style="width:100%">
@@ -268,8 +283,8 @@
                                                         @endforeach
                                                     </select>
                                                 </div>                                        
-                                            </div>
-                                            <div class="col-md-12 type-good-field d-none">
+                                            </div> --}}
+                                            {{-- <div class="col-md-12 type-good-field d-none">
                                                 <div class="mb-3">
                                                     <label class="form-label">Tax</label>
                                                     <select id="edit_tax_id" name="tax_id"  class="select2 form-select" style="width:100%">                                                
@@ -279,7 +294,7 @@
                                                         @endforeach
                                                     </select>
                                                 </div>                                        
-                                            </div>
+                                            </div> --}}
                                            
                                             <div class="col-md-12">
                                                 <div class="mb-3">
@@ -310,7 +325,7 @@
                     </div>
                 </div>
             </div>
-    <!-- /Edit Item -->
+        <!-- /Edit Item -->
 
      <!-- Delete Item -->
         <div class="modal fade" id="delete-item">
@@ -365,17 +380,13 @@
         $('#item-type').on('change', function(e){
             e.preventDefault();
             let item_type = $(this).val();
-            if(item_type == 'Raw')
-            {
-                $('.type-good-field').addClass('d-none');
-                // Reset the values of the fields
-                $('.type-good-field').find('select').val('').trigger('change');// For select inputs
-                $('.type-good-field').find('input').val('');// For select inputs
+            if(item_type == 'Raw'){
+                hideAndResetTypeGood();
             }else{
                 $('.type-good-field').removeClass('d-none');
             }
             
-        })
+        });
     </script>
 
 
@@ -393,8 +404,9 @@
                     { data: 'code' },
                     { data: 'name' },
                     { data: 'category_name' },
-                    { data: 'unit' },
-                    { data: 'tax_name' },
+                    { data: 'sell_price' },
+                    // { data: 'unit' },
+                    // { data: 'tax_name' },
                     { 
                         data: 'is_active',
                         className: 'text-center', // This applies the text-center class to the entire column
@@ -440,6 +452,8 @@
                             $('#item-store')[0].reset();  // Reset all form data
                             // Reset only Select2 fields inside #item-store
                             $('#item-store .select2').val(null).trigger('change');
+
+                            $('#item-code').val(response.itemCode);//item code letest
                             table.ajax.reload();
                         
                             notyf.success({
@@ -490,6 +504,7 @@
                         if(response.success == true){
                             $('#edit-item').modal('hide'); 
                             $('#item-update')[0].reset();  // Reset all form data
+                            $('#item-code').val(response.itemCode);//item code letest
                             table.ajax.reload();
                         
                             notyf.success({
@@ -570,17 +585,21 @@
                 $('#edit_name').val(response.name);
                 $('#edit_code').val(response.code);
                 $('#edit_type').val(response.type).trigger('change');
+                $('#edit_category_id').val(response.category_id).trigger('change');
+
 
                 if(response.type == "Good"){
                     $('.type-good-field').removeClass('d-none');
-                    $('#edit_category_id').val(response.category_id).trigger('change');
-                    $('#edit_unit_id').val(response.unit_id).trigger('change');
-                    $('#edit_tax_id').val(response.tax_id).trigger('change');
+                }else{
+                    hideAndResetTypeGood();
                 }
 
-              
-                $('#edit_stock_alert_qty').val(response.stock_alert_qty);
+                $('#edit_sell_price').val(response.sell_price);
+                $('#edit_unit_id').val(response.unit_id).trigger('change');
+                $('#edit_tax_id').val(response.tax_id).trigger('change');
                 $('#edit_unit_weight').val(response.unit_weight);
+
+                $('#edit_stock_alert_qty').val(response.stock_alert_qty);
                 $('#edit_is_active').val(response.is_active).trigger('change');              
 
                 $('#edit-item').modal('show');
@@ -593,6 +612,14 @@
         function deleteItem(id) {
             $('#submit-item-destroy').data('id', id);
             $('#delete-item').modal('show');
+        }
+
+        function hideAndResetTypeGood()
+        {
+            $('.type-good-field').addClass('d-none');
+            // Reset the values of the fields
+            $('.type-good-field').find('select').val('').trigger('change');// For select inputs
+            $('.type-good-field').find('input').val('');// For select inputs
         }
 
     </script>

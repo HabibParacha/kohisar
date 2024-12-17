@@ -50,114 +50,201 @@
                     <input type="hidden" name="recipe_id" id="recipe_id" value="{{  $recipe->id }}"> <!-- Hidden field to store the brand ID -->
                     @method('PUT')
                     @csrf
-                    <div class="card">
-                        <div class="card-body">
-                            {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
-                            <h4 class="card-title mb-4">Recipe</h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
+                                    <h4 class="card-title mb-4">Recipe</h4>
+        
+                                    <div class="row">
+                                       
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Date</label>
+                                                <div class="input-group">
+                                                    <input type="date" name="start_date" value="{{ $recipe->start_date }}" class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Time</label>
+                                                <div class="input-group">
+                                                    <input type="time" name="start_time" value="{{ $recipe->start_time }}" class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
 
-                            <div class="row">
-                               
+                                        
+
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Finished Good</label>
+                                                    <select  name="item_good_id" class="form-control select2 item-dropdown" style="width:100%">                                                
+                                                        <option value="" >Choose...</option>
+                                                        @foreach ($itemGoods as $item)
+                                                            <option value="{{$item->id}}"
+                                                                @if($recipe->item_id == $item->id)
+                                                                    selected
+                                                                @endif
+                                                                >
+                                                                {{ $item->code.'-'.$item->category->name .'-'.$item->name }}
+                                                            </option>
+                                                        @endforeach
                                 
-                             
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Name</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bx-cube" ></span> </div>
-                                            <input type="text" name="name" value="{{ $recipe->name }}" class="form-control" autocomplete="off">
-                                        </div> 
-                                    </div> 
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Description</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bx-message-square-dots" ></span> </div>
-                                            <input type="text" name="description" value="{{ $recipe->description }}" class="form-control" autocomplete="off">
-                                        </div> 
-                                    </div> 
-                                </div>
-                                
+                                                    </select>
+                            
+                                            </div> 
+                                        </div>
+                                     
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Name</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-cube" ></span> </div>
+                                                    <input type="text" name="name" value="{{ $recipe->name }}" class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Description</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-message-square-dots" ></span> </div>
+                                                    <input type="text" name="description" value="{{ $recipe->description }}" class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
+
+                                        @if ($recipe->end_date != null)
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">End Date</label>
+                                                <div class="input-group">
+                                                    <input type="date" name="end_date" value="{{ $recipe->end_date }}" class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">End Time</label>
+                                                <div class="input-group">
+                                                    <input type="time" name="end_time" value="{{ $recipe->end_time }}" class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
+                                        @else
+                                            <p class="text-primary text-center">This Recipe is not ended Yet</p>
+                                        @endif
+
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label class="form-label text-danger">Status</label>
+                                                <select  name="is_active" class="form-control select2 item-dropdown" style="width:100%">                                                
+                                                    <option value="" >Choose...</option>
+                                                    <option @if($recipe->is_active == 1 ) selected @endif   value="1" >Active</option>
+                                                    <option @if($recipe->is_active == 0 ) selected @endif   value="0" >Inactive</option>
+                                                    
+                                                    
+                            
+                                                </select>
+                                            </div> 
+                                        </div>
+                                        
+                                    </div>
+                                </div> 
                             </div>
-                        </div> 
+                        </div>
+
+
+
+
+
+
+                        <div class="col-md-8">
+                            <div class="card">
+                      
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">Recipe Details</h4>
+                                    <div class="table-responsive">
+                                        <table id="table" class="table table-border" style="border-collapse:collapse;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" width="50"></th>
+                                                    <th class="text-center" width="200">Material Name</th> 
+                                                    <th class="text-center" width="150">Unit</th> 
+                                                    <th class="text-center" width="100">QTY</th> 
+                                                    <th class="text-center" width="50"></th>
+                                                
+                                                </tr>
+                                            </thead>
+                                            <tbody id="sortable-table">
+                                                @foreach ( $recipeDetails  as $detail)
+                                                    <tr>
+                                                        <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
+                                            
+                                                        <td> 
+                                                            <select  name="item_id[]" class="form-control select2 item-dropdown-list" style="width:100%; border:1px solid red">                                                
+                                                                <option >Choose...</option>
+                                                                @foreach ($items as $item)
+                                                                    <option @if($item->id == $detail->item_id ) selected @endif value="{{$item->id}}" data-unit-id="{{ $item->unit_id }}">{{ $item->code.'-'. $item->name }}</option>
+                                                                @endforeach
+                                                                
+                                                            </select>
+                                                            
+                                                        </td> 
+                                                        <td> 
+                                                            <select name="unit_id[]"  class="form-control select2 unit-dropdown-list" style="width:100%">                                                
+                                                                <option>Choose...</option>
+                                                                @foreach ($units as $unit)
+                                                                    <option @if($unit->id == $detail->unit_id ) selected @endif value="{{$unit->id}}" data-base-unit-value="{{ $unit->base_unit_value }}" >{{ $unit->base_unit }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            
+                                                        </td> 
+                                                        <td>
+                                                            <input type="number" name="quantity[]" value="{{ $detail->quantity  }}" step="0.0001" class="form-control item-quantity">  
+                                                        </td>
+                                                        <td class="text-center">  
+                                                            <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                               
+                                            </tbody> 
+                                        </table>
+        
+                                        <button id="btn-add-more" class="btn btn-primary"><span class="bx bx-plus"></span> Add More</button>
+                                    </div> 
+                                   
+        
+                                  
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-8">
+                                    </div>
+                                    
+                                    <div class="col-md-4 d-flex align-items-center">
+                                        <table id="summary-table" class="table">
+                                            <tr>
+                                                <th width="50%">Total Quantity KG's </th>
+                                                <td width="50%">
+                                                    <input type="number" name="total_quantity" id="total_quantity" value="0" class="form-control text-end" readonly>
+                                                </td>
+                                            </tr>      
+                                        </table>
+                                    </div>
+                                </div>  
+        
+                            </div>
+                        </div>
                     </div>
+                    
                  
 
-                    <div class="card">
-                      
-                        <div class="card-body">
-                            <h4 class="card-title mb-4">Recipe Details</h4>
-                            <div class="table-responsive">
-                                <table id="table" class="table table-border" style="border-collapse:collapse;">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" width="50"></th>
-                                            <th class="text-center" width="200">Material Name</th> 
-                                            <th class="text-center" width="150">Unit</th> 
-                                            <th class="text-center" width="100">QTY</th> 
-                                            <th class="text-center" width="50"></th>
-                                        
-                                        </tr>
-                                    </thead>
-                                    <tbody id="sortable-table">
-                                        @foreach ( $recipeDetails  as $detail)
-                                            <tr>
-                                                <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
-                                    
-                                                <td> 
-                                                    <select  name="item_id[]" class="form-control select2 item-dropdown-list" style="width:100%; border:1px solid red">                                                
-                                                        <option >Choose...</option>
-                                                        @foreach ($items as $item)
-                                                            <option @if($item->id == $detail->item_id ) selected @endif value="{{$item->id}}" data-unit-id="{{ $item->unit_id }}">{{ $item->code.'-'. $item->name }}</option>
-                                                        @endforeach
-                                                        
-                                                    </select>
-                                                    
-                                                </td> 
-                                                <td> 
-                                                    <select name="unit_id[]"  class="form-control select2 unit-dropdown-list" style="width:100%">                                                
-                                                        <option>Choose...</option>
-                                                        @foreach ($units as $unit)
-                                                            <option @if($unit->id == $detail->unit_id ) selected @endif value="{{$unit->id}}" data-base-unit-value="{{ $unit->base_unit_value }}" >{{ $unit->base_unit }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    
-                                                </td> 
-                                                <td>
-                                                    <input type="number" name="quantity[]" value="{{ $detail->quantity  }}" step="0.0001" class="form-control item-quantity">  
-                                                </td>
-                                                <td class="text-center">  
-                                                    <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                       
-                                    </tbody> 
-                                </table>
-
-                                <button id="btn-add-more" class="btn btn-primary"><span class="bx bx-plus"></span> Add More</button>
-                            </div> 
-                           
-
-                          
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-md-8">
-                            </div>
-                            
-                            <div class="col-md-4 d-flex align-items-center">
-                                <table id="summary-table" class="table">
-                                    <tr>
-                                        <th width="50%">Total Quantity KG's </th>
-                                        <td width="50%">
-                                            <input type="number" name="total_quantity" id="total_quantity" value="0" class="form-control text-end" readonly>
-                                        </td>
-                                    </tr>      
-                                </table>
-                            </div>
-                        </div>  
-
-                    </div>
+                   
                     <div class="row  mt-2">
                        
                         <div class="col-md-12 text-end">

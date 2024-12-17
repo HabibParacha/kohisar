@@ -28,12 +28,11 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-
         if(Auth::user()->type == "admin")
         return redirect()->route('admin-dashboard');
 
-        elseif(Auth::user()->type == "driver")
-            return redirect()->route('driver-dashboard');
+        elseif(Auth::user()->type == "saleman")
+            return redirect()->route('saleman-dashboard');
 
         else
             return redirect()->route('login');

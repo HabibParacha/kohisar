@@ -41,26 +41,17 @@
                                 <i class="mdi mdi-chevron-down"></i></button>
                             <div class="dropdown-menu" style="margin: 0px;">
 
-                                <a class="dropdown-item" href="{{ URL('/InvoiceCreate') }}"><i class="bx bx-plus "></i>
-                                    Invoice</a>
+                                <a class="dropdown-item" href="{{ route('sale-invoice.create') }}"><i class="bx bx-plus "></i>
+                                    Sale Invoice</a>
                                 <div class="dropdown-divider"></div>
 
 
-                                <a class="dropdown-item" href="{{ route('voucher.create','BP') }}">
-                                    <i class="bx bx-plus "></i> BP-Bank Payment
+                                <a class="dropdown-item" href="{{ route('voucher.create') }}">
+                                    <i class="bx bx-plus "></i> Voucher
                                 </a>
-                                <a class="dropdown-item" href="{{  route('voucher.create','BR') }}">
-                                    <i class="bx bx-plus "></i> BR-Bank Receipt
-                                </a>
+                               
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{  route('voucher.create','CP') }}">
-                                    <i class="bx bx-plus "></i> CP-Cash Payment
-                                </a>
-                                <a class="dropdown-item" href="{{ route('voucher.create','CR') }}">
-                                    <i class="bx bx-plus "></i> CR-Cash Receipt
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{  route('voucher.create','JV') }}">
+                                <a class="dropdown-item" href="{{  route('voucher.createJournalVoucher') }}">
                                     <i class="bx bx-plus "></i> Journal Voucher
                                 </a>
 
@@ -85,14 +76,40 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">Inventory Reports <i
                                     class="mdi mdi-chevron-down"></i></button>
                             <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{{ route('report.fetchRawMaterailStock') }}">Raw Material</a>
+                                <a class="dropdown-item" href="{{ route('report.fetchFinishedGoodsStock') }}">Finshed Good Stock</a>
+                                <a class="dropdown-item" href="{{ route('report.production.request') }}">Production Report</a>
 
                             </div>
                         </div><!-- /btn-group -->
+                      
+
+
+
                         <div class="btn-group">
-                            <button type="button" class="btn btn-outline-light dropdown-toggle"
-                                data-bs-toggle="dropdown" aria-expanded="false">Accounts Reports <i
-                                    class="mdi mdi-chevron-down"></i></button>
+                            <a href="{{ route('account-reports.request') }}"  class="btn btn-outline-light"
+                               >Accounts Reports</a>
                             <div class="dropdown-menu">
+
+                               
+                                <a class="dropdown-item  " >Vochers</a>
+                                {{-- <a class="dropdown-item" href="">Cash Book</a> --}}
+                                <div class="dropdown-divider"></div>
+                                {{-- <a class="dropdown-item" href="{{ route('account-reports.daybook') }}">Day book</a> --}}
+                                {{-- <a class="dropdown-item" href="">General Ledger</a>
+                                <a class="dropdown-item" href="">Trial Balance</a>
+                                <a class="dropdown-item" href="">Trial with
+                                    acitivity</a>
+                                <a class="dropdown-item" href="">Profit & Loss</a>
+                                <a class="dropdown-item" href="">Balance Sheet</a>
+                                <a class="dropdown-item" href="">Party Balances</a>
+                             
+                                <a class="dropdown-item" href="">Bank Reconciliation</a>
+                                <a class="dropdown-item" href="">Tax Report</a>
+                                <a class="dropdown-item" href="">Invoice Summary List</a>
+                                <a class="dropdown-item" href="">Invoice Detail</a>
+                                <a class="dropdown-item" href="">Payment Summary</a>
+                                <a class="dropdown-item" href="">Expense Report</a> --}}
 
                             </div>
                         </div><!-- /btn-group -->
@@ -153,9 +170,12 @@
 
 
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item text-danger" href=""><i
-                            class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> <span
-                            key="t-logout">Logout</span></a>
+                   <form action="{{ route("logout") }}" method="POST">
+                    @csrf
+                    <button type="submit" class="dropdown-item text-danger"><i
+                        class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> <span
+                        key="t-logout">Logout</span></button>
+                   </form>
                 </div>
             </div>
 

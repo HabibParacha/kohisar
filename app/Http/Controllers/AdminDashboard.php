@@ -21,7 +21,7 @@ class AdminDashboard extends Controller
         
 
 
-        return view('adminDashboard', 
+        return view('admin_dashboard', 
             compact(
                 'total_users'
         ));

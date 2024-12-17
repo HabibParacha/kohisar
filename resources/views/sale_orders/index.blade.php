@@ -26,28 +26,61 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="filterRow">
+                                   <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Start Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
+                                                    <input type="date" name="start_date" id="start_date" class="form-control" value="">
+                                                </div>
+                                            
+                                            </div> 
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">End Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
+                                                    <input type="date" name="end_date" id="end_date" class="form-control" value="">
+                                                </div>
+                                            
+                                            </div> 
+                                        </div>
 
-                        @if (session('error'))
-                            <div class="alert alert-{{ Session::get('class') }} p-1" id="success-alert">
-
-                                {{ Session::get('error') }}
-                            </div>
-                        @endif
-                        @if (count($errors) > 0)
-
-                            <div>
-                                <div class="alert alert-danger pt-3 pl-0   border-3">
-                                    <p class="font-weight-bold"> There were some problems with your input.</p>
-                                    <ul>
-
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Saleman</label>
+                                                <select name="saleman_id" id="saleman_id" class="select2 form-control" autofocus>                                                
+                                                    <option value="">Choose...</option>
+                                                    @foreach ($userSalemen as $saleman)
+                                                        <option value="{{$saleman->id}}">{{ $saleman->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>                                        
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <button type="button" class="btn btn-danger  mt-4" id="filter-btn">
+                                                <i class="mdi mdi-filter"></i> Filter
+                                            </button>
+                                            <button type="button" class="btn btn-primary  mt-4" id="reset-filter-btn">
+                                                <i class="fas fa-sync-alt"></i> Reset
+                                            </button>
+                                        </div>  
+                                    </div>
+                                   </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>              
+                </div>
+                <div class="row">
+                    <div class="col-12">
 
-                        @endif
+                       
 
                         <div class="card">
 
@@ -59,7 +92,6 @@
                                             <th>Receipt No</th>
                                             <th>Customer Name</th>
                                             <th>Saleman Name</th>
-                                            <th>Total Amount</th>
                                            
                                             <th>Action</th>
                                         </tr>
@@ -113,18 +145,47 @@
             var table = $('#table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('sale-order.index') }}",
+                ajax: {
+                    url: "{{ route('sale-order.index') }}",
+                    data: function (d) {
+                        d.start_date = $('#start_date').val();
+                        d.end_date = $('#end_date').val();
+                        d.saleman_id = $('#saleman_id').val();
+                    }
+                },
                 columns: [
                     { data: 'date' },
                     { data: 'invoice_no' },
                     { data: 'party_business_name' },
                     { data: 'saleman_name' },
-                    { data: 'grand_total' },
                    
                     { data: 'action', orderable: false, searchable: false },
                 ],
                 order: [[0, 'desc']],
             });
+
+            $('#filter-btn').on('click', function(){
+                table.draw();
+            });
+            $('#reset-filter-btn').on('click', function(){
+                $('#start_date').val('');
+                $('#end_date').val('');
+                $('#saleman_id').val('').trigger('change');
+                table.draw();
+            });
+            $('#start_date').on('change', function() {
+                let startDate = $(this).val();
+                
+                // Set the end date to the start date if it's empty or less than the start date
+                let endDate = $('#end_date').val();
+                if (!endDate || endDate < startDate) {
+                    $('#end_date').val(startDate);
+                }
+                
+                // Set the min attribute of the end date to the start date
+                $('#end_date').attr('min', startDate);
+            });
+            
 
             $('#submit-sale-order-destroy').click(function() {
                 let invoice_master_id = $(this).data('id');

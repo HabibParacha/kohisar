@@ -26,29 +26,49 @@ class InvoiceMaster extends Model
         'vehicle_no',
         'status',
         'type',
-        'party_id',
         'recipe_id',
+        'party_id',
         'saleman_id',
         'party_warehouse_id',
         'item_total',
-        'shipping',
+        'total',
+        'total_bags',
+        'production_material_tons',
+        
         'sub_total',
+        
         'discount_type',
         'discount_value',
         'discount_amount',
-        'total',
-        'production_material_tons',
+        
         'tax_type',
         'tax_rate',
+        'tax_amount',
+        
+        'wth_tax_rate',
+        'wth_tax_amount',
+        
+        'commission_rate',
+        'commission_amount',
+        
+        'shipping_type',
+        'shipping',
+        
         'grand_total',
-
+        
         'production_qty',
         'output_qty',
         'surplus_qty',
         
+        'output_bags',
+        'surplus_bags',
+
+        'created_by',
+        
         'description',
         'attachment',
-        'creator_id'
+
+        'is_lock',
     ];
 
 
@@ -89,26 +109,27 @@ class InvoiceMaster extends Model
 
 
     // $newInvoiceNo = InvoiceMaster::generateInvoiceNo('PRO','production');
-    public static function generateInvoiceNo($prefix,$type){
-        
+    public static function generateInvoiceNo($prefix, $type)
+    {
+        // Fetch the maximum numeric part of the invoice_no, increment it by 1
+        // SUBSTRING_INDEX extracts the numeric part after the last '-'
+        // CAST converts it to an integer for comparison
         $max_invoice_no = DB::table('invoice_master')
-        ->where('type',$type)
-        ->max('invoice_no');
-        
-        
-        //if record exist
-        if($max_invoice_no)
-        {
-            // Split by '-' and get the second part (the numeric part) +1
-            $get_invoice_digits = (int)  explode('-', $max_invoice_no)[1] + 1;
-
-            $new_invoice_no =  $prefix.'-'.$get_invoice_digits;
-
+            ->select(DB::raw("MAX(CAST(SUBSTRING_INDEX(invoice_no, '-', -1) AS UNSIGNED) + 1) as maximum"))
+            ->where('type', $type) // Filter by type (e.g., 'receipt')
+            ->value('maximum');
+    
+        // Check if there is an existing invoice number
+        if ($max_invoice_no != null) {
+            // If a maximum exists, create the new invoice number by appending the incremented value to the prefix
+            $new_invoice_no = $prefix . '-' . $max_invoice_no;
+            return $new_invoice_no;
+        } else {
+            // If no existing invoice, create the first invoice number with the prefix and start from '1'
+            $new_invoice_no = $prefix . '-' . '1';
             return $new_invoice_no;
         }
-        else{ 
-            $new_invoice_no = $prefix.'-'.'1';
-            return $new_invoice_no;// first invoice no
-        }  
     }
+    
+
 }

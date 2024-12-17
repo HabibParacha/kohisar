@@ -58,8 +58,10 @@
                                         <tr>
                                             <th>Date</th>
                                             <th>Receipt No</th>
-                                            <th>Vehcile No</th>
+                                            <th>Reference No</th>
                                             <th>Supplier Name</th>
+                                            <th>Vehcile No</th>
+                                            <th>Total bags</th>
                                             <th>Shipping</th>
                                             <th>Total Amount</th>
                                            
@@ -119,8 +121,10 @@
                 columns: [
                     { data: 'date' },
                     { data: 'invoice_no' },
-                    { data: 'vehicle_no' },
+                    { data: 'reference_no' },
                     { data: 'party_business_name' },
+                    { data: 'vehicle_no' },
+                    { data: 'total_bags' },
                     { data: 'shipping' },
                     { data: 'grand_total' },
                    

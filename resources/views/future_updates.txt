@@ -4,10 +4,13 @@
 add ajax dropdownn for supplier 
 add supplier form dropdown 
 all ajax function , model can be called globally 
-
+damage stock
+by clicking on stock item genrate report that will tell us item sold in differenct invoices 
 
 -------------------------------------pending: end--------------------------
 
+
+ 
 
 
 

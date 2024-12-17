@@ -19,6 +19,15 @@ ALTER TABLE `invoice_detail` ADD `is_surplus` INT NULL DEFAULT '0' AFTER `net_we
 ALTER TABLE `invoice_master` ADD `production_qty` DECIMAL(15,2) NULL DEFAULT NULL COMMENT 'in kgs' AFTER `grand_total`, ADD `output_qty` DECIMAL(15,2) NULL DEFAULT NULL COMMENT 'in kgs' AFTER `production_qty`, ADD `surplus_qty` DECIMAL(15,2) NULL DEFAULT NULL COMMENT 'in kgs' AFTER `output_qty`;
 ---------------------------------------------System updated--------------------------------------------
 
+ALTER TABLE `recipes` CHANGE `creator_id` `created_by` BIGINT(20) NULL DEFAULT NULL;
+ALTER TABLE `vouchers` CHANGE `creator_id` `created_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE `invoice_master` CHANGE `creator_id` `created_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL;
 
-voucher_type table seeder
+---------------------------------------------System updated--------------------------------------------
+ALTER TABLE `invoice_master` ADD `output_bags` DECIMAL(15,2) NULL AFTER `surplus_qty`, ADD `surplus_bags` DECIMAL(15,2) NULL AFTER `output_bags`;
+---------------------------------------------System updated--------------------------------------------
+ALTER TABLE `invoice_master` ADD `bags` DECIMAL(15,3) NULL AFTER `total`;
 
+ALTER TABLE `recipes` ADD `item_id` BIGINT(20) NULL AFTER `id`;
+
+---------------------------------------------System updated--------------------------------------------

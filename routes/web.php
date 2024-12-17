@@ -1,18 +1,22 @@
 <?php
 
+use App\Http\Controllers\Accounts;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TaxController;
 
+use App\Http\Controllers\TaxController;
 use App\Http\Controllers\AdminDashboard;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\PartyController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SalemanDashboard;
 use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SessionController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
@@ -21,8 +25,12 @@ use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\SaleInvoiceController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\AccountReportsController;
 use App\Http\Controllers\ChartOfAccountController;
+use App\Http\Controllers\OpeningBalanceController;
 use App\Http\Controllers\PartyWarehouseController;
+use App\Http\Controllers\RolePermissionsController;
+use App\Http\Controllers\FinishedGoodsStockController;
 
 
 /*
@@ -44,14 +52,15 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified',])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-   
+    Route::post('/refresh-session', [SessionController::class, 'refreshSession']);
+    Route::post('/logout', [SessionController::class, 'logout']);
 
     Route::resource('customer', CustomerController::class);
     Route::resource('brand', BrandController::class);
@@ -59,27 +68,37 @@ Route::middleware('auth')->group(function () {
     Route::resource('tax', TaxController::class);
     Route::resource('warehouse', WarehouseController::class);
     Route::resource('unit', UnitController::class);
-    Route::resource('product', ProductController::class);
+
+
+    Route::get('items/get-all', [ItemController::class, 'getAllItems'])->name('items.getAll');
+    Route::resource('item', ItemController::class);
+
+    Route::get('recipe/create-version/{id}', [RecipeController::class, 'createVersion'])->name('recipe.createVersion');
+    Route::get('/recipes/{id}/detail-with-stock', [RecipeController::class, 'getRecipeDetailWithStock'])->name('getRecipeDetailWithStock');
+    Route::resource('recipe', RecipeController::class);
+
+    Route::resource('purchase-order', PurchaseOrderController::class);
+    
+    Route::resource('sale-order', SaleOrderController::class);
+
+    Route::get('sale-order/{id}/create-sale-invoice', [SaleInvoiceController::class, 'createFromSaleOrder'])->name('sale-invoice.createFromSaleOrder');
+    Route::resource('sale-invoice', SaleInvoiceController::class);
+
+    Route::get('production/posting/{id}', [ProductionController::class, 'posting'])->name('production.posting');
     Route::resource('production', ProductionController::class);
+
     Route::resource('expense', ExpenseController::class);
 
-   
-    Route::resource('sale-order', SaleOrderController::class);
 
     Route::get('chart-of-account/get-by-category/{id}', [ChartOfAccountController::class, 'getByCategory'])->name('chart-of-account.getByCategory');
     Route::resource('chart-of-account', ChartOfAccountController::class);
 
-    // create1 name because create was resource controller function and create do mot accept $id parameter 
-    Route::get('sale-order/{id}/create-sale-invoice', [SaleInvoiceController::class, 'createFromSaleOrder'])->name('sale-invoice.createFromSaleOrder');
-    Route::resource('sale-invoice', SaleInvoiceController::class);
+   
 
-    Route::get('items/get-all', [ItemController::class, 'getAllItems'])->name('items.getAll');
-    Route::resource('item', ItemController::class);
-    Route::resource('purchase-order', PurchaseOrderController::class);
+    
 
 
-    Route::get('/recipes/{id}/detail-with-stock', [RecipeController::class, 'getRecipeDetailWithStock'])->name('getRecipeDetailWithStock');
-    Route::resource('recipe', RecipeController::class);
+   
 
 
     Route::get('party-index/{type?}', [PartyController::class, 'index'])->name('party-index');
@@ -95,18 +114,124 @@ Route::middleware('auth')->group(function () {
     Route::resource('user', UserController::class);
     
     Route::get('/admin-dashboard', AdminDashboard::class)->name('admin-dashboard');
-    // Route::get('/driver-dashboard', DriverDashboard::class)->name('driver-dashboard');
+    Route::get('/saleman-dashboard', SalemanDashboard::class)->name('saleman-dashboard');
 
 
 
+    Route::get('voucher/create-jv', [VoucherController::class, 'createJournalVoucher'])->name('voucher.createJournalVoucher');
+    Route::post('voucher/store-jv', [VoucherController::class, 'storeJournalVoucher'])->name('voucher.storeJournalVoucher');
     Route::resource('voucher', VoucherController::class);
+
+    Route::resource('finished-goods-stock', FinishedGoodsStockController::class);
+
+
+    // START::Account Section 
+    
+
+    Route::get('account-reports/request', [AccountReportsController::class, 'request'])->name('account-reports.request');
+    Route::post('account-reports/voucher-pdf', [AccountReportsController::class, 'voucherPDF'])->name('account-reports.voucherPDF');
+    Route::post('account-reports/cashbook-pdf', [AccountReportsController::class, 'cashbookPDF'])->name('account-reports.cashbookPDF');
+    Route::post('account-reports/gernal-ledger-pdf', [AccountReportsController::class, 'gernalLedgerPDF'])->name('account-reports.gernalLedgerPDF');
+    Route::post('account-reports/daybook-pdf', [AccountReportsController::class, 'daybookPDF'])->name('account-reports.daybookPDF');
+    Route::post('account-reports/trial-balance-pdf', [AccountReportsController::class, 'trialBalancePDF'])->name('account-reports.trialBalancePDF');
+    Route::post('account-reports/customer-balance-pdf', [AccountReportsController::class, 'customerBalancePDF'])->name('account-reports.customerBalancePDF');
+    Route::post('account-reports/supplier-balance-pdf', [AccountReportsController::class, 'supplierBalancePDF'])->name('account-reports.supplierBalancePDF');
+    Route::post('account-reports/expense-pdf', [AccountReportsController::class, 'expensePDF'])->name('account-reports.expensePDF');
+    Route::post('account-reports/customer-ledger-pdf', [AccountReportsController::class, 'customerLedgerPDF'])->name('account-reports.customerLedgerPDF');
+    Route::post('account-reports/supplier-ledger-pdf', [AccountReportsController::class, 'supplierLedgerPDF'])->name('account-reports.supplierLedgerPDF');
     
     
-  
+    // START::Report Section 
+    Route::get('report/raw-material-stock',[ReportController::class,'fetchRawMaterailStock'])->name('report.fetchRawMaterailStock');    
+    Route::get('report/finished-goods-stock',[ReportController::class,'fetchFinishedGoodsStock'])->name('report.fetchFinishedGoodsStock');    
+    
+    Route::get('report/production/request', [ReportController::class, 'productionRequest'])->name('report.production.request');
+    Route::post('report/production/show', [ReportController::class, 'productionShow'])->name('report.production.show');
+    
+    
+    
+    // User Permissions
+    Route::get('role-permissions/ajax', [RolePermissionsController::class, 'ajax'])->name('role-permissions.ajax');
+    Route::resource('role-permissions', RolePermissionsController::class);
+
+
 });
 
+Route::post('test',[TestController::class, 'test']);
 
 
+// START::Account Section from Falak Travel
+
+route::get('/VoucherReport/',[Accounts::class,'VoucherReport']);
+route::post('/VoucherReport1/',[Accounts::class,'VoucherReport1']);
+route::post('/VoucherReport1PDF/',[Accounts::class,'VoucherReport1PDF']);
+
+route::get('/CashbookReport/',[Accounts::class,'CashbookReport']);
+route::post('/CashbookReport1/',[Accounts::class,'CashbookReport1']);
+route::post('/CashbookReport1PDF/',[Accounts::class,'CashbookReport1PDF']);
+
+route::get('/DaybookReport/',[Accounts::class,'DaybookReport']);
+route::post('/DaybookReport1/',[Accounts::class,'DaybookReport1']);
+route::post('/DaybookReport1PDF/',[Accounts::class,'DaybookReport1PDF']);
+
+
+route::get('/GeneralLedger/',[Accounts::class,'GeneralLedger']);
+route::post('/GeneralLedger1/',[Accounts::class,'GeneralLedger1']);
+route::post('/GeneralLedger1PDF/',[Accounts::class,'GeneralLedger1PDF']);
+
+route::get('/TrialBalance/',[Accounts::class,'TrialBalance']);
+route::post('/TrialBalance1/',[Accounts::class,'TrialBalance1']);
+route::post('/TrialBalance1PDF/',[Accounts::class,'TrialBalance1PDF']);
+
+
+route::get('/TrialBalanceActivity/',[Accounts::class,'TrialBalanceActivity']);
+route::post('/TrialBalanceActivity1/',[Accounts::class,'TrialBalanceActivity1']);
+route::post('/TrialBalanceActivity1PDF/',[Accounts::class,'TrialBalanceActivity1PDF']);
+
+route::get('/BalanceSheet/',[Accounts::class,'BalanceSheet']);
+route::post('/BalanceSheet1/',[Accounts::class,'BalanceSheet1']);
+
+
+route::get('/TicketRegister/',[Accounts::class,'TicketRegister']);
+route::post('/TicketRegister1/',[Accounts::class,'TicketRegister1']);
+route::post('/TicketRegister1PDF/',[Accounts::class,'TicketRegister1PDF']);
+
+
+Route::get('/SalemanTicketRegister/',[Accounts::class,'SalemanTicketRegister']);
+Route::post('/SalemanTicketRegister1/',[Accounts::class,'SalemanTicketRegister1']);
+
+
+route::get('/InvoiceSummary/',[Accounts::class,'InvoiceSummary']);
+route::post('/InvoiceSummary1/',[Accounts::class,'InvoiceSummary1']);
+route::post('/InvoiceSummary1PDF/',[Accounts::class,'InvoiceSummary1PDF']);
+
+route::get('/ProfitAndLoss/',[Accounts::class,'ProfitAndLoss']);
+route::post('/ProfitAndLoss1/',[Accounts::class,'ProfitAndLoss1']);
+
+
+route::get('/ReconcileReport/',[Accounts::class,'ReconcileReport']);
+route::post('/ReconcileReport1/',[Accounts::class,'ReconcileReport1']);
+
+route::get('/ReconcileUpdate/{status}/{id}',[Accounts::class,'ReconcileUpdate']);
+
+Route::post('/ReconcileStatus',[Accounts::class,'Ajax_ReconcileStatus']);
+
+
+Route::get('/Salesman/',[Accounts::class,'Salesman']);
+Route::post('/SalesmanSave/',[Accounts::class,'SalesmanSave']);
+Route::get('/SalesmanEdit/{id}',[Accounts::class,'SalesmanEdit']);
+Route::post('/SalesmanUpdate/',[Accounts::class,'SalesmanUpdate']);
+Route::get('/SalesmanDelete/{id}',[Accounts::class,'SalesmanDelete']);
+
+
+// ..............attachment iframe for all invoices ......
+Route::get('/Attachment/{vhno?}', [Accounts::class, 'Attachment']);
+Route::post('AttachmentSave', [Accounts::class, 'AttachmentSave']);
+Route::get('AttachmentDelete/{id}/{filename}', [Accounts::class, 'AttachmentDelete']);
+Route::get('AttachmentRead', [Accounts::class, 'AttachmentRead']);
+
+
+// END::Account Section from Falak Travel
 
 
 

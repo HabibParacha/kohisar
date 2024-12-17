@@ -95,8 +95,9 @@
                                             {{-- <th>batch No</th> --}}
                                             <th>Batches</th>
                                             <th>Production <sub>QTY</sub> </th>
-                                            <th>Output <sub>QTY</sub> </th>
-                                            <th>Surplus <sub>QTY</sub> </th>
+                                            <th>Output <sub>Bags</sub> </th>
+                                            <th>Surplus <sub>bags</sub> </th>
+                                            <th></th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -170,9 +171,19 @@
                      },
                     // { data: 'batch_no' },
                     { data: 'production_qty' },
-                    { data: 'output_qty' },
-                    { data: 'surplus_qty' },
-                   
+                    { data: 'output_bags' },
+                    { data: 'surplus_bags' },
+                    { 
+                        data: 'is_lock',
+                        render:function(data, type,row)
+                        {
+                            if(data == 0)
+                                return '<span class="fa fa-unlock text-primary"></span>';
+                            else
+                                return '<span class="fa fa-lock text-warning"></span>';
+
+                        }
+                     },
                    
                     { data: 'action', orderable: false, searchable: false },
                 ],

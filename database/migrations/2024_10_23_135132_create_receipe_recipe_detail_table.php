@@ -17,11 +17,17 @@ return new class extends Migration
 
         Schema::create('recipes', function (Blueprint $table) {
             $table->id();
+            $table->date('start_date')->nullable();
+            $table->time('start_time')->nullable();
+         
+            $table->unsignedBigInteger('item_id')->nullable();
             $table->string('name')->nullable();
             $table->longText('description')->nullable();
             $table->decimal('total_quantity',15,4)->nullable();
             $table->boolean('is_active')->default(1);
-            $table->unsignedBigInteger('creator_id')->nullable();
+            $table->date('end_date')->nullable();
+            $table->time('end_time')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
 
             $table->timestamps();
         });

@@ -66,7 +66,7 @@
                                                 <select name="paid_by_COA" class="select2 form-control" autofocus>                                                
                                                     <option value="">Choose...</option>
                                                     @foreach ($accounts as $account)
-                                                        <option value="{{$account->id}}">{{ $account->account_code.'-'.$account->account_name }}</option>
+                                                        <option value="{{$account->id}}">{{ $account->id.'-'.$account->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>                                        
@@ -133,7 +133,7 @@
                                                         <select  name="COA_id[]" class="form-control select2 coa-dropdown-list" style="width: 100%">                                                
                                                             <option >Choose...</option>
                                                             @foreach ($accounts as $account)
-                                                                <option value="{{$account->id}}">{{ $account->account_code.'-'. $account->account_name }}</option>
+                                                                <option value="{{$account->id}}">{{ $account->id.'-'. $account->name }}</option>
                                                             @endforeach
                                                             
                                                         </select>
@@ -372,7 +372,7 @@
                 <select  name="COA_id[]" class="form-control select2 coa-dropdown-list" style="width: 100%">                                                
                     <option >Choose...</option>
                     @foreach ($accounts as $account)
-                        <option value="{{$account->id}}">{{ $account->account_code.'-'. $account->account_name }}</option>
+                        <option value="{{$account->id}}">{{ $account->id.'-'. $account->name }}</option>
                     @endforeach
                     
                 </select>

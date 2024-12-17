@@ -21,15 +21,36 @@ class RecipeController extends Controller
 
     public function index(Request $request)
     {
-
+        $itemGoods = Item::where('type', 'Good')->get();
         try{
             if ($request->ajax()) {
-                $data = Recipe::all();
-    
+
+
+                $query = Recipe::orderBy('id', 'desc');
+
+                if ($request->has('is_active') && $request->is_active != null) {
+                    $query->where('is_active', $request->is_active);
+                }else{
+                    $query->where('is_active', 1);// by default show only active one
+                }
+                
+                if ($request->item_id) {
+                    $query->where('item_id', $request->item_id );
+                }
+                if ($request->start_date && $request->end_date) {
+                    $query->whereBetween('start_date', [$request->start_date, $request->end_date]);
+                }
+
+
+                $data = $query->get();
+
                 return Datatables::of($data)
                     ->addIndexColumn()
                     // Status toggle column
-                   
+                    ->addColumn('item_name', function ($row) {
+                        return $row->item->name ?? 'N/A';
+                    })
+                  
 
                     ->addColumn('action', function ($row) {
                         $btn = '
@@ -47,6 +68,11 @@ class RecipeController extends Controller
                                         <li>
                                             <a href="'.route('recipe.edit', $row->id).'" class="dropdown-item">
                                                 <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="'.route('recipe.createVersion', $row->id).'" class="dropdown-item">
+                                                <i class="bx bx-cog font-size-16 text-warning me-1"></i> Version
                                             </a>
                                         </li>
                                         <li>
@@ -72,7 +98,7 @@ class RecipeController extends Controller
                     ->make(true);
             }
     
-            return view('recipes.index');
+            return view('recipes.index', compact('itemGoods'));
 
         }catch (\Exception $e){
 
@@ -84,14 +110,33 @@ class RecipeController extends Controller
 
     public function create()
     {
-        $items  = Item::all();
+        $items  = Item::where('type', 'Raw')->get();
         $units = Unit::all();
+        $itemGoods = Item::where('type', 'Good')->get();
 
-        return view('recipes.create', compact('items','units'));
+        return view('recipes.create', compact('items','units','itemGoods'));
+    }
+
+    public function makeOldRecipeInactive($recipe_id)
+    {
+
+        $recipe = Recipe::find($recipe_id);
+        $recipe->update([
+            'is_active' => 0,
+            'end_date' => now()->format('Y-m-d'), // Use Carbon's now() for consistency
+            'end_time' => now()->format('H:i'),
+        ]);
     }
 
     public function store(Request $request)
     {
+        if($request->has('old_recipe_id'))
+        {
+            $this->makeOldRecipeInactive($request->old_recipe_id);
+
+        }
+
+       
         // Start a transaction
         DB::beginTransaction();
 
@@ -116,10 +161,13 @@ class RecipeController extends Controller
 
 
             $recipe = [
+                'start_date' => $request->input('start_date'),
+                'start_time' => $request->input('start_time'),
+                'item_id' => $request->input('item_good_id'),
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'total_quantity' => $request->input('total_quantity'),
-                'creator_id' => Auth::id(),
+                'created_by' => Auth::id(),
             ];
 
             $recipe_id = DB::table('recipes')->insertGetId($recipe);
@@ -167,6 +215,7 @@ class RecipeController extends Controller
     {
         $items  = Item::all();
         $units = Unit::all();
+      
         try {
             $recipe = Recipe::findOrFail($id);
             $recipeDetails = $recipe->recipeDetails;
@@ -185,10 +234,12 @@ class RecipeController extends Controller
     {
         $items  = Item::all();
         $units = Unit::all();
+        $itemGoods = Item::where('type', 'Good')->get();
+
         try {
             $recipe = Recipe::findOrFail($id);
             $recipeDetails = $recipe->recipeDetails;
-            return view('recipes.edit', compact('recipe','recipeDetails','items','units'));
+            return view('recipes.edit', compact('recipe','recipeDetails','items','units','itemGoods'));
 
         } catch (\Exception $e) {
             // Return a JSON response with an error message
@@ -209,6 +260,7 @@ class RecipeController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'description' => 'nullable', // Validation for image
+            'is_active' => 'required', 
             'item_id.*' => 'required',
             'unit_id.*' => 'required',
             'quantity.*' => 'required',
@@ -229,9 +281,15 @@ class RecipeController extends Controller
 
        try {
             $recipe = [
+                'start_date' => $request->input('start_date'),
+                'start_time' => $request->input('start_time'),
+                'item_id' => $request->input('item_good_id'),
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'total_quantity' => $request->input('total_quantity'),
+                'end_date' => $request->input('end_date') ?? null,
+                'end_time' => $request->input('end_time') ?? null,
+                'is_active' => $request->input('is_active'),
             ];
 
           DB::table('recipes')->where('id',$id)->update($recipe);
@@ -284,6 +342,15 @@ class RecipeController extends Controller
         try {
             $recipe = Recipe::find($id);
 
+            $recordExists = DB::table('invoice_master')->where('recipe_id',$id)->first();
+            if($recordExists)
+            {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recipe Record Exists.',
+                    ],200);
+            }
+
             DB::table('recipe_detail')->where('recipe_id',$id)->delete();
 
             $recipe->delete();// Delete the recipe record
@@ -328,6 +395,29 @@ class RecipeController extends Controller
             ], 500);
         }
     }
+
+    public function createVersion($id){
+        
+        $old_recipe_id = $id;
+        $items  = Item::where('type', 'Raw')->get();
+        $units = Unit::all();
+        $itemGoods = Item::where('type', 'Good')->get();
+        try {
+            $recipe = Recipe::findOrFail($id);
+            $recipeDetails = $recipe->recipeDetails;
+            return view('recipes.create_version', compact('recipe','recipeDetails','items','units','itemGoods','old_recipe_id'));
+
+        } catch (\Exception $e) {
+            // Return a JSON response with an error message
+            return response()->json([
+                'message' => $e->getMessage(),
+                'success' => false,
+            ], 500);
+        }
+    }
+
+
+    
 
 
    

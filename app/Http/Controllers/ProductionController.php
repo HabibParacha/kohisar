@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Models\Unit;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use App\Models\InvoiceDetail;
 use App\Models\InvoiceMaster;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,8 @@ class ProductionController extends Controller
      */
     public function index(Request $request)
     {
+       
+        
         $recipes = Recipe::all();
         try{
             if ($request->ajax()) {
@@ -47,12 +50,14 @@ class ProductionController extends Controller
                     // Status toggle column
 
                     ->addColumn('recipe_name', function($row){
-                        return ($row->recipe_id) ? $row->recipe->name : '-';
+                        return  $row->recipe->name ?? 'N/A';
                     })
                    
                     ->addColumn('date', function($row){
                         return date('d-m-Y', strtotime($row->date));
                     })
+
+                   
                    
 
                     ->addColumn('action', function ($row) {
@@ -67,16 +72,26 @@ class ProductionController extends Controller
                                             <a href="'.route('production.show',$row->id) .'"  class="dropdown-item">
                                                 <i class="bx bx-show font-size-16 text-primary me-1"></i> View
                                             </a>
-                                        </li>
-                                         <li>
-                                            <a href="'. route('production.edit', $row->id).'" class="dropdown-item">
-                                                <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
-                                            </a>
-                                        </li>
+                                        </li>';
+
+                                        if($row->is_lock == 0)
+                                        {
+                                            $btn .='
+                                            <li>
+                                                <a href="'. route('production.edit', $row->id).'" class="dropdown-item">
+                                                    <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
+                                                </a>
+                                            </li>
+                                             <li>
+                                                <a href="'.route('production.posting',$row->id) .'"  class="dropdown-item '.($row->output_qty == 0 ? "disabled":'') .'">
+                                                    <i class="fas fa-check-double font-size-16 text-warning me-1"></i> Posting
+                                                </a>
+                                            </li>';
+                                        }
                                        
                                        
                                        
-                                    </ul>
+                        $btn .='    </ul>
                                 </div>
                             </div>';
     
@@ -113,7 +128,7 @@ class ProductionController extends Controller
     {
         $goodItems  = Item::where('type','Good')->get();
         $units = Unit::all();
-        $recipes = Recipe::all();
+        $recipes = Recipe::where('is_active',1)->get();
         
         $newInvoiceNo = InvoiceMaster::generateInvoiceNo('PRO','production');
 
@@ -128,7 +143,7 @@ class ProductionController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+
         // Start a transaction
         DB::beginTransaction();
 
@@ -138,8 +153,18 @@ class ProductionController extends Controller
             $validator = Validator::make($request->all(), [
                 'recipe_id' => 'required',
                 'production_material_tons' => 'required',
+                'production_material_tons' => 'required',
                 
             ]);
+
+            if($request->has('output_item_id'))
+            {
+                $validator = Validator::make($request->all(), [
+                    'output_item_id.*' => 'required',
+                    'output_quantity.*' => 'required',
+                    
+                ]);
+            }
 
             if ($validator->fails()) {
                 return response()->json([
@@ -164,9 +189,16 @@ class ProductionController extends Controller
                 'production_qty' => $request->production_sub_total_weight,
                 'output_qty' => $request->output_sub_total_weight,
                 'surplus_qty' => $request->surplus_sub_total_weight,
+                'grand_total' => $request->total_production_cost,
+                'output_bags' => $request->output_bags,
+                'surplus_bags' => $request->surplus_bags,
+
             ];
 
             $invoice_master_id  = DB::table('invoice_master')->insertGetId($invoice_master);
+
+
+           
 
             //production
             for($i=0; $i < count($request->production_item_id); $i++)
@@ -178,25 +210,22 @@ class ProductionController extends Controller
                      'type' => 'production',
                      'item_id' => $request->production_item_id[$i],
                      'net_weight' => $request->production_quantity_weight[$i],
+                     
+                     'per_unit_price' =>  $request->production_unit_cost[$i],
+                     'grand_total' =>  $request->production_item_total_cost[$i],
                  ];
  
  
                  DB::table('invoice_detail')->insertGetId($invoice_detail);
  
             }
-
-
             //output
             if($request->has('output_item_id'))
             {
 
-                
                 for($i=0; $i < count($request->output_item_id); $i++)
                 {
                     
-                   
-
-
                     $invoice_detail = [
                         'invoice_master_id' => $invoice_master_id,
                         'date' => $request->input('date'),
@@ -204,15 +233,18 @@ class ProductionController extends Controller
                         'type' => 'output',
                         'item_id' => $request->output_item_id[$i],
                         'unit_weight' => $request->output_unit_weight[$i],
+                        'per_unit_price' => $request->output_per_unit_cost[$i] / $request->output_unit_weight[$i] ,
                         'total_quantity' => $request->output_quantity[$i],
                         'net_weight' => $request->output_quantity_weight[$i],
+                        'total_price' => $request->output_total_cost[$i],
+                        'grand_total' => $request->output_total_cost[$i],//output Grand Total
                         'is_surplus' =>  $request->is_surplus[$i],
                     ];
-    
     
                     DB::table('invoice_detail')->insertGetId($invoice_detail);
     
                 }
+
             }
                
 
@@ -270,7 +302,7 @@ class ProductionController extends Controller
     {
         $goodItems  = Item::where('type','Good')->get();
         $units = Unit::all();
-        $recipes = Recipe::all();
+        $recipes = Recipe::where('is_active',1)->get();
         
         try {
             $production = InvoiceMaster::with(['productionDetails','outputDetails'])->find($id);
@@ -327,14 +359,16 @@ class ProductionController extends Controller
                 'production_qty' => $request->production_sub_total_weight,
                 'output_qty' => $request->output_sub_total_weight,
                 'surplus_qty' => $request->surplus_sub_total_weight,
+                'grand_total' => $request->total_production_cost,
+                'output_bags' => $request->output_bags,
+                'surplus_bags' => $request->surplus_bags,
             ];
-
-            DB::table('invoice_master')->where('id', $production->id)->update($invoice_master);
-            
-            DB::table('invoice_detail')->where('invoice_master_id',$production->id)->delete();
-
             $invoice_master_id = $production->id;
             $invoice_no = $production->invoice_no;
+            DB::table('invoice_master')->where('id', $production->id)->update($invoice_master);
+            
+           
+            DB::table('invoice_detail')->where('invoice_master_id',$production->id)->delete();
 
             //production
             for($i=0; $i < count($request->production_item_id); $i++)
@@ -346,6 +380,8 @@ class ProductionController extends Controller
                     'type' => 'production',
                     'item_id' => $request->production_item_id[$i],
                     'net_weight' => $request->production_quantity_weight[$i],
+                    'per_unit_price' =>  $request->production_unit_cost[$i],
+                    'grand_total' =>  $request->production_item_total_cost[$i],
                 ];
                 DB::table('invoice_detail')->insertGetId($invoice_detail);
             }
@@ -363,14 +399,19 @@ class ProductionController extends Controller
                         'type' => 'output',
                         'item_id' => $request->output_item_id[$i],
                         'unit_weight' => $request->output_unit_weight[$i],
+                        'per_unit_price' => $request->output_per_unit_cost[$i] / $request->output_unit_weight[$i] ,
                         'total_quantity' => $request->output_quantity[$i],
                         'net_weight' => $request->output_quantity_weight[$i],
+                        'total_price' => $request->output_total_cost[$i],
+                        'grand_total' => $request->output_total_cost[$i],//output Grand Total
                         'is_surplus' =>  $request->is_surplus[$i],
+
                     ];
     
                     DB::table('invoice_detail')->insertGetId($invoice_detail);
     
                 }
+               
             }
                
 
@@ -405,6 +446,76 @@ class ProductionController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    public function posting($id){
+
+        DB::beginTransaction();
+        try {
+
+            $production = InvoiceMaster::find($id);
+
+            $recipe = 'Recipe: ' .$production->recipe->name;
+            $batches = ' Total Batches: '.number_format($production->production_material_tons,0);
+            $cost = ' Cost: '.$production->grand_total;
+
+            $narration = $recipe . $batches . $cost;
+            
+
+            $journalCredit = [
+                'date' => $production->date,
+                'voucher_no' => $production->invoice_no,
+                'type' => 'production',
+                'chart_of_account_id' => env('RAW_MATERIAL'),
+                'narration' => $narration ,
+                'production_id' => $production->id,
+                'credit' =>  $production->grand_total,
+                'trace' => '',
+                'created_by' => Auth::user()->id,
+                'created_at' => now(),
+            ];
+            
+            DB::table('journals')->insert($journalCredit);
+    
+            $journalDebit = [
+    
+                'date' => $production->date,
+                'voucher_no' => $production->invoice_no,
+                'type' => 'output',
+                'chart_of_account_id' => env('FINISHED_GOOD'),
+                'narration' => $narration ,
+                'production_id' => $production->id,
+                'debit' =>  $production->grand_total,
+                'trace' => '',
+                'created_by' => Auth::user()->id,
+                'created_at' => now(),
+            ];
+            
+            DB::table('journals')->insert($journalDebit);
+    
+            $production->update([
+                'is_lock' => 1
+            ]);
+        
+            DB::commit();
+
+             // Return a JSON response with a success message
+            //  return response()->json([
+            //     'success' => true,
+            //     'message' => 'Production Posting successfully.',
+            // ],200);
+            return redirect()->back();
+
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Handle the exception
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
 

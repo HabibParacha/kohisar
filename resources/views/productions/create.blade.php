@@ -96,6 +96,16 @@
                                     </div>                                        
                                 </div>
                                 <div class="col-md-3">
+                                    <div class="mb-2">
+                                        <label class="form-label">Total Tons</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><span class="mdi mdi-weight"></span> </div>
+                                            <input type="number" name="production_material_tons" id="production_material_tons" step="0.0001" class="form-control" disabled>
+                                        </div> 
+                                        <span id="production_material_tons_message" class="text-danger">Please Select Recipe</span>
+                                    </div> 
+                                </div>
+                                <div class="col-md-3">
                                     <div class="mb-3">
                                         <label class="form-label">Output</label>
                                         <select  id="output-item" class="form-control select2" style="width:100%" >                                                
@@ -106,17 +116,6 @@
                     
                                         </select>
                                     </div>                                        
-                                </div>
-                               
-                                <div class="col-md-3">
-                                    <div class="mb-2">
-                                        <label class="form-label">Total Tons</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="mdi mdi-weight"></span> </div>
-                                            <input type="number" name="production_material_tons" id="production_material_tons" step="0.0001" class="form-control" disabled>
-                                        </div> 
-                                        <span id="production_material_tons_message" class="text-danger">Please Select Recipe</span>
-                                    </div> 
                                 </div>
 
                                 <div class="col-md-3">
@@ -164,12 +163,14 @@
                                         <table id="material-table" class="table table-border" style="border-collapse:collapse;">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-start">Item Name</th> 
-                                                    <th class="d-none">Unit</th> 
-                                                    <th class="text-end">Recipe QTY</th> 
-                                                    <th class="text-end">Production QTY</th> 
-                                                    <th class="text-center">Stock QTY</th> 
-                                                    <th class="text-center">status</th> 
+                                                    <th width="10%" class="text-start">Item Name</th> 
+                                                    <th width="10%" class="d-none">Unit</th> 
+                                                    <th width="10%" class="text-end">Recipe QTY</th> 
+                                                    <th width="10%" class="text-end">Production QTY</th> 
+                                                    <th width="10%" class="text-end">Stock QTY</th> 
+                                                    <th width="10%" class="text-end">Unit Cost</th> 
+                                                    <th width="10%" class="text-end">Total Cost</th> 
+                                                    <th width="20%" class="text-center">status</th> 
                                                 
                                                 </tr>
                                             </thead>
@@ -177,6 +178,18 @@
                                             
                                             
                                             </tbody> 
+                                            <tfoot>
+                                                <tr class="text-end">
+                                                    <td  class="fw-bold text-start">TOTAL</td>
+                                                    <td><input type="number" id="materail_recipe_qty_total" class="fw-bold text-end" readonly></td>
+                                                    <td><input type="number" id="materail_production_qty_total" class="text-end fw-bold" readonly></td>
+                                                    <td><input type="number" id="materail_stock_qty_total" class="text-end fw-bold" readonly></td>
+                                                    <td><input type="number" id="materail_avg_unit_price" class="text-end fw-bold" readonly></td>
+                                                    <td class="text-end"><input type="number" id="materail_total_cost" class="text-end fw-bold" readonly></td>
+                                                    <td></td>
+                                                    
+                                                </tr>
+                                            </tfoot>
                                         </table>
         
                                     </div> 
@@ -203,8 +216,10 @@
                                                     <th class="text-center" width="200">Item Name</th> 
                                                     <th class="d-none" width="150">Unit Name</th> 
                                                     <th class="text-center" width="150">Unit Weight</th> 
-                                                    <th class="text-center" width="100">QTY</th> 
+                                                    <th class="text-center" width="100">Bags Qty.</th> 
                                                     <th class="text-center" width="100">QTY Weight</th> 
+                                                    <th class="text-center" width="100">Unit Cost</th> 
+                                                    <th class="text-center" width="100">Total Cost</th> 
                                                     <th class="text-center" width="50"></th>
                                                 
                                                 </tr>
@@ -237,32 +252,57 @@
                         <div class="col-md-6 d-flex justify-content-end offset-md-6">
                        <div class="card">
                            
-                           <div class="card-body">
+                           
+                            <div class="card-body">
                                 <h4 class="card-title mb-4">Summary</h4>
-                                    <table id="summary-table" class="table">
-                                        <tr>
-                                            <th width="50%">Production <sub>KG's</sub></th>
-                                            <td width="50%">
-                                                <input type="number" name="production_sub_total_weight" id="production-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
-                                            </td>
-                                        </tr>  
-                                        <tr>
-                                            <th width="50%">Output <sub>KG's</sub></th>
-                                            <td width="50%">
-                                                <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
-                                            </td>
-                                        </tr>  
-                                        <tr>
-                                            <th width="50%">Surplus <sub>KG's</sub></th>
-                                            <td width="50%">
+                                <table id="summary-table" class="table">
+                                    <tr>
+                                        <th width="50%">Production <sub>KG's</sub></th>
+                                        <td width="50%">
+                                            <input type="number" name="production_sub_total_weight" id="production-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                        </td>
+                                    </tr>  
+                                    <tr>
+                                        <th width="50%">Output <sub>KG's</sub></th>
+                                        {{-- <td width="50%">
+                                        </td> --}}
+                                        <td>
+                                            <div class="input-group">
+                                                    <span class="input-group-text"> KG's</span>
+                                                    <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+
+                                            </div>
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Bags</span>
+                                                <input type="number" name="output_bags" id="output-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                            </div>
+                                        </td>
+                                    </tr>  
+                                    <tr>
+                                        <th width="50%">Surplus <sub>KG's</sub></th>
+                                        <td width="50%">
+                                            <div class="input-group">
+                                                <span class="input-group-text"> KG's</span>
                                                 <input type="number" name="surplus_sub_total_weight" id="surplus-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
-                                            </td>
-                                        </tr>  
-                                    
-                            
-                                    
-                                    </table>
-                                </div>
+
+                                            </div>
+                                            <div class="input-group ">
+                                                <span class="input-group-text">Bags</span>
+                                                <input type="number" name="surplus_bags" id="surplus-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                            </div>
+                                        </td>
+                                    </tr>  
+                                    <tr>
+                                        <th width="50%">Prod. Cost</th>
+                                        <td width="50%">
+                                            <input type="number" name="total_production_cost" id="total-production-cost" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                        </td>
+                                    </tr>  
+                                
+                        
+                                
+                                </table>
+                            </div>
                         </div>
                        </div>
                     </div>  
@@ -362,18 +402,8 @@
        
         // appendNewRow();
     });
-
-
-    $(document).on('select2:select','#output-item', function(e){
-        e.preventDefault();
-        let selected_item = $(this).val();
-        let table = $('#output-table tbody');
-        table.empty();// remove tbody all rows
-        appendNewRow();// add new row
-        table.find('tr:first').find('.output-item-dropdown').val(selected_item).trigger('change');
-
-        
-    });
+    //tfoot of material table
+    
 
     $('#production-store').on('keydown', function(e) {
         if (e.key === 'Enter') {
@@ -386,35 +416,35 @@
 
 <script>
     
-    
+  
     $('#submit-production-store').on('click', function(e){
 
         storeProduction();
 
     //     e.preventDefault();
 
-    //    let prodcution_weight =  parseFloat($('#production-sub-total-weight').val()) || 0;
-    //    let output_weight =  parseFloat($('#output-sub-total-weight').val()) || 0;
-    //    let difference = output_weight - prodcution_weight;
+        //    let prodcution_weight =  parseFloat($('#production-sub-total-weight').val()) || 0;
+        //    let output_weight =  parseFloat($('#output-sub-total-weight').val()) || 0;
+        //    let difference = output_weight - prodcution_weight;
 
-    //    if(prodcution_weight == 0)
-    //    {
-    //         alert("Add Total Tons Value");
-    //         return;
-            
-    //    }
-    
+        //    if(prodcution_weight == 0)
+        //    {
+        //         alert("Add Total Tons Value");
+        //         return;
+                
+        //    }
+        
 
-    //    $('#productionQty').text(prodcution_weight.toFixed(2));
-    //    $('#outputQty').text(output_weight.toFixed(2));
-    //    $('#quantityDifference').text(difference.toFixed(2));
+        //    $('#productionQty').text(prodcution_weight.toFixed(2));
+        //    $('#outputQty').text(output_weight.toFixed(2));
+        //    $('#quantityDifference').text(difference.toFixed(2));
 
-    //    if(prodcution_weight != output_weight)
-    //    {
-    //     $('#quantityMismatchModal').modal('show');   
-    //    }
-    //    else{
-    //     storeProduction();
+        //    if(prodcution_weight != output_weight)
+        //    {
+        //     $('#quantityMismatchModal').modal('show');   
+        //    }
+        //    else{
+        //     storeProduction();
     //    }
  
     });
@@ -486,58 +516,7 @@
         });
     
     }
-    // $('#production-store').on('submit', function(e) {
-    //     e.preventDefault();
-    //     var submit_btn = $('#submit-production-store');
-    //     let createformData = new FormData($('#production-store')[0]);
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "{{ route('production.store') }}",
-    //         dataType: 'json',
-    //         contentType: false,
-    //         processData: false,
-    //         cache: false,
-    //         data: createformData,
-    //         enctype: "multipart/form-data",
-    //         beforeSend: function() {
-    //             submit_btn.prop('disabled', true);
-    //             submit_btn.html('Processing');
-    //         },
-    //         success: function(response) {
-                
-    //             submit_btn.prop('disabled', false).html('Save');  
-
-    //             if(response.success == true){
-    //                 $('#production-store')[0].reset();  // Reset all form data
-                
-    //                 notyf.success({
-    //                     message: response.message, 
-    //                     duration: 3000
-    //                 });
-
-    //                 // Redirect after success notification
-    //                 setTimeout(function() {
-    //                     window.location.href = '{{ route("production.index") }}';
-    //                 }, 200); // Redirect after 3 seconds (same as notification duration)
-
-
-    //             }else{
-    //                 notyf.error({
-    //                     message: response.message,
-    //                     duration: 5000
-    //                 });
-    //             }   
-    //         },
-    //         error: function(e) {
-    //             submit_btn.prop('disabled', false).html('Save');
-            
-    //             notyf.error({
-    //                 message: e.responseJSON.message,
-    //                 duration: 5000
-    //             });
-    //         }
-    //     });
-    // });
+   
             
 </script>
 {{-- END:: Store Data using AJAX --}}

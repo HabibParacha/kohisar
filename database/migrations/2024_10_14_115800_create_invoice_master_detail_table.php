@@ -32,27 +32,52 @@ return new class extends Migration
             $table->unsignedBigInteger('saleman_id')->nullable();// user table type saleman
             $table->unsignedBigInteger('party_warehouse_id')->nullable();
             $table->decimal('item_total', 14, 2)->nullable();
-            $table->decimal('shipping', 14, 2)->nullable();
+            $table->decimal('total', 14, 2)->nullable();
+            $table->decimal('total_bags', 15, 3)->nullable();
+            $table->decimal('production_material_tons', 14, 4)->nullable();
+
+            
             $table->decimal('sub_total', 14, 2)->nullable();
             $table->string('discount_type')->nullable();
             $table->decimal('discount_value', 14, 2)->nullable();
             $table->decimal('discount_amount', 14, 2)->nullable();
-            $table->decimal('total', 14, 2)->nullable();
-            $table->decimal('production_material_tons', 14, 4)->nullable();
+
             $table->string('tax_type')->nullable();
-            $table->decimal('tax_rate', 5, 2)->nullable();
+            $table->decimal('tax_rate', 15, 2)->nullable()->comment('GST or VAT');
+            $table->decimal('tax_amount', 15, 2)->nullable();
+            
+
+            $table->decimal('wth_tax_rate', 15, 2)->nullable()->comment('Withholdong Tax');
+            $table->decimal('wth_tax_amount', 15, 2)->nullable();
+            
+            
+            $table->decimal('commission_rate', 15, 2)->nullable();
+            $table->decimal('commission_amount', 15, 2)->nullable();
+
+
+            $table->string('shipping_type')->nullable();
+            $table->decimal('shipping', 15, 2)->nullable();
+
             $table->decimal('grand_total', 14, 2)->nullable();
+            
+            
             $table->decimal('production_qty', 15, 2)->nullable()->comment('in kgs');
             $table->decimal('output_qty', 15, 2)->nullable()->comment('in kgs');
             $table->decimal('surplus_qty', 15, 2)->nullable()->comment('in kgs');
 
+            $table->decimal('output_bags', 15, 2)->nullable();
+            $table->decimal('surplus_bags', 15, 2)->nullable();
 
-            $table->unsignedBigInteger('creator_id')->nullable();// who created the record
+
+            $table->unsignedBigInteger('created_by')->nullable();// who created the record
 
             
 
             $table->longText('description')->nullable();
             $table->string('attachment')->nullable();
+
+            $table->char('is_lock',2)->default(0);
+
 
             $table->timestamps();
             
@@ -105,7 +130,6 @@ return new class extends Migration
 
         });
 
-      
 
         Schema::enableForeignKeyConstraints();
     }

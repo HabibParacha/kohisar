@@ -1,0 +1,28 @@
+{
+    "Insert Journal Debit Entry": {
+        "prefix": "DebitJournalInsert",
+        "body": [
+            "\\$journalDebit = [",
+            "    'date' => '',",
+            "    'voucher_no' => '',",
+            "    'code' => '',",
+            "    'type' => '',",
+            "    'chart_of_account_id' => '',",
+            "    'narration' => '',",
+            "    'party_id' => '',",
+            "    'customer_id' => '',",
+            "    'supplier_id' => '',",
+            "    'voucher_id' => '',",
+            "    'invoice_master_id' => '',",
+            "    'expense_id' => '',",
+            "    'debit' => '',",
+            "    'trace' => '',",
+            "    'created_by' => Auth::user()->id,",
+            "    'created_at' => now(),",
+            "];",
+            "",
+            "DB::table('journals')->insert(\\$journalDebit);"
+        ],
+        "description": "Insert a journal debit entry into the database."
+    }
+}

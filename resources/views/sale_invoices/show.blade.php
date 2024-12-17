@@ -72,7 +72,7 @@
                                         <th style="width: 70px;" class="text-end">Unit Weight</th>
                                         <th style="width: 70px;" class="text-end">Qty</th>
                                         <th style="width: 70px;" class="text-end">Total Weight</th>
-                                        <th style="width: 70px;" class="text-end">Unit Price</th>
+                                        <th style="width: 70px;" class="text-end">Retail Price</th>
                                         <th style="width: 70px;" class="text-end">Discout Price</th>
                                         <th style="width: 70px;" class="text-end">Before Discount</th>
                                         <th style="width: 70px;" class="text-end">After Discount</th>

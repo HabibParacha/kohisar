@@ -34,10 +34,13 @@ class ItemController extends Controller
 
         $itemTypes = $this->itemTypes();
       
+        $itemCode = (Item::max('id') + 1);
 
         try{
             if ($request->ajax()) {
                 $data = Item::all();
+
+
     
                 return Datatables::of($data)
                     ->addIndexColumn()
@@ -87,7 +90,7 @@ class ItemController extends Controller
                     ->make(true);
             }
     
-            return view('items.index', compact('categories','brands','taxes','units','warehouses','itemTypes'));
+            return view('items.index', compact('categories','brands','taxes','units','warehouses','itemTypes','itemCode'));
 
         }catch (\Exception $e){
 
@@ -118,9 +121,10 @@ class ItemController extends Controller
             {
                 $validator = Validator::make($request->all(), [
                     'category_id' => 'required',
-                    'unit_id' => 'nullable', 
-                    'tax_id' => 'nullable', 
+                    // 'unit_id' => 'nullable', 
+                    // 'tax_id' => 'nullable', 
                     'unit_weight' => 'required',
+                    'sell_price' => 'required',
                 ]);
             }
             // Validate the request data
@@ -136,15 +140,18 @@ class ItemController extends Controller
             }
 
             $data = $request->all();// storing request data in array
+            $data['unit_id'] =1;// by default add 1 that is KG**************************************
 
             Item::create($data);
 
             DB::commit();// Commit the transaction
+            $itemCode = (Item::max('id') + 1);
 
             // Return a JSON response with a success message
             return response()->json([
                 'success' => true,
                 'message' => 'Item added successfully.',
+                'itemCode' => $itemCode
             ],200);
         
 
@@ -197,8 +204,8 @@ class ItemController extends Controller
             'code' => 'required|unique:items,code,'.$item->id,
             'name' => 'required',
             'category_id' => 'nullable',
-            'unit_id' => 'required', 
-            'tax_id' => 'nullable', 
+            // 'unit_id' => 'required', 
+            // 'tax_id' => 'nullable', 
             'stock_alert_qty' => 'nullable',
             'unit_weight' => 'nullable',
             'is_active' => 'nullable',
@@ -222,11 +229,12 @@ class ItemController extends Controller
            $item->update($data);
 
            DB::commit();// Commit the transaction
-
+           $itemCode = (Item::max('id') + 1);
            // Return a JSON response with a success message
            return response()->json([
                'success' => true,
                'message' => 'Item Update successfully.',
+               'itemCode' => $itemCode // new item code for new item passing this to modal
                ],200);
 
 

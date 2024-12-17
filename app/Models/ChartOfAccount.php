@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class ChartOfAccount extends Model
 {
     use HasFactory;
-
+    public $incrementing = false;
     protected $fillable = [
-        'account_code',
-        'account_name',
+
+        'id',
+        'name',
         'description',
         'level',
         'parent_id',

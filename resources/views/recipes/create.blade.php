@@ -48,85 +48,124 @@
                 <!-- start page title -->
                 <form id="recipe-store" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <div class="card">
-                        <div class="card-body">
-                            {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
-                            <h4 class="card-title mb-4">Recipe</h4>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
+                                    <h4 class="card-title mb-4">Recipe</h4>
+        
+                                    <div class="row">
+                                       
+                                        
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Date</label>
+                                                <div class="input-group">
+                                                    <input type="date" name="start_date" value="{{ date('Y-m-d') }}" class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Time</label>
+                                                <div class="input-group">
+                                                    <input type="time" name="start_time" value="{{ now()->format('H:i') }}" class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
 
-                            <div class="row">
-                               
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Finished Good</label>
+                                                    <select  name="item_good_id" class="form-control select2 item-dropdown" style="width:100%">                                                
+                                                        <option value="" >Choose...</option>
+                                                        @foreach ($itemGoods as $item)
+                                                            <option value="{{$item->id}}">
+                                                                {{ $item->code.'-'.$item->category->name .'-'.$item->name }}
+                                                            </option>
+                                                        @endforeach
                                 
-                             
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Name</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bx-cube" ></span> </div>
-                                            <input type="text" name="name"  class="form-control" autocomplete="off">
-                                        </div> 
-                                    </div> 
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Description</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bx-message-square-dots" ></span> </div>
-                                            <input type="text" name="description"  class="form-control" autocomplete="off">
-                                        </div> 
-                                    </div> 
-                                </div>
-                                
+                                                    </select>
+                            
+                                            </div> 
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Name</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-cube" ></span> </div>
+                                                    <input type="text" name="name"  class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Description</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-text"><span class="bx bx-message-square-dots" ></span> </div>
+                                                    <input type="text" name="description"  class="form-control" autocomplete="off">
+                                                </div> 
+                                            </div> 
+                                        </div>
+                                        
+                                    </div>
+                                </div> 
                             </div>
-                        </div> 
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card">
+                      
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">Recipe Details</h4>
+                                    <div class="table-responsive">
+                                        <table id="table" class="table table-border" style="border-collapse:collapse;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" width="50"></th>
+                                                    <th class="text-center" width="200">Material Name</th> 
+                                                    <th class="d-none" width="150">Unit</th> 
+                                                    <th class="text-center" width="100">QTY</th> 
+                                                    <th class="text-center" width="50"></th>
+                                                
+                                                </tr>
+                                            </thead>
+                                            <tbody id="sortable-table">
+                                                
+                                               
+                                            </tbody> 
+                                            
+                                        </table>
+        
+                                        <button id="btn-add-more" class="btn btn-primary"><span class="bx bx-plus"></span> Add More</button>
+                                    </div> 
+                                    <div class="row mt-3">
+                                        <div class="col-md-8">
+                                        </div>
+                                        
+                                        <div class="col-md-4 d-flex align-items-center">
+                                            <table id="summary-table" class="table">
+                                                <tr>
+                                                    <th width="50%">Total Quantity KG's </th>
+                                                    <td width="50%">
+                                                        <input type="number" name="total_quantity" id="total_quantity" value="0" class="form-control text-end" readonly>
+                                                    </td>
+                                                </tr>      
+                                            </table>
+                                        </div>
+                                    </div>  
+                                   
+        
+                                  
+                                </div>
+        
+                            </div>
+                        </div>
                     </div>
+                    
                  
 
-                    <div class="card">
-                      
-                        <div class="card-body">
-                            <h4 class="card-title mb-4">Recipe Details</h4>
-                            <div class="table-responsive">
-                                <table id="table" class="table table-border" style="border-collapse:collapse;">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" width="50"></th>
-                                            <th class="text-center" width="200">Material Name</th> 
-                                            <th class="d-none" width="150">Unit</th> 
-                                            <th class="text-center" width="100">QTY</th> 
-                                            <th class="text-center" width="50"></th>
-                                        
-                                        </tr>
-                                    </thead>
-                                    <tbody id="sortable-table">
-                                        
-                                       
-                                    </tbody> 
-                                    
-                                </table>
-
-                                <button id="btn-add-more" class="btn btn-primary"><span class="bx bx-plus"></span> Add More</button>
-                            </div> 
-                            <div class="row mt-3">
-                                <div class="col-md-8">
-                                </div>
-                                
-                                <div class="col-md-4 d-flex align-items-center">
-                                    <table id="summary-table" class="table">
-                                        <tr>
-                                            <th width="50%">Total Quantity KG's </th>
-                                            <td width="50%">
-                                                <input type="number" name="total_quantity" id="total_quantity" value="0" class="form-control text-end" readonly>
-                                            </td>
-                                        </tr>      
-                                    </table>
-                                </div>
-                            </div>  
-                           
-
-                          
-                        </div>
-
-                    </div>
+                    
                     <div class="row  mt-2">
                        
                         <div class="col-md-12 text-end">
