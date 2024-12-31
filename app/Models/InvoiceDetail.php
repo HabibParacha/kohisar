@@ -30,10 +30,12 @@ class InvoiceDetail extends Model
         'net_weight',
         'is_surplus',
 
+        'per_unit_price_stock',
         'per_unit_price',
         'per_unit_price_old_value',
         'per_unit_price_new_value',
         
+        'total_price_stock',
         'total_price',
         'discount_type',
         'discount_value',

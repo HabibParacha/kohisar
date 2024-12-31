@@ -31,3 +31,12 @@ ALTER TABLE `invoice_master` ADD `bags` DECIMAL(15,3) NULL AFTER `total`;
 ALTER TABLE `recipes` ADD `item_id` BIGINT(20) NULL AFTER `id`;
 
 ---------------------------------------------System updated--------------------------------------------
+ALTER TABLE `invoice_detail` ADD `per_unit_price_stock` DECIMAL(15,2) NULL AFTER `is_surplus`;
+ALTER TABLE `invoice_detail` ADD `total_price_stock` DECIMAL(15,2) NULL AFTER `per_unit_price_new_value`;
+ALTER TABLE `invoice_master` ADD `sub_total_stock` DECIMAL(14,2) NULL AFTER `production_material_tons`;
+ALTER TABLE `invoice_master` ADD `bag_type_id` BIGINT(20) NULL AFTER `total_bags`, ADD `bag_type_name` VARCHAR(255) NULL AFTER `bag_type_id`, ADD `total_net_weight` DECIMAL(15,3) NULL AFTER `bag_type_name`, ADD `total_gross_weight` DECIMAL(15,3) NULL AFTER `total_net_weight`;
+ALTER TABLE `invoice_master` ADD `empty_bag_weight` DECIMAL(15,3) NULL AFTER `total_bags`;
+ALTER TABLE `invoice_master` ADD `is_x_freight` VARCHAR(2) NULL AFTER `commission_amount`;
+ALTER TABLE `vouchers` ADD `invoice_master_id` BIGINT(20) NULL AFTER `chart_of_account_id`;
+ALTER TABLE `voucher_details` ADD `invoice_master_id` BIGINT(20) NULL AFTER `chart_of_account_id`;
+---------------------------------------------System updated--------------------------------------------

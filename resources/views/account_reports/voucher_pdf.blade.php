@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Party List</title>
+    <title>Vouchers</title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -29,17 +29,10 @@
             <table width="100%">
                 <tr>
                     <td colspan="2">
-                        <div align="center" class="style1">FALAK TAVEL AND TOURISM LLC </div>
+                        <div align="center" class="style1">{{ env('COMPANY_NAME') }}</div>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="2">
-                        <div align="center"><strong>Shop # 3, Maryam Building Hor Ul Anz, Deira Dubai<br>
-                                PHONE : +971555751344, +971553613356, +9714880551 <br>
-                                <br>
-                            </strong></div>
-                    </td>
-                </tr>
+                
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>

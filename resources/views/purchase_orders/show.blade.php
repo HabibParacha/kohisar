@@ -69,10 +69,11 @@
 
 
 
-                                <th class="text-center" width="100">Per Kg Price</th>
-                                <th class="text-center" width="100">
-                                    Total Price <i class="bx bxs-help-circle mr-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="per kg price x after cut">
-                                </th>
+                                <th class="text-center" width="100">Per Kg Price <br>Supplier</th>
+                                <th class="text-center" width="100">Total Price <br>Supplier</th>
+                                <th class="text-center" width="100">Per Kg Price <br>Stock</th>
+                                <th class="text-center" width="100">Total Price <br>Stock</th>
+                                
 
                             </tr>
                             @foreach ($invoice_detail as $detail)
@@ -133,15 +134,16 @@
 
                                             @endif
                                             
-                                        </td>
+                                        </td> 
+                                        <td class="text-end">{{ $detail->total_price }}</td>
 
 
-                                      
-                                        
-                                        <td class="text-end">{{ $detail->grand_total }}</td>
+                                        <td class="text-end">{{ $detail->per_unit_price_stock }}</td>
+                                        <td class="text-end">{{ $detail->total_price_stock }}</td>
                                     </tr>
                                     
                                    
+                                    
 
                                 </tr>
                                
@@ -177,17 +179,49 @@
                         <div class="col-md-4 d-flex align-items-center">
                             <table id="summary-table" class="table">
                                 <tr>
-                                    <th class="text-end" width="50%">Sub Total</th>
+                                    <th class="text-end" width="50%">Sub Total Booked in Supplier</th>
                                     <td class="text-end"  width="50%">
                                        {{ $invoice_master->sub_total }}
                                     </td>
                                 </tr>  
                                 <tr>
-                                    <th class="text-end" >Shipping</th>
-                                    <td class="text-end" >
-                                       {{ $invoice_master->shipping }}
+                                    <th class="text-end" width="50%">Sub Total Booked in Stock</th>
+                                    <td class="text-end"  width="50%">
+                                       {{ $invoice_master->sub_total_stock }}
+                                    </td>
+                                </tr>  
+                            
+                                <tr>
+                                    <th class="text-end">Freight </th>
+                                    <td>
+                                        <input type="hidden" name="is_x_freight" id="is-x-freight" value="0" readonly>
+                                        <div class="row">
+                                            <div class="col-md-6 text-center">
+                                                <label class="label mx-1">X</label>
+                                                <input type="checkbox" @checked($invoice_master->is_x_freight == 1)  disabled>
+
+                                            </div>
+                                            <div class="col-md-6 text-end">
+                                                {{ $invoice_master->shipping  }}
+
+                                            </div>
+                                        </div>         
                                     </td>
                                 </tr>
+                                <tr class="text-end">
+                                    <th width="50%">Total Bags</th>
+                                    <td width="50%">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                               {{ $invoice_master->bag_type_name }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                {{ $invoice_master->total_bags }}
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>  
 
                                 <tr >
                                     <th class="text-end"  width="50%">Grand Total</th>

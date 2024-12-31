@@ -33,8 +33,17 @@ class InvoiceMaster extends Model
         'item_total',
         'total',
         'total_bags',
+
+        'empty_bag_weight',
+        'bag_type_id',
+        'bag_type_name',
+        'total_net_weight',
+        'total_gross_weight',
+
+
         'production_material_tons',
         
+        'sub_total_stock',
         'sub_total',
         
         'discount_type',
@@ -51,6 +60,7 @@ class InvoiceMaster extends Model
         'commission_rate',
         'commission_amount',
         
+        'is_x_freight',
         'shipping_type',
         'shipping',
         

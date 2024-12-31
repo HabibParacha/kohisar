@@ -12,8 +12,9 @@ use DateTime;
 use Carbon\Carbon;
 // for excel export
 use App\Models\Item;
-use App\Mail\SendMail;
+use App\Models\Party;
 // end for excel export
+use App\Mail\SendMail;
 use App\Models\Category;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class ReportController extends Controller
    
     public function fetchRawMaterailStock()
     {
-        $data = DB::table('v_raw_material_stock_report')->get();
+        $data = DB::table('v_raw_material_avg_unit_price')->get();
 
         return view('reports.raw_material_stock', compact('data'));
 
@@ -69,56 +70,202 @@ class ReportController extends Controller
     }
 
     public function productionShow(Request $request)
-    {
+{
+    $startDate = $request->startDate;
+    $endDate = $request->endDate;
 
-        $items = Item::where('type','Good')->get();
+    $date = new DateTime($startDate);
+    $currentMonthStartDate = $date->format('Y-m-01');  // The first date of the current month
+    $previousMonthEndDate = $date->modify('last day of last month')->format('Y-m-d');  // Last date of the previous month
+
+    // Fetch all items where type is 'Good' and order them by category
+    $items = Item::where('type', 'Good')
+    ->when($request->category_id, function ($query) use ($request) {
+        return $query->where('category_id', $request->category_id);
+    })
+    ->orderBy('category_id')->get();
+
+    // Group items by category
+    $groupedByCategory = $items->groupBy('category_id');
+    $data = [];
+
+    // Loop through each category
+    foreach ($groupedByCategory as $categoryId => $itemsInCategory) {
+        $category = Category::find($categoryId);
+        
+        $categoryData = [
+            'category_name' => $category ? $category->name : 'N/A',
+            'items' => [],
+        ];
+
+        // Loop through each item in the category
+        foreach ($itemsInCategory as $item) {
+            // Collect data for each item
+            $categoryData['items'][] = [
+                'name' => $item->name,
+                'code' => $item->code,
+                'category' => $category ? $category->name : 'N/A',
+                'before_start_date_production' => DB::table('invoice_detail')
+                    ->where('type', 'output')
+                    ->where('item_id', $item->id)
+                    ->where('date', '<', $startDate)
+                    ->sum('total_quantity'),
+
+                'before_start_date_sales' => DB::table('invoice_detail')
+                    ->where('type', 'invoice')
+                    ->where('item_id', $item->id)
+                    ->where('date', '<', $startDate)
+                    ->sum('total_quantity'),
+
+                'between_dates_production' => DB::table('invoice_detail')
+                    ->where('type', 'output')
+                    ->where('item_id', $item->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->sum('total_quantity'),
+
+                'between_dates_sales' => DB::table('invoice_detail')
+                    ->where('type', 'invoice')
+                    ->where('item_id', $item->id)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->sum('total_quantity'),
+
+                'cumulative_sale' => DB::table('invoice_detail')
+                    ->where('type', 'invoice')
+                    ->where('item_id', $item->id)
+                    ->whereBetween('date', [$currentMonthStartDate, $startDate])
+                    ->sum('total_quantity'),
+
+                'cumulative_prod' => DB::table('invoice_detail')
+                    ->where('type', 'output')
+                    ->where('item_id', $item->id)
+                    ->whereBetween('date', [$currentMonthStartDate, $startDate])
+                    ->sum('total_quantity'),
+            ];
+        }
+
+        // Add category data to the final data array
+        $data[] = $categoryData;
+    }
+
+    // Return the data to the view (you can also return as JSON for API response)
+    return view('reports.production.show', compact('data', 'startDate', 'endDate'));
+}
+
+
+
+    public function rawMaterialHistoryRequest()
+    {
+        $items = Item::where('type','Raw')->get();
+
+        return view('reports.raw_material_history.request', compact('items'));
+    }
+    public function rawMaterialHistroyShow(Request $request)
+    {
 
         $startDate = $request->startDate;
         $endDate = $request->endDate;
+        $item_id = $request->item_id;
 
-        $date = new DateTime($startDate);
-        $startOfMonth = $date->format('Y-m-01');  // Month in two-digit format (01, 02, ..., 12)
+        $receipts = InvoiceDetail::where('item_id', $item_id )
+        ->where('type','receipt')
+        ->whereBetween('date',[ $startDate, $endDate])
+        ->get();
+        $productions = InvoiceDetail::where('item_id', $item_id )
+        ->where('type','production')
+        ->whereBetween('date',[ $startDate, $endDate])
+        ->get();
 
-        // dd($month);
+      
+        // $pdf = PDF::loadView('reports.raw_material_history.pdf', compact('item','receipts','productions','startDate','endDate'));
+        // $pdf->setpaper('A4', 'landscape');
 
-       foreach($items as $item)
-       {
+        // return $pdf->stream();
+        return view('reports.raw_material_history.show', compact('receipts','productions','startDate','endDate'));
+
+    }
+
+    public function materialReceivedHistoryRequest()
+    {
+        $items = Item::where('type','Raw')->get();
+        $suppliers = Party::where('party_type','Supplier')->get();
+
+        return view('reports.material_received_history.request', compact('items','suppliers'));
+    }
+    public function materialReceivedHistoryShow(Request $request)
+    {
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+
+        $data = InvoiceMaster::where('type', 'receipt')
+        ->whereBetween('date', [$startDate, $endDate])
+        ->when($request->supplier_id, function ($query) use ($request) {
+            return $query->where('party_id', $request->supplier_id);
+        })
+        ->with('invoiceDetails')
+        ->orderBy('date','asc')
+        ->get();
+        
+
+        $pdf = PDF::loadView('reports.material_received_history.pdf', compact('data','startDate','endDate'));
+        $pdf->setpaper('A4', 'landscape');
+        return $pdf->stream();
+
+        // return view('reports.material_received_history.pdf', compact('data','startDate','endDate'));
+    }
+
+    public function rawMaterialStockLevelRequest()
+    {
+        $items = Item::where('type','Raw')->get();
+
+        return view('reports.raw_material_stock_level.request', compact('items'));
+    }
+
+    public function rawMaterialStockLevelShow(Request $request)
+    {
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+        $item_id = $request->item_id;
+        $items = Item::where('type','Raw')->get();
+
+        $data= [];
+
+        foreach($items as $item)
+        {
             $data[] = [
+                'name' => $item->name,
+                'receipts' => InvoiceDetail::where('item_id', $item->id )
+                ->where('type','receipt')
+                ->where('date','<', $startDate)
+                ->sum('net_weight'),
 
-                    
-                    'name' => $item->name,
-                    'code' => $item->code,
-                    
-                    'production' => DB::table('invoice_detail')
-                                    ->select('item_id','date','type','total_quantity')
-                                    ->where('type','output')
-                                    ->where('item_id', $item->id)
-                                    ->whereBetween('date',[$startDate,$endDate])
-                                    ->sum('total_quantity'),
+                'productions' => InvoiceDetail::where('item_id', $item->id )
+                ->where('type','production')
+                ->where('date','<', $startDate)
+                ->sum('net_weight'),
 
-                    'bag_issued' => DB::table('invoice_detail')
-                                    ->select('item_id','date','type','total_quantity')
-                                    ->where('type','invoice')
-                                    ->where('item_id', $item->id)
-                                    ->whereBetween('date',[$startDate,$endDate])
-                                    ->sum('total_quantity'),  
+                'received' => InvoiceDetail::where('item_id', $item->id )
+                ->where('type','receipt')
+                ->whereBetween('date', [$startDate, $endDate])
+                ->sum('net_weight'),
 
-                    'cumulative_sale' => DB::table('invoice_detail')
-                                    ->select('item_id','date','type','total_quantity')
-                                    ->where('type','invoice')
-                                    ->where('item_id', $item->id)
-                                    ->whereBetween('date',[$startDate,$endDate])
-                                    ->sum('total_quantity'),     
+                'usage' => InvoiceDetail::where('item_id', $item->id )
+                ->where('type','production')
+                ->whereBetween('date', [$startDate, $endDate])
+                ->sum('net_weight'),
 
+                'purchased_worth' => InvoiceDetail::Where('item_id', $item->id)
+                ->where('type','receipt')
+                ->where('date','<=', $endDate)
+                ->sum('total_price_stock'),
 
-                ]; 
-       }
-       return response()->json($data);
+                'purchased_net_wgt' => InvoiceDetail::where('item_id', $item->id)
+                ->where('type','receipt')
+                ->where('date','<=', $endDate)
+                ->sum('net_weight'),
 
+            ];
+        }
 
-        // $categories = Category::all();
-
-        // return view('reports.production.show', compact('categories','startDate','endDate'));
-
+        return view('reports.raw_material_stock_level.show', compact('data','startDate','endDate'));
     }
 }

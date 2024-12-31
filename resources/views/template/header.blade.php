@@ -79,6 +79,9 @@
                                 <a class="dropdown-item" href="{{ route('report.fetchRawMaterailStock') }}">Raw Material</a>
                                 <a class="dropdown-item" href="{{ route('report.fetchFinishedGoodsStock') }}">Finshed Good Stock</a>
                                 <a class="dropdown-item" href="{{ route('report.production.request') }}">Production Report</a>
+                                <a class="dropdown-item" href="{{ route('report.raw-material-history.request') }}">Raw Material History</a>
+                                <a class="dropdown-item" href="{{ route('report.material-received-history.request') }}">Material Received History</a>
+                                <a class="dropdown-item" href="{{ route('report.raw-material-stock-level.request') }}">Material Stock Level</a>
 
                             </div>
                         </div><!-- /btn-group -->

@@ -33,6 +33,13 @@
                         <span key="t-dashboards">Bill Receipt</span>
                     </a>
                 </li>
+                {{-- <li>
+                    <a href="{{route('purcahse-order.createTest')}}" class="waves-effect ">
+                        <i class=" fas fa-file-invoice-dollar mb-0 "></i>
+                        <span key="t-dashboards"> Create Bill Receipt </span>
+                        <span class="badge rounded-pill bg-danger float-end" key="t-hot">Test</span>
+                    </a>
+                </li> --}}
                 <li>
                     <a href="{{route('recipe.index')}}" class="waves-effect">
                         <i class=" fas fa-utensils mb-0"></i>
@@ -57,6 +64,8 @@
                         <span key="t-dashboards"> Sale Invoice</span>
                     </a>
                 </li>
+                
+              
                 
                 <li>
                     <a href="{{route('party-index','supplier')}}" class="waves-effect">

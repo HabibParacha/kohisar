@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kohisar</title>
+    <title>Customer Ledger</title>
     <style type="text/css">
         .style1 {
             font-size: 20px
@@ -55,27 +55,26 @@
                         <th width='15%' style="text-align:center;">Balance</th>
                     </tr>
                 </tbody>
-                @if($journals->isNotEmpty())
+               
                     <tbody>
                         @php
                             $bf = $broughtForward[0]->amount;
                         @endphp
-                        {{-- <tr>
+                        <tr>
                             <td></td>
                             <td></td>
-                            <td>By Balance Brought Forward</td>
+                            <td>Balance Brought Forward</td>
                             <td></td>
                             <td></td>
-                            <td style="text-align:right">
+                            <td style="text-align:right" >
                                 @if ( $bf < 0 )
                                     <span style="color:red">{{ '('.number_format(abs($bf), 2).')'  }}</span>
                                 @else
                                 <span>{{ number_format($bf, 2) }}</span>
                                 @endif
                             </td>
-                            <td></td>
-                            <td></td>
-                        </tr> --}}
+                           
+                        </tr>
                         
                         @php
                             // Store brought forward value in a variable
@@ -165,11 +164,7 @@
                         </tr>
                         
                     </tbody>
-                @else    
-                    <tr>
-                        <td colspan="6" style="text-align: center; color:red"><b>No Data Found</b></td>
-                    </tr>
-                @endif    
+               
 
             </table>
             {{-- <p class="text-danger">No data found</p> --}}

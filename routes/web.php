@@ -78,6 +78,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('recipe', RecipeController::class);
 
     Route::resource('purchase-order', PurchaseOrderController::class);
+    Route::get('purchase-order/test/create', [PurchaseOrderController::class,'createTest'])->name('purcahse-order.createTest');//********************** */
+
     
     Route::resource('sale-order', SaleOrderController::class);
 
@@ -147,9 +149,16 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('report/production/request', [ReportController::class, 'productionRequest'])->name('report.production.request');
     Route::post('report/production/show', [ReportController::class, 'productionShow'])->name('report.production.show');
+
+
+    Route::get('report/raw-material-history/request', [ReportController::class, 'rawMaterialHistoryRequest'])->name('report.raw-material-history.request');
+    Route::post('report/raw-material-history/show', [ReportController::class, 'rawMaterialHistroyShow'])->name('report.raw-material-history.show');
     
+    Route::get('report/material-received-history/request', [ReportController::class, 'materialReceivedHistoryRequest'])->name('report.material-received-history.request');
+    Route::post('report/material-received-history/show', [ReportController::class, 'materialReceivedHistoryshow'])->name('report.material-received-history.show');
     
-    
+    Route::get('report/raw-material-stock-level/request', [ReportController::class, 'rawMaterialStockLevelRequest'])->name('report.raw-material-stock-level.request');
+    Route::post('report/raw-material-stock-level/show', [ReportController::class, 'rawMaterialStockLevelShow'])->name('report.raw-material-stock-level.show');
     // User Permissions
     Route::get('role-permissions/ajax', [RolePermissionsController::class, 'ajax'])->name('role-permissions.ajax');
     Route::resource('role-permissions', RolePermissionsController::class);
@@ -160,78 +169,8 @@ Route::middleware(['auth'])->group(function () {
 Route::post('test',[TestController::class, 'test']);
 
 
-// START::Account Section from Falak Travel
-
-route::get('/VoucherReport/',[Accounts::class,'VoucherReport']);
-route::post('/VoucherReport1/',[Accounts::class,'VoucherReport1']);
-route::post('/VoucherReport1PDF/',[Accounts::class,'VoucherReport1PDF']);
-
-route::get('/CashbookReport/',[Accounts::class,'CashbookReport']);
-route::post('/CashbookReport1/',[Accounts::class,'CashbookReport1']);
-route::post('/CashbookReport1PDF/',[Accounts::class,'CashbookReport1PDF']);
-
-route::get('/DaybookReport/',[Accounts::class,'DaybookReport']);
-route::post('/DaybookReport1/',[Accounts::class,'DaybookReport1']);
-route::post('/DaybookReport1PDF/',[Accounts::class,'DaybookReport1PDF']);
 
 
-route::get('/GeneralLedger/',[Accounts::class,'GeneralLedger']);
-route::post('/GeneralLedger1/',[Accounts::class,'GeneralLedger1']);
-route::post('/GeneralLedger1PDF/',[Accounts::class,'GeneralLedger1PDF']);
-
-route::get('/TrialBalance/',[Accounts::class,'TrialBalance']);
-route::post('/TrialBalance1/',[Accounts::class,'TrialBalance1']);
-route::post('/TrialBalance1PDF/',[Accounts::class,'TrialBalance1PDF']);
-
-
-route::get('/TrialBalanceActivity/',[Accounts::class,'TrialBalanceActivity']);
-route::post('/TrialBalanceActivity1/',[Accounts::class,'TrialBalanceActivity1']);
-route::post('/TrialBalanceActivity1PDF/',[Accounts::class,'TrialBalanceActivity1PDF']);
-
-route::get('/BalanceSheet/',[Accounts::class,'BalanceSheet']);
-route::post('/BalanceSheet1/',[Accounts::class,'BalanceSheet1']);
-
-
-route::get('/TicketRegister/',[Accounts::class,'TicketRegister']);
-route::post('/TicketRegister1/',[Accounts::class,'TicketRegister1']);
-route::post('/TicketRegister1PDF/',[Accounts::class,'TicketRegister1PDF']);
-
-
-Route::get('/SalemanTicketRegister/',[Accounts::class,'SalemanTicketRegister']);
-Route::post('/SalemanTicketRegister1/',[Accounts::class,'SalemanTicketRegister1']);
-
-
-route::get('/InvoiceSummary/',[Accounts::class,'InvoiceSummary']);
-route::post('/InvoiceSummary1/',[Accounts::class,'InvoiceSummary1']);
-route::post('/InvoiceSummary1PDF/',[Accounts::class,'InvoiceSummary1PDF']);
-
-route::get('/ProfitAndLoss/',[Accounts::class,'ProfitAndLoss']);
-route::post('/ProfitAndLoss1/',[Accounts::class,'ProfitAndLoss1']);
-
-
-route::get('/ReconcileReport/',[Accounts::class,'ReconcileReport']);
-route::post('/ReconcileReport1/',[Accounts::class,'ReconcileReport1']);
-
-route::get('/ReconcileUpdate/{status}/{id}',[Accounts::class,'ReconcileUpdate']);
-
-Route::post('/ReconcileStatus',[Accounts::class,'Ajax_ReconcileStatus']);
-
-
-Route::get('/Salesman/',[Accounts::class,'Salesman']);
-Route::post('/SalesmanSave/',[Accounts::class,'SalesmanSave']);
-Route::get('/SalesmanEdit/{id}',[Accounts::class,'SalesmanEdit']);
-Route::post('/SalesmanUpdate/',[Accounts::class,'SalesmanUpdate']);
-Route::get('/SalesmanDelete/{id}',[Accounts::class,'SalesmanDelete']);
-
-
-// ..............attachment iframe for all invoices ......
-Route::get('/Attachment/{vhno?}', [Accounts::class, 'Attachment']);
-Route::post('AttachmentSave', [Accounts::class, 'AttachmentSave']);
-Route::get('AttachmentDelete/{id}/{filename}', [Accounts::class, 'AttachmentDelete']);
-Route::get('AttachmentRead', [Accounts::class, 'AttachmentRead']);
-
-
-// END::Account Section from Falak Travel
 
 
 

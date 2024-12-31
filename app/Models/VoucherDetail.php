@@ -19,6 +19,8 @@ class VoucherDetail extends Model
         'code',
         'type',
         'chart_of_account_id',
+        'invoice_master_id',
+
         'party_id',
         'customer_id',
         'supplier_id',

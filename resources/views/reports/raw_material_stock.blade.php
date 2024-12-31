@@ -63,7 +63,7 @@
                                         @foreach ($data as $value)
                                             
                                             @php
-                                                $price = ($value->balance * $value->purchase_unit_price);
+                                                $price = ($value->balance * $value->average_unit_price);
                                                 $totalPrice += $price;
                                             @endphp
 
@@ -73,7 +73,8 @@
                                                 <td class="text-end">{{ number_format($value->qty_in,0) }}</td>
                                                 <td class="text-end">{{ number_format($value->qty_out,0) }}</td>
                                                 <td class="text-end balance">{{ number_format($value->balance,0) }}</td>
-                                                <td class="text-end">{{ $value->purchase_unit_price }}</td>
+                                                {{-- <td class="text-end">{{ $value->purchase_unit_price }}</td> --}}
+                                                <td class="text-end">{{ number_format($value->average_unit_price, 2) }}</td>
                                                 <td class="text-end">{{ number_format( $price, 2) }}</td>
                                             </tr>
                                             

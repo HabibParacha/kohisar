@@ -172,8 +172,8 @@
                                                     <th width="10%" class="text-end">Recipe QTY</th> 
                                                     <th width="10%" class="text-end">Production QTY</th> 
                                                     <th width="10%" class="text-end">Stock QTY</th> 
-                                                    <th width="10%" class="text-end">Unit Cost</th> 
-                                                    <th width="10%" class="text-end">Total Cost</th> 
+                                                    <th width="10%" class="text-end d-none">Unit Cost</th> 
+                                                    <th width="10%" class="text-end d-none">Total Cost</th> 
                                                     <th width="20%" class="text-center">status</th> 
                                                 
                                                 </tr>
@@ -188,8 +188,8 @@
                                                     <td><input type="number" id="materail_recipe_qty_total" class="fw-bold text-end" readonly></td>
                                                     <td><input type="number" id="materail_production_qty_total" class="text-end fw-bold" readonly></td>
                                                     <td><input type="number" id="materail_stock_qty_total" class="text-end fw-bold" readonly></td>
-                                                    <td><input type="number" id="materail_avg_unit_price" class="text-end fw-bold" readonly></td>
-                                                    <td class="text-end"><input type="number" id="materail_total_cost" class="text-end fw-bold" readonly></td>
+                                                    <td class="d-none"><input type="number" id="materail_avg_unit_price" class="text-end fw-bold" readonly></td>
+                                                    <td class="text-end d-none"><input type="number" id="materail_total_cost" class="text-end fw-bold" readonly></td>
                                                     <td></td>
                                                     
                                                 </tr>
@@ -505,10 +505,10 @@
                                 <input type="number" name="" step="0.0001" class="stock-quantity text-end" value="${stock_val.toFixed(2)}" readonly>
                             </td> 
                                </td> 
-                            <td class="text-end">
+                            <td class="text-end d-none">
                                 <input type="number" name="production_unit_cost[]" step="0.0001" class="stock-unit-cost text-end" value="${detail.purchase_unit_price }" readonly>
                             </td> 
-                            <td class="text-end">
+                            <td class="text-end d-none">
                                 <input type="number" name="production_item_total_cost[]" step="0.0001" class="stock-total-cost text-end" value="${total_cost}" readonly>
                             </td> 
                            

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('code')->nullable();
             $table->string('type')->nullable();
             $table->unsignedBigInteger('chart_of_account_id')->nullable();
+            $table->unsignedBigInteger('invoice_master_id')->nullable();
             $table->text('narration')->nullable();
             $table->decimal('total_amount', 20,2)->nullable();
             $table->string('attachment')->nullable();
@@ -41,6 +42,7 @@ return new class extends Migration
             $table->string('type')->nullable();
 
             $table->unsignedBigInteger('chart_of_account_id')->nullable();
+            $table->unsignedBigInteger('invoice_master_id')->nullable();
             
             $table->unsignedBigInteger('party_id')
             ->nullable()

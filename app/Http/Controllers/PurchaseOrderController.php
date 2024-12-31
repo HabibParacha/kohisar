@@ -6,9 +6,10 @@ use App\Models\Tax;
 use App\Models\Item;
 use App\Models\Unit;
 use App\Models\Party;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
-use App\Models\InvoiceDetail;
 
+use App\Models\InvoiceDetail;
 use App\Models\InvoiceMaster;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -123,6 +124,27 @@ class PurchaseOrderController extends Controller
             'suppliers','items','taxes','units','paymentTerms','newInvoiceNo','itemTypes'
         ));
     }
+    public function createTest()
+    {
+        
+        $suppliers = Party::whereIn('party_type',['supplier','both'])->get();
+        $items = Item::all();
+        $taxes = Tax::all();
+        $units = Unit::all();
+
+        $paymentTerms = $this->paymentTerms();
+        $newInvoiceNo = InvoiceMaster::generateInvoiceNo('PR','receipt');
+ 
+        
+
+        $itemController = new ItemController;
+        $itemTypes = $itemController->itemTypes();
+        
+        return view('purchase_orders.test.create', 
+        compact(
+            'suppliers','items','taxes','units','paymentTerms','newInvoiceNo','itemTypes'
+        ));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -132,7 +154,6 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
-        
           // Validate the request data
         $validator = Validator::make($request->all(), [
             'party_id' => 'required',
@@ -175,8 +196,13 @@ class PurchaseOrderController extends Controller
                 'party_id' => $request->input('party_id'),
                 'item_total' => $request->input('item_total'),
                 'total_bags' => $request->input('total_bags'),
+                // 'empty_bag_weight' => $request->input('empty_bag_weight'),
+                // 'bag_type_id' => $request->input('bag_type_id'),
+                'bag_type_name' => $request->input('bag_type_name'),
+                'is_x_freight' => $request->input('is_x_freight'),
                 'shipping' => $request->input('shipping'),
                 'sub_total' => $request->input('sub_total'),
+                'sub_total_stock' => $request->input('sub_total_stock'),
                 'discount_type' => $request->input('discount_type'),
                 'discount_value' => $request->input('discount_value'),
                 'discount_amount' => $request->input('discount_amount'),
@@ -222,8 +248,12 @@ class PurchaseOrderController extends Controller
 
                     'per_unit_price' => $request->per_unit_price[$i],
                     'per_unit_price_old_value' => $request->per_unit_price[$i],// to keep track of change
-
                     'total_price' => $request->total_price[$i],
+
+                    'per_unit_price_stock' => $request->per_unit_price_stock[$i],
+                    'total_price_stock' => $request->total_price_stock[$i],
+
+
                     'grand_total' => $request->total_price[$i],
                 ];
 
@@ -232,41 +262,14 @@ class PurchaseOrderController extends Controller
 
            }
 
-           $journalCredit_AP = [
-               'date' =>  $request->input('date'),
-               'voucher_no' => $newInvoiceNo,
-               'type' => 'receipt',
-               'chart_of_account_id' => env('AP'),
-               'narration' => 'Raw material purchased @ '.$newInvoiceNo. ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2),
-               'supplier_id' => $request->input('party_id'),
-               'invoice_master_id' => $invoice_master_id,
-               'credit' => $request->input('grand_total'),
-               'trace' => '',
-               'created_by' => Auth::user()->id,
-               'created_at' => now(),
-           ];
            
-           DB::table('journals')->insert($journalCredit_AP);
 
 
-           $journalDebit_Raw = [
-               'date' =>  $request->input('date'),
-               'voucher_no' => $newInvoiceNo,
-               'type' => 'receipt',
-               'chart_of_account_id' =>  env('RAW_MATERIAL'),
-               'narration' => 'Raw material purchased @ '.$newInvoiceNo. ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2),
-               'supplier_id' => $request->input('party_id'),
-               'invoice_master_id' => $invoice_master_id,
-               'debit' => $request->input('grand_total'),
-               'trace' => '',
-               'created_by' => Auth::user()->id,
-               'created_at' => now(),
-           ];
-           
-           DB::table('journals')->insert($journalDebit_Raw);
+           $this->createVoucherJournals($request, $invoice_master_id, $newInvoiceNo);
 
 
-           
+
+
 
 
             DB::commit();// Commit the transaction
@@ -291,6 +294,7 @@ class PurchaseOrderController extends Controller
         }
     }
 
+    
     /**
      * Display the specified resource.
      *
@@ -388,7 +392,6 @@ class PurchaseOrderController extends Controller
 
         try {
 
-        
             $invoice_master_data = [
                 'date' => $request->input('date'),
                 'vehicle_no' => $request->input('vehicle_no'),
@@ -396,6 +399,13 @@ class PurchaseOrderController extends Controller
                 'party_id' => $request->input('party_id'),
                 'item_total' => $request->input('item_total'),
                 'total_bags' => $request->input('total_bags'),
+
+                // 'empty_bag_weight' => $request->input('empty_bag_weight'),
+                // 'bag_type_id' => $request->input('bag_type_id'),
+                'bag_type_name' => $request->input('bag_type_name'),
+                'is_x_freight' => $request->input('is_x_freight'),
+                'sub_total_stock' => $request->input('sub_total_stock'),
+
                 'shipping' => $request->input('shipping'),
                 'sub_total' => $request->input('sub_total'),
                 'discount_type' => $request->input('discount_type'),
@@ -432,10 +442,20 @@ class PurchaseOrderController extends Controller
             ->where('invoice_master_id', $invoiceMaster->id)
             ->delete();
 
-            // Delete fro Journals
+            DB::table('voucher_details')
+            ->where('invoice_master_id', $invoiceMaster->id)
+            ->delete();
+
+            DB::table('vouchers')
+            ->where('invoice_master_id', $invoiceMaster->id)
+            ->delete();
+            
             DB::table('journals')
             ->where('invoice_master_id', $invoiceMaster->id)
             ->delete();
+
+           
+            
 
 
 
@@ -461,6 +481,10 @@ class PurchaseOrderController extends Controller
                     'per_unit_price_new_value' => $request->per_unit_price[$i],// to keep track of change
 
                     'total_price' => $request->total_price[$i],
+
+                    'per_unit_price_stock' => $request->per_unit_price_stock[$i],
+                    'total_price_stock' => $request->total_price_stock[$i],
+                    
                     'grand_total' => $request->total_price[$i],
                 ];
 
@@ -469,38 +493,7 @@ class PurchaseOrderController extends Controller
 
            }
 
-           $journalCredit_AP = [
-            'date' =>  $request->input('date'),
-            'voucher_no' => $invoiceMaster->invoice_no,
-            'type' => 'receipt',
-            'chart_of_account_id' => env('AP'),
-            'narration' => 'Raw material purchased @ '.$invoiceMaster->invoice_no. ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2),
-            'supplier_id' => $request->input('party_id'),
-            'invoice_master_id' => $invoiceMaster->id,
-            'credit' => $request->input('grand_total'),
-            'trace' => '',
-            'updated_by' => Auth::user()->id,
-            'updated_at' => now(),
-            ];
-        
-            DB::table('journals')->insert($journalCredit_AP);
-
-
-            $journalDebit_Raw = [
-                'date' =>  $request->input('date'),
-                'voucher_no' => $invoiceMaster->invoice_no,
-                'type' => 'receipt',
-                'chart_of_account_id' =>  env('RAW_MATERIAL'),
-                'narration' => 'Raw material purchased @ '.$invoiceMaster->invoice_no. ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2),
-                'supplier_id' => $request->input('party_id'),
-                'invoice_master_id' => $invoiceMaster->id,
-                'debit' => $request->input('grand_total'),
-                'trace' => '',
-                'updated_by' => Auth::user()->id,
-                'updated_at' => now(),
-            ];
-        
-            DB::table('journals')->insert($journalDebit_Raw);
+           $this->createVoucherJournals($request, $invoiceMaster->id, $invoiceMaster->invoice_no);
 
             DB::commit();// Commit the transaction
 
@@ -574,6 +567,255 @@ class PurchaseOrderController extends Controller
         ];
 
         return $data;
+    }
+
+
+    public function createVoucherJournals(Request $request, $invoice_master_id, $newInvoiceNo)
+    {
+        $date = $request->input('date');
+        $supplier_id = $request->input('party_id');
+        $is_x_freight = $request->input('is_x_freight');
+        $sub_total = $request->input('sub_total');
+        $sub_total_stock = $request->input('sub_total_stock');
+        $shipping = $request->input('shipping');
+        $grand_total = $request->input('grand_total');
+
+        // material = 100
+         // freight = 10
+        if($is_x_freight == 0 )
+        {   
+         /**
+          * Raw material Cost = 100
+          * Freight = 10
+          * 
+          * Jounral Raw material DR = 100
+          * Jounral AP CR = 100
+          * 
+          * Jounral AP DR = 10
+          * Jounral Petty Cah CR = 10
+        
+          */
+             //in this case suppliers says pay freight on the befalf of him 
+             
+             $rawMaterial_DR = $grand_total; //DR => 100
+             $AP_CR = $grand_total;// CR => 100
+             $narration1 = 'Raw material purchased @ '.$newInvoiceNo. ' amount Rs: ' . number_format($grand_total, 2);
+
+             $AP_DR = $shipping; // DR => 10
+             $pettyCash_CR = $shipping;  // CR => 10
+             $narration2 = 'Freight paid on behalf of supplier @ '.$newInvoiceNo. ' amount Rs: ' . number_format($shipping, 2);
+
+             // $rawMaterial_DR
+             DB::table('journals')->insert([
+                 'date' =>  $request->input('date'),
+                 'voucher_no' => $newInvoiceNo,
+                 'type' => 'receipt',
+                 'chart_of_account_id' => env('RAW_MATERIAL'),
+                 'narration' => $narration1,
+                 'supplier_id' => $supplier_id,
+                 'invoice_master_id' => $invoice_master_id,
+                 'debit' => $rawMaterial_DR,
+                 'trace' => '',
+                 'created_by' => Auth::user()->id,
+                 'created_at' => now(),
+             ]);
+
+             // $AP_CR
+             DB::table('journals')->insert([
+                 'date' =>  $request->input('date'),
+                 'voucher_no' => $newInvoiceNo,
+                 'type' => 'receipt',
+                 'chart_of_account_id' => env('AP'),
+                 'narration' => $narration1,
+                 'supplier_id' => $supplier_id,
+                 'invoice_master_id' => $invoice_master_id,
+                 'credit' => $AP_CR,
+                 'trace' => '',
+                 'created_by' => Auth::user()->id,
+                 'created_at' => now(),
+             ]);
+
+
+             $voucher_type = DB::table('voucher_types')->where('code','CP')->first();
+             $newVoucherNo =  Voucher::generateVoucherNo( $voucher_type->code);
+
+             $voucher = [
+                 'date' => $request->date,
+                 'voucher_no' => $newVoucherNo,
+                 'code' => $voucher_type->code,
+                 'type' => $voucher_type->name,
+                 'invoice_master_id' => $invoice_master_id,
+
+                 'narration' => $narration2,
+                 'total_amount' => $shipping,
+                 'created_by' => Auth::user()->id,
+             ];
+             $voucher_id = DB::table('vouchers')->insertGetId($voucher);
+             
+             $voucher_DR = [
+                 'voucher_id' => $voucher_id,
+                 'date' => $request->date,
+                 'voucher_no' => $newVoucherNo,
+                 'code' => $voucher_type->code,
+                 'type' => $voucher_type->name,
+                 'chart_of_account_id' => env('AP'),
+                 'invoice_master_id' => $invoice_master_id,
+
+                 'supplier_id' => $supplier_id,
+                 'narration' => $narration2,
+                 'debit' => $AP_DR,
+                 'created_at' => now(),
+             ];
+             DB::table('voucher_details')->insert($voucher_DR);
+
+             $voucher_DR['created_by'] = Auth::user()->id; // Add created_by only for journals
+             DB::table('journals')->insert($voucher_DR);
+
+             $voucher_CR = [
+                 'voucher_id' => $voucher_id,
+                 'date' => $request->date,
+                 'voucher_no' => $newVoucherNo,
+                 'code' => $voucher_type->code,
+                 'type' => $voucher_type->name,
+                 'chart_of_account_id' => env('PETTY_CASH'),
+                 'invoice_master_id' => $invoice_master_id,
+
+                 'supplier_id' => $supplier_id,
+                 'narration' => $narration2,
+                 'credit' => $pettyCash_CR,
+                 'created_at' => now(),
+             ];
+             DB::table('voucher_details')->insert($voucher_CR);
+
+             $voucher_CR['created_by'] = Auth::user()->id; // Add created_by only for journals
+             DB::table('journals')->insert($voucher_CR);
+
+      
+        }
+        else{
+             // in this case freight is paid by us so our raw material 
+             //cost will be increrased by the amount of freight
+
+             $rawMaterial_DR = $grand_total + $shipping; //DR => 110
+             $AP_CR = $grand_total;// CR => 100
+             $freightExp_CR = $shipping;// CR => 10
+             $narration1 = 'Raw material purchased @ '.$newInvoiceNo. ' amount Rs: ' . number_format($grand_total, 2);
+             $shipping1 = 'Freight paid @ '.$newInvoiceNo. ' amount Rs: ' . number_format($shipping, 2);
+
+
+             $freightExp_DR = $shipping;// DR => 10
+             $pettyCash_CR =  $shipping;// CR => 10 
+             
+             
+
+             // $rawMaterial_DR
+             DB::table('journals')->insert([
+                 'date' =>  $request->input('date'),
+                 'voucher_no' => $newInvoiceNo,
+                 'type' => 'receipt',
+                 'chart_of_account_id' => env('RAW_MATERIAL'),
+                 'narration' => $narration1. ' and '. $shipping1,
+                 'supplier_id' => $supplier_id,
+                 'invoice_master_id' => $invoice_master_id,
+                 'debit' => $rawMaterial_DR,
+                 'trace' => '',
+                 'created_by' => Auth::user()->id,
+                 'created_at' => now(),
+             ]);
+
+             // $AP_CR
+             DB::table('journals')->insert([
+                 'date' =>  $request->input('date'),
+                 'voucher_no' => $newInvoiceNo,
+                 'type' => 'receipt',
+                 'chart_of_account_id' => env('AP'),
+                 'narration' => $narration1,
+                 'supplier_id' => $supplier_id,
+                 'invoice_master_id' => $invoice_master_id,
+                 'credit' => $AP_CR,
+                 'trace' => '',
+                 'created_by' => Auth::user()->id,
+                 'created_at' => now(),
+             ]);
+
+             // $freightExp_CR
+             DB::table('journals')->insert([
+                 'date' =>  $request->input('date'),
+                 'voucher_no' => $newInvoiceNo,
+                 'type' => 'receipt',
+                 'chart_of_account_id' => env('INPUT_FREIGHT'),
+                 'narration' => $shipping1,
+                 'supplier_id' => $supplier_id,
+                 'invoice_master_id' => $invoice_master_id,
+                 'credit' => $freightExp_CR,
+                 'trace' => '',
+                 'created_by' => Auth::user()->id,
+                 'created_at' => now(),
+             ]);
+
+
+
+
+             $voucher_type = DB::table('voucher_types')->where('code','CP')->first();
+             $newVoucherNo =  Voucher::generateVoucherNo( $voucher_type->code);
+
+             $voucher = [
+                 'date' => $request->date,
+                 'voucher_no' => $newVoucherNo,
+                 'code' => $voucher_type->code,
+                 'type' => $voucher_type->name,
+                 'invoice_master_id' => $invoice_master_id,
+
+                 'narration' => $shipping1,
+                 'total_amount' => $shipping,
+                 'created_by' => Auth::user()->id,
+             ];
+             $voucher_id = DB::table('vouchers')->insertGetId($voucher);
+             
+             $voucher_DR = [
+                 'voucher_id' => $voucher_id,
+                 'date' => $request->date,
+                 'voucher_no' => $newVoucherNo,
+                 'code' => $voucher_type->code,
+                 'type' => $voucher_type->name,
+                 'chart_of_account_id' => env('INPUT_FREIGHT'),
+                 'invoice_master_id' => $invoice_master_id,
+
+                 'supplier_id' => $supplier_id,
+                 'narration' => $shipping1,
+                 'debit' => $freightExp_DR,
+                 'created_at' => now(),
+             ];
+             DB::table('voucher_details')->insert($voucher_DR);
+
+             $voucher_DR['created_by'] = Auth::user()->id; // Add created_by only for journals
+             DB::table('journals')->insert($voucher_DR);
+
+             $voucher_CR = [
+                 'voucher_id' => $voucher_id,
+                 'date' => $request->date,
+                 'voucher_no' => $newVoucherNo,
+                 'code' => $voucher_type->code,
+                 'type' => $voucher_type->name,
+                 'chart_of_account_id' => env('PETTY_CASH'),
+                 'invoice_master_id' => $invoice_master_id,
+
+                 'supplier_id' => $supplier_id,
+                 'narration' => $shipping1,
+                 'credit' => $pettyCash_CR,
+                 'created_at' => now(),
+             ];
+             DB::table('voucher_details')->insert($voucher_CR);
+
+             $voucher_CR['created_by'] = Auth::user()->id; // Add created_by only for journals
+             DB::table('journals')->insert($voucher_CR);
+
+
+
+
+
+
+        }
     }
 
    

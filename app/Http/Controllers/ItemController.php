@@ -47,10 +47,10 @@ class ItemController extends Controller
                     // Status toggle column
 
                     ->addColumn('category_name', function ($row) {
-                        return ($row->category_id) ? $row->category->name : '-';
+                        return $row->category->name ?? 'N/A';
                     })
                     ->addColumn('tax_name', function ($row) {
-                        return ($row->tax_id) ?  $row->tax->name : '-';
+                        return $row->tax->name ?? 'N/A';
                     })
                     ->addColumn('unit', function ($row) {
                         return ($row->unit_id) ? $row->unit->base_unit.' , '.$row->unit->child_unit : '-';

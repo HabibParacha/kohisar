@@ -48,12 +48,13 @@
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                         <h3 class="mb-sm-0 font-size-18">All Items</h3>
+                        <h3 class="mb-sm-0 font-size-18 text-danger">New Module Test Page</h3>
 
                         <div class="page-title-right d-flex">
 
-                            <div class="page-btn">
+                            {{-- <div class="page-btn">
                                 <a href="#" class="btn btn-added btn-primary" data-bs-toggle="modal" data-bs-target="#add-item"><i class="me-2 bx bx-plus"></i>Item</a>
-                            </div>  
+                            </div>   --}}
                         </div>
 
 
@@ -166,9 +167,14 @@
 
 
 
-                                            <th class="text-center" width="100">Per Kg Price</th>
+                                            <th class="text-center" width="100">Per Kg Price <br>Supplier</th>
                                             <th class="text-center" width="100">
-                                                Total Price <i class="bx bxs-help-circle mr-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="per kg price x after cut">
+                                                Total Price <br>Supplier  <i class="bx bxs-help-circle mr-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="per kg price x after cut">
+                                            </th>
+
+                                            <th class="text-center" width="100">Per Kg Price <br>Stock</th>
+                                            <th class="text-center" width="100">
+                                                Total Price <br>Stock  <i class="bx bxs-help-circle mr-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="(per kg price + freigt x) x after cut">
                                             </th>
                                 
                                             <th class="text-center" width="50"></th>
@@ -178,6 +184,7 @@
                                     <tbody id="sortable-table">
                                       
                                     </tbody> 
+                                    
                                 </table>
 
                                 <button id="btn-add-more" class="btn btn-primary"><span class="bx bx-plus"></span> Add More</button>
@@ -193,15 +200,32 @@
                                 <div class="col-md-4 d-flex align-items-center">
                                     <table id="summary-table" class="table">
                                         <tr>
-                                            <th width="50%">Sub Total</th>
+                                            <th width="50%">Sub Total Booked in Supplier</th>
                                             <td width="50%">
                                                 <input type="number" step="0.01" name="sub_total" id="sub-total" value="0" class="form-control text-end" readonly>
                                             </td>
                                         </tr>  
                                         <tr>
+                                            <th width="50%">Sub Total Booked in Stock</th>
+                                            <td width="50%">
+                                                <input type="number" step="0.01" name="sub_total_stock" id="sub-total-stock" value="0" class="form-control text-end" readonly>
+                                            </td>
+                                        </tr>  
+                                        <tr>
                                             <th>Freight </th>
                                             <td>
-                                                <input type="number" step="0.001" name="shipping" class="form-control text-end"  autocomplete="off">
+                                                <input type="hidden" name="is_x_freight" id="is-x-freight" value="0" readonly>
+                                                <div class="row">
+                                                    <div class="col-md-3 my-2">
+                                                        <label class="label mx-1">X</label>
+                                                        <input type="checkbox"  id="x-freight-checkbox" class="form-check-input">
+
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <input type="number" step="0.001" name="shipping" id="total-freight" class="form-control text-end" autocomplete="off">
+
+                                                    </div>
+                                                </div>         
                                             </td>
                                         </tr>
 
@@ -215,7 +239,18 @@
                                         <tr class="">
                                             <th width="50%">Total Bags</th>
                                             <td width="50%">
-                                                <input type="number" step="0.001" name="total_bags" id="total-bags" value="0" class="form-control text-end" readonly>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <select class="form-control form-select" name="bag_type_name" id="">
+                                                            <option value="Jute">Jute</option>
+                                                            <option value="Plastic">Plastic</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <input type="number" step="0.001" name="total_bags" id="total-bags" value="0" class="form-control text-end" readonly>
+
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>  
                             
@@ -412,223 +447,9 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on('change', '.unit-dropdown-list, .item-discount-type, .item-tax-dropdown', function(e){
-    
-        let row =  $(this).closest('tr');
-    
-        calculation(row);  
-
-    });
-
-    $(document).on('keyup','.item-gross-weight, .item-per-unit-price, .item-discount-value, .item-cut-percentage, .item-per-package-weight, .item-total-quantity',function(){
-        
-        let row = $(this).closest('tr');
-
-        calculation(row);  
-    });
-
-    $(document).on('change', '.cut-checkbox', function(e){
-        
-        let row =  $(this).closest('tr');
-    
-        if($(this).prop('checked'))
-        {
-            
-           row.find('.item-cut-percentage').removeClass('d-none');
-           row.find('.item-cut-value').removeClass('d-none');
-           row.find('.item-after-cut-total-weight').removeClass('d-none');
-        }   
-        else{
-            row.find('.item-cut-percentage').addClass('d-none').val('0');//reest value to 0
-            row.find('.item-cut-value').addClass('d-none').val('0');//reest value to 0
-            row.find('.item-after-cut-total-weight').addClass('d-none');
-            calculation(row);
-
-        }     
-   
-    });
-   
-    function calculation(row) {
-
-        let gross_weight = parseFloat(row.find('.item-gross-weight').val()) || 0;
-        let price = parseFloat(row.find('.item-price').val()) || 0;
-
-        //Cut Calcaution:start
-            let cut_percentage = parseFloat(row.find('.item-cut-percentage').val()) || 0;
-            let after_cut_total_weight =  gross_weight; 
-            if(cut_percentage > 0){
-                cut_value = (cut_percentage/100) * gross_weight;
-                row.find('.item-cut-value').val(cut_value.toFixed(2));
-
-                after_cut_total_weight = gross_weight - cut_value;
-
-            }
-            row.find('.item-after-cut-total-weight').val(after_cut_total_weight.toFixed(2));
-        //Cut Calcaution:end
-
-
-        //Package Weight Calcaution: start
-            let total_quantity = parseFloat(row.find('.item-total-quantity').val()) || 0;
-            let per_package_weight = parseFloat(row.find('.item-per-package-weight').val()) || 0;
-
-            let total_package_weight = per_package_weight * total_quantity;
-            row.find('.item-total-package-weight').val(total_package_weight.toFixed(2));
-
-            let net_weight = after_cut_total_weight - total_package_weight
-            row.find('.item-net-weight').val(net_weight.toFixed(2));
-        //Package Weight Calcaution: end
-
-        //Total Price Calcaution: start    
-            let per_unit_price =  parseFloat(row.find('.item-per-unit-price').val()) || 0;
-            let total_price = per_unit_price * after_cut_total_weight;
-            row.find('.item-total-price').val(total_price.toFixed(2));
-        //Total Price Calcaution: end    
-
-        summaryCalculation();
-
-    }
-
-    function summaryCalculation()
-    {
-        let sub_total = 0;
-        let tax_total = 0;
-        let discount_total = 0;
-        let grand_total = 0;
-        let total_bags = 0;
-
-        $('.item-total-price').each(function(){
-            let item_total_price = parseFloat($(this).val()) || 0;
-            sub_total+= item_total_price;
-        });
-        $('#sub-total').val(sub_total.toFixed(2));
-
-
-        $('.item-total-quantity').each(function(){
-            let value = parseFloat($(this).val()) || 0;
-            total_bags+= value;
-        });
-        $('#total-bags').val(total_bags.toFixed(2));
-
-
-        grand_total = sub_total;
-        $('#grand-total').val(grand_total.toFixed(2));
-
-
-        
- 
-    }
-
-    $('#btn-add-more').on('click', function(e){
-        e.preventDefault();
-
-        appendNewRow();
-       
-    });
-    
-    $(document).on('click', '.remove-item', function(e) {
-        e.preventDefault();
-        
-        // Show a confirmation dialog
-        if (confirm("Are you sure you want to remove this item?")) {
-            // If confirmed, remove the row
-            $(this).closest('tr').remove();
-            
-            // Recalculate the summary
-            summaryCalculation();
-        }
-    });
-
-   
-
-    function appendNewRow(){
-        let tableBody = $('#table tbody');
-
-        let row = 
-        `<tr>
-            <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
-            <td> 
-                <select  name="item_id[]" class="form-control select2 item-dropdown-list" style="width:150px">                                                
-                   
-                    
-                </select>
-                
-            </td>  
-        
-            <td class="text-end"> 
-                <input  type="number" name="gross_weight[]" step="0.0001" class="form-control item-gross-weight"  autocomplete="off">  
-            </td>
-
-            <td class="text-center"> 
-                <input class="form-check-input cut-checkbox" type="checkbox">
-            </td>
-            <td> 
-                <input type="number" name="cut_percentage[]"  step="0.0001" class="form-control item-cut-percentage d-none"  autocomplete="off">  
-            </td>
-            <td> 
-                <input type="number" name="cut_value[]" value="0" step="0.0001" class="form-control item-cut-value d-none text-end" readonly>  
-            </td>
-            <td> 
-                <input type="number" name="after_cut_total_weight[]" step="0.0001" class="form-control item-after-cut-total-weight d-none text-end" readonly>  
-            </td>
-
-
-
-            <td> 
-                <input type="number" name="total_quantity[]" step="0.0001" class="form-control item-total-quantity"  autocomplete="off">  
-            </td>
-            <td> 
-                <input type="number" name="per_package_weight[]" step="0.0001" class="form-control item-per-package-weight"  autocomplete="off">  
-            </td>
-            <td> 
-                <input type="number" name="total_package_weight[]" value="0" step="0.0001" class="form-control item-total-package-weight text-end" readonly>  
-            </td>
-            <td> 
-                <input type="number" name="net_weight[]" value="0" step="0.0001" class="form-control item-net-weight text-end" readonly>  
-            </td>
-            
-
-
-            <td> 
-                <input type="number" name="per_unit_price[]" step="0.0001" class="form-control item-per-unit-price"  autocomplete="off">  
-            </td>
-            
-
-            <td > 
-                <input type="number" name="total_price[]" step="0.0001" class="form-control item-total-price text-end" readonly>  
-            </td>
-
-
-            <td class="text-center">  
-                <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
-            </td>
-
-        </tr>`;
-        tableBody.append(row);
-        $('.select2', 'table').select2();
-
-    }
-
-
-
 </script>
 
-
-<script>
-    $(function() {
-        // Enable full sorting for tbody rows, allowing drag and drop from bottom to top
-        $("#sortable-table").sortable({
-            handle: ".handle",  // Set the 'handle' option to the bx-menu icon
-            placeholder: "ui-state-highlight",  // Placeholder while dragging
-            axis: "y",  // Restrict dragging to vertical movement
-            update: function(event, ui) {
-                // This event is triggered when the row has been moved
-                console.log('Row moved');
-            }
-        }).disableSelection();  // Disable text selection while dragging
-    });
-</script>
-
-
+@include('purchase_orders.js')
 
 <script>
     $('#purchase-order-store').on('submit', function(e) {
@@ -684,56 +505,6 @@ $(document).ready(function () {
         });
     });
             
-</script>
-<script>
-    $(document).ready(function () {
-        $('#item-store').on('submit', function(e) {
-                e.preventDefault();
-                var submit_btn = $('#submit-item-store');
-                let createformData = new FormData(this);
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('item.store') }}",
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    cache: false,
-                    data: createformData,
-                    enctype: "multipart/form-data",
-                    beforeSend: function() {
-                        submit_btn.prop('disabled', true);
-                        submit_btn.html('Processing');
-                    },
-                    success: function(response) {
-                        
-                        submit_btn.prop('disabled', false).html('Create Item');  
-
-                        if(response.success == true){
-                            $('#add-item').modal('hide'); 
-                            $('#item-store')[0].reset();  // Reset all form data
-                        
-                            notyf.success({
-                                message: response.message, 
-                                duration: 3000
-                            });
-                        }else{
-                            notyf.error({
-                                message: response.message,
-                                duration: 5000
-                            });
-                        }   
-                    },
-                    error: function(e) {
-                        submit_btn.prop('disabled', false).html('Create Item');
-                    
-                        notyf.error({
-                            message: e.responseJSON.message,
-                            duration: 5000
-                        });
-                    }
-                });
-            });
-    });
 </script>
 
 

@@ -1,6 +1,6 @@
 @extends('template.tmp')
 
-@section('title', 'Kohisar')
+@section('title', 'Account Reports')
 
 @section('content')
 
@@ -182,8 +182,8 @@
                                 <div class="tab-pane col-12 col-md-4" id="tab-cashbook" role="tabpanel">
                                     <div class="mb-1 mt-1">
                                         <label >Current Assets Accounts</label>
-                                        <select name="current_coa_id" id="current-coa-id" class="select2 form-control" style="width: 100%">
-                                            <option value="0">All</option>
+                                        <select name="current_coa_id_cashbook" id="current-coa-id-cashbook" class="select2 form-control" style="width: 100%">
+                                            <option value="2222">All</option>
                                             @foreach ($currentAssetAccounts as $account)
                                                 <option value="{{ $account->id }}">{{ $account->id.'-'.$account->name }}</option>
                                             @endforeach
@@ -196,7 +196,7 @@
                                 <div class="tab-pane col-12 col-md-4" id="tab-daybook" role="tabpanel">
                                     <div class="mb-1 mt-1">
                                         <label >Current Assets Accounts</label>
-                                        <select name="current_coa_id" id="current-coa-id" class="select2 form-control" style="width: 100%">
+                                        <select name="current_coa_id_daybook" id="current-coa-id-daybook" class="select2 form-control" style="width: 100%">
                                             <option value="0">All</option>
                                             @foreach ($currentAssetAccounts as $account)
                                                 <option value="{{ $account->id }}">{{ $account->id.'-'.$account->name }}</option>
@@ -246,7 +246,8 @@
                                     <div class="mb-1">
                                         <label >Debitor / Creditor</label>
                                         <select name="balance_report_type_customer" class="select2 form-control" style="width: 100%">
-                                            <option selected value="debitor">Debitor</option>
+                                            <option value="both">Both</option>
+                                            <option value="debitor">Debitor</option>
                                             <option value="creditor">Creditor</option>
                                             
                                         </select>
@@ -268,7 +269,8 @@
                                     <div class="mb-1">
                                         <label >Debitor / Creditor</label>
                                         <select name="balance_report_type_supplier" class="select2 form-control" style="width: 100%">
-                                            <option selected value="debitor">Debitor</option>
+                                            <option value="both">Both</option>
+                                            <option value="debitor">Debitor</option>
                                             <option value="creditor">Creditor</option>
                                             
                                         </select>
@@ -360,61 +362,61 @@
         $(document).ready(function() {
             $('#voucher-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.voucherPDF') }}');
                 $('#form').submit();
             });
             $('#cashbook-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.cashbookPDF') }}');
                 $('#form').submit();
             });
             $('#gernal-ledger-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.gernalLedgerPDF') }}');
                 $('#form').submit();
             });
             $('#daybook-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.daybookPDF') }}');
                 $('#form').submit();
             });
             $('#trail-balance-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.trialBalancePDF') }}');
                 $('#form').submit();
             });
             $('#customer-balance-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.customerBalancePDF') }}');
                 $('#form').submit();
             });
             $('#supplier-balance-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.supplierBalancePDF') }}');
                 $('#form').submit();
             });
             $('#expense-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.expensePDF') }}');
                 $('#form').submit();
             });
             $('#customer-ledger-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.customerLedgerPDF') }}');
                 $('#form').submit();
             });
             $('#supplier-ledger-pdf').click(function(e) {
                 e.preventDefault();
-                $('#form').removeAttr('target');
+                $('#form').attr('target','_blank');
                 $('#form').attr('action', '{{ route('account-reports.supplierLedgerPDF') }}');
                 $('#form').submit();
             });

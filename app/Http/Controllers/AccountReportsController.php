@@ -103,48 +103,29 @@ class AccountReportsController extends Controller
 
     public function cashbookPDF(Request $request)
     {
-
         $this->validateDateRange($request);
+
+        // Initialize the accounts array with the provided cashbook account ID
+        $levelFourAccounts = [$request->current_coa_id_cashbook];
+
+        // Check if the provided account ID is "0" to fetch level 4 cash accounts
+        if ($request->current_coa_id_cashbook === "0") {
+            $levelFourAccounts = ChartOfAccount::where('category', 'cash')
+                ->where('level', 4)
+                ->pluck('id')  // Get an array of account IDs
+                ->toArray();   // Convert the result to a plain array
+        }
+
 
         $broughtForward = DB::table('journals')
             ->select(DB::raw('SUM(COALESCE(debit, 0) - COALESCE(credit, 0)) AS amount'))
             ->where('date', '<', $request->startDate)
-            ->when($request->current_coa_id, function ($query, $currentAssetAccountId) {
-                if ($currentAssetAccountId == "0") {
-
-                    $levelFourAccounts = ChartOfAccount::select('id')
-                        ->whereIn('category', ['cash','bank','card'])
-                        ->where('level', 4)
-                        ->pluck('id')  // This will return the 'id' values as an array
-                        ->toArray();  // Convert the collection to an array
-    
-                    return $query->whereIn('chart_of_account_id',$levelFourAccounts);
-
-                } else {
-                    return $query->where('chart_of_account_id', $currentAssetAccountId);
-                }
-            })
+            ->whereIn('chart_of_account_id',$levelFourAccounts)
             ->get();
 
 
+        $query = Journal::whereIn('chart_of_account_id',$levelFourAccounts)
 
-        $query = Journal::query()
-                ->when($request->current_coa_id, function ($query, $currentAssetAccountId) {
-
-                    if($currentAssetAccountId == "0") {
-
-                        $levelFourAccounts = ChartOfAccount::select('id')
-                        ->whereIn('category', ['cash','bank','card'])
-                        ->where('level', 4)
-                        ->pluck('id')  // This will return the 'id' values as an array
-                        ->toArray();  // Convert the collection to an array
-    
-                    return $query->whereIn('chart_of_account_id',$levelFourAccounts);
-
-                    }else{
-                        return $query->where('chart_of_account_id', $currentAssetAccountId);
-                    }
-                })
                 ->when($request->startDate, function ($query, $startDate) {
                     return $query->where('date', '>=', $startDate);
                 })
@@ -170,10 +151,16 @@ class AccountReportsController extends Controller
 
         $this->validateDateRange($request);
 
+        $coaName = null;
+        if($request->coa_id != "0"){
+            $coaName = ChartOfAccount::find($request->coa_id)->name;
+        }
+        
         $broughtForward = DB::table('journals')
             ->when($request->coa_id, function ($query, $coaId) {
                 if($coaId != "0"){
                     return $query->where('chart_of_account_id', $coaId);
+
                 }
             })
             ->when($request->startDate, function ($query, $startDate) {
@@ -204,7 +191,7 @@ class AccountReportsController extends Controller
 
         $journals = $query->get(); 
         
-        $pdf = PDF::loadView('account_reports.gernal_ledger_pdf', compact('journals','broughtForward'));
+        $pdf = PDF::loadView('account_reports.gernal_ledger_pdf', compact('coaName','journals','broughtForward'));
         $pdf->setpaper('A4', 'landscape');
 
         return $pdf->stream();
@@ -216,20 +203,23 @@ class AccountReportsController extends Controller
     {
         $this->validateDateRange($request);
 
-        $levelFourAccounts = ChartOfAccount::select('id')
-                        ->whereIn('category', ['cash','bank','card'])
-                        ->where('level', 4)
-                        ->pluck('id')  // This will return the 'id' values as an array
-                        ->toArray();  // Convert the collection to an array
 
+        // Initialize the accounts array with the provided daybook account ID
+        $levelFourAccounts = [$request->current_coa_id_daybook];
+
+        // Check if the provided account ID is "0" to fetch level 4 cash accounts
+        if ($request->current_coa_id_daybook == "0") {
+            $levelFourAccounts = ChartOfAccount::whereIn('category', ['cash','bank','card'])
+                ->where('level', 4)
+                ->pluck('id')  // Get an array of account IDs
+                ->toArray();   // Convert the result to a plain array
+        }
+        
         $invoices = InvoiceMaster::whereBetween('date',[$request->startDate,$request->endDate])
         ->whereIn('type', ['receipt','invoice'])
         ->get();
 
         $query = Journal::query()
-                ->when($request->coa_id, function ($query, $coaId) {
-                    return $query->where('chart_of_account_id', $coaId);
-                })
                 ->when($request->startDate, function ($query, $startDate) {
                     return $query->where('date', '>=', $startDate);
                 })
@@ -324,13 +314,39 @@ class AccountReportsController extends Controller
         DB::raw('sum(if(ISNULL(debit),0,debit)) as total_debit'),
         DB::raw('sum(if(ISNULL(credit),0,credit)) as total_credit'))
         
-        ->groupBy('customer_id')
-        // ->having(DB::raw('sum(if(ISNULL(debit),0,debit)) - sum(if(ISNULL(credit),0,credit))'), '>', 0);
-        ->having(DB::raw('SUM(COALESCE(debit, 0)) - SUM(COALESCE(credit, 0))'), ($type == 'debitor') ?  '>' : '<' , 0);
-        
+        ->groupBy('customer_id');
         $journals = $query->get(); 
 
+        $debitors = $journals->filter(function ($journal) {
+            return $journal->total_debit > $journal->total_credit;
+        });
+        
+        $creditors = $journals->filter(function ($journal) {
+            return $journal->total_debit < $journal->total_credit;
+        });
+        
+
         $pdf = PDF::loadView('account_reports.customer_balance_pdf', compact('journals'));
+        // Post-processing to separate debitors and creditors
+        $debitors = $journals->filter(function ($journal) {
+            return $journal->total_debit > $journal->total_credit;
+        });
+        
+        $creditors = $journals->filter(function ($journal) {
+            return $journal->total_debit < $journal->total_credit;
+        });
+        $pdf = NULL;
+        if($type == 'debitor'){
+            $journals = $debitors;
+            $pdf = PDF::loadView('account_reports.customer_balance.seprate', compact('journals'));
+        }
+        elseif($type == 'creditor'){
+            $journals = $creditors;
+            $pdf = PDF::loadView('account_reports.customer_balance.seprate', compact('journals'));
+        }
+        else{
+            $pdf = PDF::loadView('account_reports.customer_balance.both', compact('debitors','creditors'));  
+        }
         // $pdf->setpaper('A4', 'landscape');
         return $pdf->stream();
         
@@ -342,33 +358,47 @@ class AccountReportsController extends Controller
         $type = $request->balance_report_type_supplier;
 
         $query = Journal::query()
-
-        ->when($request->supplier_id, function ($query, $supplier_id){
-            if($supplier_id != "0"){
-                return $query->where('supplier_id', $supplier_id);
-            }
-        })
-         // Filter by start date
-         ->when($request->startDate, function ($query, $startDate) {
-            return $query->where('date', '>=', $startDate);
-        })
-        // Filter by end date
-        ->when($request->endDate, function ($query, $endDate) {
-            return $query->where('date', '<=', $endDate);
-        })
-
-        ->where('chart_of_account_id', env('AP'))
-        ->select('supplier_id',
-        DB::raw('sum(if(ISNULL(debit),0,debit)) as total_debit'),
-        DB::raw('sum(if(ISNULL(credit),0,credit)) as total_credit'))
+            ->when($request->supplier_id, function ($query, $supplier_id) {
+                if ($supplier_id != "0") {
+                    return $query->where('supplier_id', $supplier_id);
+                }
+            })
+            ->when($request->startDate, function ($query, $startDate) {
+                return $query->where('date', '>=', $startDate);
+            })
+            ->when($request->endDate, function ($query, $endDate) {
+                return $query->where('date', '<=', $endDate);
+            })
+            ->where('chart_of_account_id', env('AP'))
+            ->select('supplier_id',
+                DB::raw('sum(if(ISNULL(debit),0,debit)) as total_debit'),
+                DB::raw('sum(if(ISNULL(credit),0,credit)) as total_credit')
+            )
+            ->groupBy('supplier_id');
         
-        ->groupBy('supplier_id')
-        // ->having(DB::raw('sum(if(ISNULL(debit),0,debit)) - sum(if(ISNULL(credit),0,credit))'), '>', 0);
-        ->having(DB::raw('SUM(COALESCE(debit, 0)) - SUM(COALESCE(credit, 0))'), ($type == 'debitor') ?  '>' : '<' , 0);
+        // Execute the query to get results
+        $journals = $query->get();
         
-        $journals = $query->get(); 
-
-        $pdf = PDF::loadView('account_reports.supplier_balance_pdf', compact('journals'));
+        // Post-processing to separate debitors and creditors
+        $debitors = $journals->filter(function ($journal) {
+            return $journal->total_debit > $journal->total_credit;
+        });
+        
+        $creditors = $journals->filter(function ($journal) {
+            return $journal->total_debit < $journal->total_credit;
+        });
+        $pdf = NULL;
+        if($type == 'debitor'){
+            $journals = $debitors;
+            $pdf = PDF::loadView('account_reports.supplier_balance.seprate', compact('journals'));
+        }
+        elseif($type == 'creditor'){
+            $journals = $creditors;
+            $pdf = PDF::loadView('account_reports.supplier_balance.seprate', compact('journals'));
+        }
+        else{
+            $pdf = PDF::loadView('account_reports.supplier_balance.both', compact('debitors','creditors'));  
+        }
         // $pdf->setpaper('A4', 'landscape');
         return $pdf->stream();
         
@@ -403,41 +433,31 @@ class AccountReportsController extends Controller
 
         $request->validate([
             'customer_id_1' => 'required',
+            'startDate' => 'required',
+            'endDate' => 'required',
         ],
         [
             'customer_id_1.required' =>'customer is required'
         ]);
+        $customer_id = $request->customer_id_1;
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
 
         $broughtForward = DB::table('journals')
-        ->when($request->customer_id_1, function ($query, $customer_id){
-            return $query->where('customer_id', $customer_id);
-        })
-          // Filter by start date
-          ->when($request->startDate, function ($query, $startDate) {
-            return $query->where('date', '<', $startDate);
-        })
-            
-      
+        ->where('customer_id', $customer_id)
+        ->where('date', '<', $startDate)
         ->where('chart_of_account_id', env('AR'))
         ->select(DB::raw('SUM(COALESCE(debit, 0) - COALESCE(credit, 0)) AS amount'))
         ->get();
+      
+       
 
-        $query = Journal::query()
-
-        ->when($request->customer_id_1, function ($query, $customer_id){
-            return $query->where('customer_id', $customer_id);
-        })
-         ->when($request->startDate, function ($query, $startDate) {
-            return $query->where('date', '>=', $startDate);
-        })
-        ->when($request->endDate, function ($query, $endDate) {
-            return $query->where('date', '<=', $endDate);
-        })    
-            
-        ->where('chart_of_account_id', env('AR'));
-        
-        $journals = $query->get(); 
-
+        $journals = Journal::where('customer_id', $customer_id)
+        ->where('date', '>=', $startDate)
+        ->where('date', '<=', $endDate)
+        ->where('chart_of_account_id', env('AR'))
+        ->orderBy('date','asc')
+        ->get();
 
         $pdf = PDF::loadView('account_reports.customer_ledger_pdf', compact('journals','broughtForward'));
         // $pdf->setpaper('A4', 'landscape');
@@ -453,41 +473,32 @@ class AccountReportsController extends Controller
 
         $request->validate([
             'supplier_id_1' => 'required',
+            'startDate' => 'required',
+            'endDate' => 'required',
         ],
         [
             'supplier_id_1.required' =>'Supplier is required'
         ]);
 
+        $supplier_id = $request->supplier_id_1;
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
 
         $broughtForward = DB::table('journals')
-        ->when($request->supplier_id_1, function ($query, $supplier_id){
-            return $query->where('supplier_id', $supplier_id);
-        })
-          // Filter by start date
-          ->when($request->startDate, function ($query, $startDate) {
-            return $query->where('date', '<', $startDate);
-        })
-      
+        ->where('supplier_id', $supplier_id)
+        ->where('date', '<', $startDate)
         ->where('chart_of_account_id', env('AP'))
         ->select(DB::raw('SUM(COALESCE(debit, 0) - COALESCE(credit, 0)) AS amount'))
         ->get();
 
-        $query = Journal::query()
 
-        ->when($request->supplier_id_1, function ($query, $supplier_id){
-            return $query->where('supplier_id', $supplier_id);
-        })
-         // Filter by start date
-         ->when($request->startDate, function ($query, $startDate) {
-            return $query->where('date', '>=', $startDate);
-        })
-        // Filter by end date
-        ->when($request->endDate, function ($query, $endDate) {
-            return $query->where('date', '<=', $endDate);
-        })    
-        ->where('chart_of_account_id', env('AP'));
-        
-        $journals = $query->get(); 
+        $journals = Journal::where('supplier_id', $supplier_id)
+        ->where('date', '>=', $startDate)
+        ->where('date', '<=', $endDate)
+        ->where('chart_of_account_id', env('AP'))
+        ->orderBy('date','asc')
+        ->get();
+       
 
 
         $pdf = PDF::loadView('account_reports.supplier_ledger_pdf', compact('journals','broughtForward'));

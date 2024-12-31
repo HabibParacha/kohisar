@@ -17,6 +17,8 @@ class Voucher extends Model
         'code',
         'type',
         'chart_of_account_id',
+        'invoice_master_id',
+        'invoice',
         'narration',
         'total_amount',
         'attachment',

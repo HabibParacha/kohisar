@@ -34,10 +34,20 @@ return new class extends Migration
             $table->decimal('item_total', 14, 2)->nullable();
             $table->decimal('total', 14, 2)->nullable();
             $table->decimal('total_bags', 15, 3)->nullable();
+           
+
+            $table->decimal('empty_bag_weight', 15, 3)->nullable();
+            $table->unsignedBigInteger('bag_type_id')->nullable();
+            $table->string('bag_type_name')->nullable();
+            
+            $table->decimal('total_net_weight', 15, 3)->nullable()->comment('weight without packaging');
+            $table->decimal('total_gross_weight', 15, 3)->nullable()->comment('wgt after cut incl packaging wgt');
+            
             $table->decimal('production_material_tons', 14, 4)->nullable();
 
             
-            $table->decimal('sub_total', 14, 2)->nullable();
+            $table->decimal('sub_total_stock', 14, 2)->nullable(); 
+            $table->decimal('sub_total', 14, 2)->nullable(); 
             $table->string('discount_type')->nullable();
             $table->decimal('discount_value', 14, 2)->nullable();
             $table->decimal('discount_amount', 14, 2)->nullable();
@@ -54,7 +64,7 @@ return new class extends Migration
             $table->decimal('commission_rate', 15, 2)->nullable();
             $table->decimal('commission_amount', 15, 2)->nullable();
 
-
+            $table->char('is_x_freight',2)->nullable();
             $table->string('shipping_type')->nullable();
             $table->decimal('shipping', 15, 2)->nullable();
 
@@ -105,10 +115,12 @@ return new class extends Migration
             $table->integer('is_surplus')->nullable()->default(0);
 
             
+            $table->decimal('per_unit_price_stock',15,2)->nullable();
             $table->decimal('per_unit_price',15,2)->nullable();
             $table->decimal('per_unit_price_old_value',15,2)->nullable();// to detect change
             $table->decimal('per_unit_price_new_value',15,2)->nullable();// to detect change
 
+            $table->decimal('total_price_stock',15,2)->nullable();
             $table->decimal('total_price',15,2)->nullable();
             
             $table->string('discount_type')->nullable();
