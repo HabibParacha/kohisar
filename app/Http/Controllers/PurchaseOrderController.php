@@ -107,10 +107,12 @@ class PurchaseOrderController extends Controller
     {
         
         $suppliers = Party::whereIn('party_type',['supplier','both'])->get();
-        $items = Item::all();
+        $items = Item::where('type','Raw')->get();
         $taxes = Tax::all();
         $units = Unit::all();
-
+        
+        $itemBags = Item::where('type','Good')->where('category_id',6)->get();
+       
         $paymentTerms = $this->paymentTerms();
         $newInvoiceNo = InvoiceMaster::generateInvoiceNo('PR','receipt');
  
@@ -121,7 +123,7 @@ class PurchaseOrderController extends Controller
         
         return view('purchase_orders.create', 
         compact(
-            'suppliers','items','taxes','units','paymentTerms','newInvoiceNo','itemTypes'
+            'suppliers','items','taxes','units','paymentTerms','newInvoiceNo','itemTypes','itemBags'
         ));
     }
     public function createTest()
@@ -157,11 +159,13 @@ class PurchaseOrderController extends Controller
           // Validate the request data
         $validator = Validator::make($request->all(), [
             'party_id' => 'required',
+            'bag_type_id' => 'required',
             'item_id.*' =>'required',
             'gross_weight.*' =>'required',
             'per_unit_price.*' =>'required',
         ],
         [
+            'bag_type_id.required' => 'Select empty bag Item.',
             'party_id.required' => 'The Supplier is required.',
             'item_id.*.required' => 'Each item is required.',
             'gross_weight.*.required' => 'Gross weight is required for all items.',
@@ -176,7 +180,8 @@ class PurchaseOrderController extends Controller
                 'message' => $validator->errors()->first()
             ]);
         }
-        
+        dd($request->all());
+
         // Start a transaction
         DB::beginTransaction();
        
@@ -197,8 +202,8 @@ class PurchaseOrderController extends Controller
                 'item_total' => $request->input('item_total'),
                 'total_bags' => $request->input('total_bags'),
                 // 'empty_bag_weight' => $request->input('empty_bag_weight'),
-                // 'bag_type_id' => $request->input('bag_type_id'),
-                'bag_type_name' => $request->input('bag_type_name'),
+                'bag_type_id' => $request->input('bag_type_id'),
+                // 'bag_type_name' => $request->input('bag_type_name'),
                 'is_x_freight' => $request->input('is_x_freight'),
                 'shipping' => $request->input('shipping'),
                 'sub_total' => $request->input('sub_total'),
@@ -261,6 +266,24 @@ class PurchaseOrderController extends Controller
                 DB::table('invoice_detail')->insertGetId($invoice_detail);
 
            }
+
+              // Add empty bag item in invoice detail
+
+                $itemBag = Item::find($request->bag_type_id);
+                $item_bag = [
+                    'invoice_master_id' => $invoice_master_id,
+                    'date' => $request->input('date'),
+                    'invoice_no' => $newInvoiceNo,
+                    'type' => 'receipt',
+                    'item_id' => $request->bag_type_id,
+                    'gross_weight' => $itemBag->unit_weight * $request->total_bags,
+                    'total_quantity' => $request->total_bags,
+                    'unit_weight' => $itemBag->unit_weight,
+                    'net_weight' => $itemBag->unit_weight * $request->total_bags,
+                ];
+
+
+                DB::table('invoice_detail')->insertGetId($item_bag);
 
            
 
@@ -328,7 +351,7 @@ class PurchaseOrderController extends Controller
     {
         try {
             $suppliers = Party::whereIn('party_type',['supplier','both'])->get();
-            $items = Item::all();
+            $items = Item::where('type','Raw')->get();
             $taxes = Tax::all();
             $units = Unit::all();
 
@@ -337,8 +360,8 @@ class PurchaseOrderController extends Controller
             $invoice_master = InvoiceMaster::findOrFail($id);
             $invoice_detail = InvoiceDetail::where('invoice_master_id', $id)->get();
 
-            return view('purchase_orders.edit', compact
-            (
+            return view('purchase_orders.edit', 
+            compact(
                 'invoice_master','invoice_detail',
                 'suppliers','items','taxes','units','paymentTerms'
             ));

@@ -305,22 +305,22 @@
    });
 
 
-    // $(document).on('select2:select', '.customer-dropdown', function(e){
-    //     // let code = $(this).val();
-    //     let row = $(this).closest('tr');
+    $(document).on('select2:select', '.customer-dropdown', function(e){
+        // let code = $(this).val();
+        let row = $(this).closest('tr');
 
-    //     let code = 112100;
-    //     row.find('.account-dropdown').val(code).trigger('change');
+        let code = 112100;
+        row.find('.account-dropdown').val(code).trigger('change');
         
-    // });
-    // $(document).on('select2:select', '.supplier-dropdown', function(e){
-    //     // let code = $(this).val();
-    //     let row = $(this).closest('tr');
+    });
+    $(document).on('select2:select', '.supplier-dropdown', function(e){
+        // let code = $(this).val();
+        let row = $(this).closest('tr');
 
-    //     let code = 211100;
-    //     row.find('.account-dropdown').val(code).trigger('change');
+        let code = 211100;
+        row.find('.account-dropdown').val(code).trigger('change');
         
-    // });
+    });
 
    $('#btn-add-more').on('click', function(e){
         e.preventDefault();

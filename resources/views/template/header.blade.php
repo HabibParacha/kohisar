@@ -91,31 +91,12 @@
 
                         <div class="btn-group">
                             <a href="{{ route('account-reports.request') }}"  class="btn btn-outline-light"
-                               >Accounts Reports</a>
-                            <div class="dropdown-menu">
-
-                               
-                                <a class="dropdown-item  " >Vochers</a>
-                                {{-- <a class="dropdown-item" href="">Cash Book</a> --}}
-                                <div class="dropdown-divider"></div>
-                                {{-- <a class="dropdown-item" href="{{ route('account-reports.daybook') }}">Day book</a> --}}
-                                {{-- <a class="dropdown-item" href="">General Ledger</a>
-                                <a class="dropdown-item" href="">Trial Balance</a>
-                                <a class="dropdown-item" href="">Trial with
-                                    acitivity</a>
-                                <a class="dropdown-item" href="">Profit & Loss</a>
-                                <a class="dropdown-item" href="">Balance Sheet</a>
-                                <a class="dropdown-item" href="">Party Balances</a>
-                             
-                                <a class="dropdown-item" href="">Bank Reconciliation</a>
-                                <a class="dropdown-item" href="">Tax Report</a>
-                                <a class="dropdown-item" href="">Invoice Summary List</a>
-                                <a class="dropdown-item" href="">Invoice Detail</a>
-                                <a class="dropdown-item" href="">Payment Summary</a>
-                                <a class="dropdown-item" href="">Expense Report</a> --}}
-
-                            </div>
-                        </div><!-- /btn-group -->
+                               >Accounts Reports</a> 
+                        </div>
+                        <div class="btn-group">
+                            <a href="{{ route('balance-sheet.request') }}"  class="btn btn-outline-light"
+                               >Balance Sheet</a> 
+                        </div>
 
                     </div>
                 </div>

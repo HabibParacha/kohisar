@@ -54,8 +54,20 @@
                         <div class="card-body">
                             <h4 class="card-title mb-4">Finished Goods Stock Opening Balance</h4>
 
-                            {{-- <div class="row">
-                                <div class="col-md-3">
+                            <div class="row">
+
+                                  <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Date</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
+                                            <input type="date" name="date" id="date" class="form-control" value="{{ date('Y-m-d') }}">
+                                        </div>
+                                       
+                                    </div> 
+                                </div>
+
+                                {{-- <div class="col-md-3">
                                     <div class="mb-3">
                                         <label class="form-label">Customers</label>
                                         <select name="party_id"  id="party_id" class="select2 form-control">                                                
@@ -97,13 +109,7 @@
                                             <input type="text" name="invoice_no" id="invoice_no" class="form-control" value="{{ $newInvoiceNo }}" readonly>
                                         </div> 
                                     </div> 
-                                </div>
-
-
-                              
-                               
-                                
-                               
+                                </div>            
                              
                                 <div class="col-md-3">
                                     <div class="mb-3">
@@ -133,12 +139,12 @@
                                             <input type="text" name="reference_no"class="form-control">
                                         </div> 
                                     </div> 
-                                </div>
+                                </div> --}}
                                
                                 
                               
                                 
-                            </div> --}}
+                            </div>
                         </div> 
                     </div>
                  

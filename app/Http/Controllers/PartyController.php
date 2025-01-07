@@ -222,7 +222,14 @@ class PartyController extends Controller
 
        
         $data = $request->all();// storing request data in array
-        $data['name'] = $request->prefix.' '.$request->first_name.' '.$request->middle_name.' '.$request->last_name ;
+       
+
+        if($request->type == 'individual'){
+            $data['business_name'] = $request->prefix.' '.$request->first_name.' '.$request->middle_name.' '.$request->last_name ;
+        }
+        else{
+            $data['business_name'] = $request->business_name;
+        }
 
 
        try {

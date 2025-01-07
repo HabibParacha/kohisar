@@ -89,7 +89,7 @@
                                                                     selected
                                                                 @endif
                                                                 >
-                                                                {{ $item->code.'-'.$item->category->name .'-'.$item->name }}
+                                                                {{ ($item->code.'-'.($item->category->name ?? 'N/A') .'-'.$item->name) }}
                                                             </option>
                                                         @endforeach
                                 

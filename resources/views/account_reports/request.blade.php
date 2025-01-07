@@ -59,14 +59,14 @@
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link" data-bs-toggle="tab" href="#tab-customer-balance" role="tab" aria-selected="false" tabindex="-1">
                                     <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
-                                    <span class="d-none d-sm-block">Cust. Balance</span>   
+                                    <span class="d-none d-sm-block">Cust. Bal.</span>   
                                 </a>
                             </li>
 
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link" data-bs-toggle="tab" href="#tab-supplier-balance" role="tab" aria-selected="false" tabindex="-1">
                                     <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
-                                    <span class="d-none d-sm-block">Supp. Balance</span>   
+                                    <span class="d-none d-sm-block">Supp. Bal.</span>   
                                 </a>
                             </li>
                            
@@ -89,6 +89,8 @@
                                     <span class="d-none d-sm-block">Expense</span>   
                                 </a>
                             </li>
+
+                           
                            
                         </ul>
                     </div>
@@ -136,6 +138,7 @@
                                                     <a class="dropdown-item" href="#" data-range="custom">Custom Range</a>
                                                 </div>
                                             </div>
+                                            
         
                                             <!-- Date inputs -->
                                         </div>
@@ -315,6 +318,7 @@
 
                                 </div>
 
+                              
                             </div>
                             
                            
@@ -420,7 +424,7 @@
                 $('#form').attr('action', '{{ route('account-reports.supplierLedgerPDF') }}');
                 $('#form').submit();
             });
-            
+           
         });
     </script>
 

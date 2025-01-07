@@ -231,6 +231,8 @@
             var table = $('#table').DataTable({
                 processing: true,
                 serverSide: true,
+                bPaginate: false,
+
 
                 ajax: {
                     url: "{{ route('party-index', ':type') }}".replace(':type', type), // Using route name
@@ -259,6 +261,7 @@
                     },
                     {
                         data: 'action',
+
                         orderable: false,
                         searchable: false
                     },

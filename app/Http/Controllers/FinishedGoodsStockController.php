@@ -105,7 +105,7 @@ class FinishedGoodsStockController extends Controller
                 $newInvoiceNo = InvoiceMaster::generateInvoiceNo('OB','output');// defined in model
     
                 $invoice_master = [
-                    'date' => date('Y-m-d'),
+                    'date' => $request->input('date'),
                     'invoice_no' => $newInvoiceNo,
                     'batch_no' => $request->input('batch_no'),
                     'type' => 'output',
@@ -122,7 +122,7 @@ class FinishedGoodsStockController extends Controller
                     
                     $invoice_detail = [
                         'invoice_master_id' => $invoice_master_id,
-                        'date' =>  date('Y-m-d'),
+                        'date' => $request->input('date'),
                         'invoice_no' => $newInvoiceNo,
                         'type' => 'output',
                         'item_id' => $request->item_id[$i],

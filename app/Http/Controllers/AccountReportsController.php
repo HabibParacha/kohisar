@@ -326,7 +326,7 @@ class AccountReportsController extends Controller
         });
         
 
-        $pdf = PDF::loadView('account_reports.customer_balance_pdf', compact('journals'));
+        // $pdf = PDF::loadView('account_reports.customer_balance_pdf', compact('journals'));
         // Post-processing to separate debitors and creditors
         $debitors = $journals->filter(function ($journal) {
             return $journal->total_debit > $journal->total_credit;
@@ -505,6 +505,112 @@ class AccountReportsController extends Controller
         $pdf->setpaper('A4', 'landscape');
         return $pdf->stream();
     }
+
+
+    public function balanceSheetPDF(Request $request)
+    {
+        $this->validateDateRange($request);
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+
+        $data = [];
+
+        // Get the top-level ChartOfAccounts
+        $topLevel = ChartOfAccount::where('level', 1)->get();
+
+        foreach ($topLevel as $top) {
+            // Get second-level accounts based on parent_id of top level
+            $secondLevel = ChartOfAccount::where('parent_id', $top->id)->get();
+
+            $topData = [
+                'first' => $top->name,
+                'second' => []
+            ];
+
+            foreach ($secondLevel as $second) {
+                // Get third-level accounts based on parent_id of second level
+                $thirdLevel = ChartOfAccount::where('parent_id', $second->id)->get();
+
+                $secondData = [
+                    'second' => $second->name,
+                    'third' => []
+                ];
+
+                foreach ($thirdLevel as $third) {
+                    // Get fourth-level accounts based on parent_id of third level
+                    $fourthLevel = ChartOfAccount::where('parent_id', $third->id)->get();
+
+                    $thirdData = [
+                        'third' => $third->name,
+                        'fourth' => [] // Initialize fourth level
+                    ];
+
+                    foreach ($fourthLevel as $fourth) {
+                        // Calculate total debit and credit for each fourth-level account
+                        $totalDebit = Journal::where('chart_of_account_id', $fourth->id)
+                        ->where('date','<=',$startDate)
+                        ->sum('debit');
+
+
+                        $totalCredit = Journal::where('chart_of_account_id', $fourth->id)
+                        ->where('date','<=',$startDate)
+                        ->sum('credit');
+                        
+                        // Add the fourth-level data
+                        $thirdData['fourth'][] = [
+                            'name' => $fourth->name,
+                            'total_debit' => $totalDebit,
+                            'total_credit' => $totalCredit,
+                            'balance' => $totalDebit - $totalCredit
+                        ];
+                    }
+
+                    // Add the third-level data to the second-level
+                    $secondData['third'][] = $thirdData;
+                }
+
+                // Add the second-level data to the top-level
+                $topData['second'][] = $secondData;
+            }
+
+            // Add the top-level data to the final data array
+            $data[] = $topData;
+        }
+
+
+
+                $supplierJournals = Journal::where('chart_of_account_id', env('AP'))
+                ->select('supplier_id',
+                    DB::raw('sum(if(ISNULL(debit),0,debit)) as total_debit'),
+                    DB::raw('sum(if(ISNULL(credit),0,credit)) as total_credit')
+                )
+                ->where('date','<=',$startDate)
+                ->groupBy('supplier_id')
+                ->get();
+
+
+                $customerJournals = Journal::where('chart_of_account_id', env('AR'))
+                ->select('customer_id',
+                    DB::raw('sum(if(ISNULL(debit),0,debit)) as total_debit'),
+                    DB::raw('sum(if(ISNULL(credit),0,credit)) as total_credit')
+                )
+                ->where('date','<=',$startDate)
+                ->groupBy('customer_id')
+                ->get();
+            
+    
+
+                $pdf = PDF::loadView('account_reports.balance_sheet_pdf', compact('data', 'supplierJournals','customerJournals'));
+                // $pdf->setpaper('A4', 'landscape');
+                return $pdf->stream();
+        
+
+        // Return the view with the structured data
+        // return view('account_reports.balance_sheet_pdf', compact('data', 'supplierJournals','customerJournals'));
+    }
+
+
+
 
 
 

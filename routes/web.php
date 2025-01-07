@@ -24,6 +24,7 @@ use App\Http\Controllers\SaleOrderController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\SaleInvoiceController;
+use App\Http\Controllers\BalanceSheetController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\AccountReportsController;
 use App\Http\Controllers\ChartOfAccountController;
@@ -95,6 +96,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('chart-of-account/get-by-category/{id}', [ChartOfAccountController::class, 'getByCategory'])->name('chart-of-account.getByCategory');
     Route::resource('chart-of-account', ChartOfAccountController::class);
 
+
+    Route::get('balance-sheet/request', [BalanceSheetController::class, 'request'])->name('balance-sheet.request');
+    Route::post('balance-sheet/show', [BalanceSheetController::class, 'show'])->name('balance-sheet.show');
+
    
 
     
@@ -141,6 +146,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('account-reports/expense-pdf', [AccountReportsController::class, 'expensePDF'])->name('account-reports.expensePDF');
     Route::post('account-reports/customer-ledger-pdf', [AccountReportsController::class, 'customerLedgerPDF'])->name('account-reports.customerLedgerPDF');
     Route::post('account-reports/supplier-ledger-pdf', [AccountReportsController::class, 'supplierLedgerPDF'])->name('account-reports.supplierLedgerPDF');
+    Route::post('account-reports/balance-sheet-pdf', [AccountReportsController::class, 'balanceSheetPDF'])->name('account-reports.balanceSheetPDF');
     
     
     // START::Report Section 
