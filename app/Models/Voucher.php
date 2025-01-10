@@ -62,4 +62,6 @@ class Voucher extends Model
         }
     }
 
+    
+
 }

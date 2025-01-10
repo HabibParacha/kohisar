@@ -69,8 +69,16 @@ class SaleInvoiceController extends Controller
                                                 <i class="bx bx-show font-size-16 text-primary me-1"></i> View
                                             </a>
                                         </li>
-                                        
-                                       
+                                        <li>
+                                            <a href="javascript:void(0)" onclick="deleteSaleInvoice(' . $row->id . ')" class="dropdown-item">
+                                                <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="'. route('sale-invoice.edit', $row->id).'" class="dropdown-item">
+                                                <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
+                                            </a>
+                                        </li>
                                        
                                     </ul>
                                 </div>
@@ -454,7 +462,29 @@ class SaleInvoiceController extends Controller
      */
     public function edit($id)
     {
-        //
+        try {
+            $partyCustomers = Party::whereIn('party_type',['customer','both'])->get();
+            $itemGoods = Item::where('type','Good')->get();
+            $taxes = Tax::all();
+            $units = Unit::all();
+            $userSalemen = User::where('type','saleman')->get();
+
+            
+            $invoice_master = InvoiceMaster::findOrFail($id);
+
+            return view('sale_invoices.edit', 
+            compact(
+                'invoice_master',
+                'partyCustomers','userSalemen','itemGoods','taxes','units',
+            ));
+
+        } catch (\Exception $e) {
+            // Return a JSON response with an error message
+            return response()->json([
+                'message' => $e->getMessage(),
+                'success' => false,
+            ], 500);
+        }
     }
 
     /**
@@ -477,6 +507,31 @@ class SaleInvoiceController extends Controller
      */
     public function destroy($id)
     {
-        //
+        DB::beginTransaction();// Start a transaction
+
+        try {
+
+            DB::table('invoice_detail')->where('invoice_master_id', $id)->delete();
+            DB::table('journals')->where('invoice_master_id', $id)->delete();
+
+            // Then delete the invoice master record
+            DB::table('invoice_master')->where('id', $id)->delete();
+
+            DB::commit();// Commit the transaction
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Sale Invoice Delete successfully.',
+                ],200);
+                
+        } catch (\Exception $e) {
+          
+            DB::rollBack();  // Rollback the transaction if there is an error
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

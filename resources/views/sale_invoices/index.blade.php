@@ -172,7 +172,7 @@
                 });
             });
         });
-        function deletePurchaseOrder(id) {
+        function deleteSaleInvoice(id) {
             $('#submit-sale-invoice-destroy').data('id', id);
             $('#delete-sale-invoice').modal('show');
         }
