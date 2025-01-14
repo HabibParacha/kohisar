@@ -45,22 +45,24 @@
         </table>
        
             <table width="100%" border="1" cellpadding="3" cellspacing="0" style="border-collapse:collapse;">
-                <tbody>
+                <thead>
                     <tr bgcolor="#CCCCCC">
                         <th width='10%' style="text-align:center;">DATE</th>
                         <th width='5%' style="text-align:center;">VHNO</th>
+                        <th width='5%' style="text-align:center;">WAREHOUSE</th>
                         <th width='40%' style="text-align:center;">DESCRIPTION</th>
                         <th width='10%' style="text-align:right;">RECEIPTS</th>
                         <th width='10%' style="text-align:right;">PAYMENTS</th>
                         <th width='15%' style="text-align:center;">Balance</th>
                     </tr>
-                </tbody>
+                </thead>
                
                     <tbody>
                         @php
                             $bf = $broughtForward[0]->amount;
                         @endphp
                         <tr>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td>Balance Brought Forward</td>
@@ -94,6 +96,7 @@
                         <tr>
                             <td>{{ $journal->date }}</td>
                             <td>{{ $journal->voucher_no }}</td>
+                            <td>{{ $invoiceDetails[0]->invoiceMaster->partyWarehouse->name ?? '-' }}</td>
                             
                             <td>
                                 {{-- if journal entry is of invoice --}}
@@ -105,18 +108,21 @@
                                             <th width="20%" style="text-align:right">Qty.</th>
                                             <th width="20%" style="text-align:right">Rate</th>
                                             <th width="20%" style="text-align:right">Dis%</th>
-                                            <th width="30%" style="text-align:right">Amount</th>
+                                            <th width="30%" style="text-align:right">Rate</th>
                                         </tr>
                                         @foreach ($invoiceDetails as  $detail)
                                             <tr style="border-top:1px dotted #CCCCCC;">
                                                 <td width="20%" style="text-align:left" >{{ $detail->item->name }}</td>
                                                 <td width="20%" style="text-align:right" >{{ number_format($detail->total_quantity,0)}}</td>
                                                 <td width="20%" style="text-align:right" >{{ number_format($detail->per_unit_price,1) }}</td>
-                                               
-                                                <td width="20%" style="text-align:right" >{{ 
-                                                    ($detail->discount_value ? (100-($detail->discount_value / $detail->per_unit_price * 100)) :'-' 
-                                                
-                                                )}}</td>
+                                                @php
+                                                    $discount = 0;
+                                                    if($detail->discount_value)
+                                                    {
+                                                        $discount = 100-($detail->discount_value / $detail->per_unit_price * 100);
+                                                    }
+                                                @endphp
+                                                <td width="20%" style="text-align:right" >{{ number_format($discount,2) }}</td>
                                                 <td width="30%" style="text-align:right" >{{ $detail->grand_total}}</td>
                                             </tr>
                                         @endforeach
@@ -149,7 +155,7 @@
 
                         <tr bgcolor="#CCCCCC" style="font-weight: bold">
 
-                            <td colspan="2">TOTAL</td>
+                            <td colspan="3">TOTAL</td>
                             <td class="text-end"></td>
                             <td style="text-align:right;">{{ number_format($journals->sum('debit'), 2) }}</td>
                             <td style="text-align:right;"> {{ number_format($journals->sum('credit'), 2) }}</td>

@@ -88,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('sale-invoice', SaleInvoiceController::class);
 
     Route::get('production/posting/{id}', [ProductionController::class, 'posting'])->name('production.posting');
+    Route::get('production/unposting/{id}', [ProductionController::class, 'unposting'])->name('production.unposting');
     Route::resource('production', ProductionController::class);
 
     Route::resource('expense', ExpenseController::class);

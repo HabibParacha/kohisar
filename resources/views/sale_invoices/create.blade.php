@@ -322,101 +322,65 @@
     });
 
 
-    $('#btn-add-more').on('click', function(e){
-        e.preventDefault();
-
-        appendNewRow();
-       
-    });
-    
-   
-   
-
-    function appendNewRow(){
-        let tableBody = $('#table tbody');
-
-        let row = `
-              <tr class="">
-                    <td class="text-end"><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
-    
-                    <td class=""> 
-                        <select  name="item_id[]" class="form-control select2 item-dropdown" style="width:100%">                                                
-                            <option value="" >Choose...</option>
-                            @foreach ($itemGoods as $item)
-                                <option value="{{$item->id}}"
-                                 data-stock="{{ $item->balance }}"  
-                                 data-unit-weight="{{ $item->unit_weight }}"
-                                 data-sell-price="{{ $item->sell_price }}"
-                                >
-                                 {{ $item->code.'-'.$item->category_name .'-'.$item->name }}</option>
-                            @endforeach
-    
-                        </select>
-
-                    </td> 
-                    
-                    <td class="text-end">
-                        <input type="number" name="unit_weight[]" step="0.0001" class=" text-end form-control item-unit-weight" readonly>  
-                    </td>
-                    <td class="text-end">
-                        <input type="number"  step="0.0001" class=" text-end form-control item-stock-balance" readonly>  
-                    </td>
-                    <td class="text-end">
-                        <input type="number" name="total_quantity[]" step="0.0001" class=" text-end form-control item-total-quantity" >  
-                    </td>
-                    <td class="text-end">
-                        <input type="number" name="net_weight[]" step="0.0001" class=" text-end form-control item-net-weight" readonly>  
-                    </td>
-                    <td class="text-end">
-                        <input type="number" name="per_unit_price[]" step="0.0001" class=" text-end form-control item-per-unit-price">  
-                    </td>
-                    <td class="text-end">
-                        <input type="number" name="total_price[]" step="0.0001" class=" text-end form-control item-total-price" readonly>  
-                    </td>
-
-                    <td>
-                        <input type="number" name="discount_value[]" value="0" step="0.01" class="form-control item-discount-value" >
-                    </td>
-    
-                    <td>
-                        <select name="discount_type[]"  class="form-select item-discount-type">                                                
-                            <option selected value="percentage">%</option>
-                            <option  value="fixed">Fixed</option>
-                        </select>
-                    </td>
-                    <td class="text-end">
-                        <input type="number" name="discount_unit_price[]" value="0" step="0.01" class=" text-end form-control item-discount-unit-price" readonly>
-                    </td>
-                    
-                    
-                    <td class="text-end">
-                        <input type="number" name="discount_amount[]" value="0" step="0.01" class=" text-end form-control item-discount-amount" readonly>
-                    </td>
-
-                    
-
-                    <td class="text-end"> 
-                        <input type="number" name="after_discount_total_price[]" class=" text-end form-control item-after-discount" readonly>  
-                    </td>
-                    
-                    
-                    
-                    <td class="text-center">  
-                        <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
-                    </td>
-                </tr>
-
-        `;
-      
-        tableBody.append(row);
-        $('.select2', 'table').select2();
-
-    }
 
 
 
 </script>
+<script>
+    $('#sale-invoice-store').on('submit', function(e) {
+        e.preventDefault();
+        var submit_btn = $('#submit-sale-invoice-store');
+        let createformData = new FormData(this);
+        $.ajax({
+            type: "POST",
+            url: "{{ route('sale-invoice.store') }}",
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            cache: false,
+            data: createformData,
+            enctype: "multipart/form-data",
+            beforeSend: function() {
+                submit_btn.prop('disabled', true);
+                submit_btn.html('Processing');
+            },
+            success: function(response) {
+                
+                submit_btn.prop('disabled', false).html('Save');  
 
+                if(response.success == true){
+                    $('#sale-invoice-store')[0].reset();  // Reset all form data
+                
+                    notyf.success({
+                        message: response.message, 
+                        duration: 3000
+                    });
+
+                    // Redirect after success notification
+                    setTimeout(function() {
+                        window.location.href = '{{ route("sale-invoice.index") }}';
+                    }, 200); // Redirect after 3 seconds (same as notification duration)
+
+
+                }else{
+                    notyf.error({
+                        message: response.message,
+                        duration: 5000
+                    });
+                }   
+            },
+            error: function(e) {
+                submit_btn.prop('disabled', false).html('Save');
+            
+                notyf.error({
+                    message: e.responseJSON.message,
+                    duration: 5000
+                });
+            }
+        });
+    });
+            
+</script>
 
 
 

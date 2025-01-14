@@ -46,13 +46,13 @@
                                             $opeing_stock = $item['before_start_date_production'] - $item['before_start_date_sales'];
                                         
                                             // Round the opening stock to 2 decimal places
-                                            $opeing_stock = round($opeing_stock, 2);
+                                            $opeing_stock = round($opeing_stock, 0);
                                         
                                             // Calculate total
                                             $total = $item['between_dates_production'] + $opeing_stock;
                                         
                                             // Round the total to 2 decimal places
-                                            $total = round($total, 2);
+                                            $total = round($total, 0);
                                         
                                             // Calculate closing stock
                                             $closing_stock = $total - $item['between_dates_sales'];

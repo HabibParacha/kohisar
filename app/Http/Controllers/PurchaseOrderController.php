@@ -180,7 +180,6 @@ class PurchaseOrderController extends Controller
                 'message' => $validator->errors()->first()
             ]);
         }
-        dd($request->all());
 
         // Start a transaction
         DB::beginTransaction();

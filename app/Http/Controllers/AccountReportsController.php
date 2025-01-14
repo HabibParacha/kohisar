@@ -460,7 +460,7 @@ class AccountReportsController extends Controller
         ->get();
 
         $pdf = PDF::loadView('account_reports.customer_ledger_pdf', compact('journals','broughtForward'));
-        // $pdf->setpaper('A4', 'landscape');
+        $pdf->setpaper('A4', 'landscape');
         return $pdf->stream();
     }
 

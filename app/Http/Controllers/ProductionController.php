@@ -87,6 +87,14 @@ class ProductionController extends Controller
                                                     <i class="fas fa-check-double font-size-16 text-warning me-1"></i> Posting
                                                 </a>
                                             </li>';
+                                        }else{
+                                            $btn .='
+                                             <li>
+                                                <a href="'.route('production.unposting',$row->id) .'"  class="dropdown-item '.($row->output_qty == 0 ? "disabled":'') .'">
+                                                    <i class="fas fa-check-double font-size-16 text-danger me-1"></i> UnPosting
+                                                </a>
+                                            </li>
+                                            ';
                                         }
                                        
                                        
@@ -517,6 +525,29 @@ class ProductionController extends Controller
             ], 500);
         }
     }
+
+    public function unposting($id)
+    {
+
+        DB::beginTransaction();
+        try {
+            $production = InvoiceMaster::find($id);
+            DB::table('journals')->where('production_id',$production->id)->delete();
+            $production->update([
+                'is_lock' => 0
+            ]);
+            DB::commit();
+            return redirect()->back();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Handle the exception
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }   
 
 
 }
