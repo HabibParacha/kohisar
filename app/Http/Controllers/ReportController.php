@@ -98,51 +98,99 @@ class ReportController extends Controller
             'items' => [],
         ];
 
-        // Loop through each item in the category
+        // with point values result
+        /*
+            foreach ($itemsInCategory as $item) {
+                // Collect data for each item
+                $categoryData['items'][] = [
+                    'name' => $item->name,
+                    'code' => $item->code,
+                    'category' => $category ? $category->name : 'N/A',
+                    'before_start_date_production' => DB::table('invoice_detail')
+                        ->where('type', 'output')
+                        ->where('item_id', $item->id)
+                        ->where('date', '<', $startDate)
+                        ->sum('total_quantity'),
+
+                    'before_start_date_sales' => DB::table('invoice_detail')
+                        ->where('type', 'invoice')
+                        ->where('item_id', $item->id)
+                        ->where('date', '<', $startDate)
+                        ->sum('total_quantity'),
+
+                    'between_dates_production' => DB::table('invoice_detail')
+                        ->where('type', 'output')
+                        ->where('item_id', $item->id)
+                        ->whereBetween('date', [$startDate, $endDate])
+                        ->sum('total_quantity'),
+
+                    'between_dates_sales' => DB::table('invoice_detail')
+                        ->where('type', 'invoice')
+                        ->where('item_id', $item->id)
+                        ->whereBetween('date', [$startDate, $endDate])
+                        ->sum('total_quantity'),
+
+                    'cumulative_sale' => DB::table('invoice_detail')
+                        ->where('type', 'invoice')
+                        ->where('item_id', $item->id)
+                        ->whereBetween('date', [$currentMonthStartDate, $startDate])
+                        ->sum('total_quantity'),
+
+                    'cumulative_prod' => DB::table('invoice_detail')
+                        ->where('type', 'output')
+                        ->where('item_id', $item->id)
+                        ->whereBetween('date', [$currentMonthStartDate, $startDate])
+                        ->sum('total_quantity'),
+                ];
+            }
+        */
+
+        // dropping after point value using floor
         foreach ($itemsInCategory as $item) {
             // Collect data for each item
             $categoryData['items'][] = [
                 'name' => $item->name,
                 'code' => $item->code,
                 'category' => $category ? $category->name : 'N/A',
-                'before_start_date_production' => DB::table('invoice_detail')
+                
+                'before_start_date_production' => floor(DB::table('invoice_detail')
                     ->where('type', 'output')
                     ->where('item_id', $item->id)
                     ->where('date', '<', $startDate)
-                    ->sum('total_quantity'),
-
-                'before_start_date_sales' => DB::table('invoice_detail')
+                    ->sum('total_quantity')),
+        
+                'before_start_date_sales' => floor(DB::table('invoice_detail')
                     ->where('type', 'invoice')
                     ->where('item_id', $item->id)
                     ->where('date', '<', $startDate)
-                    ->sum('total_quantity'),
-
-                'between_dates_production' => DB::table('invoice_detail')
+                    ->sum('total_quantity')),
+        
+                'between_dates_production' => floor(DB::table('invoice_detail')
                     ->where('type', 'output')
                     ->where('item_id', $item->id)
                     ->whereBetween('date', [$startDate, $endDate])
-                    ->sum('total_quantity'),
-
-                'between_dates_sales' => DB::table('invoice_detail')
+                    ->sum('total_quantity')),
+        
+                'between_dates_sales' => floor(DB::table('invoice_detail')
                     ->where('type', 'invoice')
                     ->where('item_id', $item->id)
                     ->whereBetween('date', [$startDate, $endDate])
-                    ->sum('total_quantity'),
-
-                'cumulative_sale' => DB::table('invoice_detail')
+                    ->sum('total_quantity')),
+        
+                'cumulative_sale' => floor(DB::table('invoice_detail')
                     ->where('type', 'invoice')
                     ->where('item_id', $item->id)
                     ->whereBetween('date', [$currentMonthStartDate, $startDate])
-                    ->sum('total_quantity'),
-
-                'cumulative_prod' => DB::table('invoice_detail')
+                    ->sum('total_quantity')),
+        
+                'cumulative_prod' => floor(DB::table('invoice_detail')
                     ->where('type', 'output')
                     ->where('item_id', $item->id)
                     ->whereBetween('date', [$currentMonthStartDate, $startDate])
-                    ->sum('total_quantity'),
+                    ->sum('total_quantity')),
             ];
         }
-
+        
         // Add category data to the final data array
         $data[] = $categoryData;
     }

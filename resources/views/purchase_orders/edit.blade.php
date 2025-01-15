@@ -411,57 +411,57 @@
 
 <script>
     $('#purchase-order-update').on('submit', function(e) {
-                e.preventDefault();
-                var submit_btn = $('#submit-purchase-order-update');
-                let invoice_master_id = $('#invoice_master_id').val(); // Get the ID of the purchase-order being edited
+        e.preventDefault();
+        var submit_btn = $('#submit-purchase-order-update');
+        let invoice_master_id = $('#invoice_master_id').val(); // Get the ID of the purchase-order being edited
 
-                let editFormData = new FormData(this);
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('purchase-order.update', ':id') }}".replace(':id', invoice_master_id), // Using route name
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    cache: false,
-                    data: editFormData,
-                    enctype: "multipart/form-data",
-                    beforeSend: function() {
-                        submit_btn.prop('disabled', true);
-                        submit_btn.html('Processing');
-                    },
-                    success: function(response) {
-                        
-                        submit_btn.prop('disabled', false).html('Update');  
+        let editFormData = new FormData(this);
+        $.ajax({
+            type: "POST",
+            url: "{{ route('purchase-order.update', ':id') }}".replace(':id', invoice_master_id), // Using route name
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            cache: false,
+            data: editFormData,
+            enctype: "multipart/form-data",
+            beforeSend: function() {
+                submit_btn.prop('disabled', true);
+                submit_btn.html('Processing');
+            },
+            success: function(response) {
+                
+                submit_btn.prop('disabled', false).html('Update');  
 
-                        if(response.success == true){
-                            $('#purchase-order-update')[0].reset();  // Reset all form data
-                        
-                            notyf.success({
-                                message: response.message, 
-                                duration: 3000
-                            });
+                if(response.success == true){
+                    $('#purchase-order-update')[0].reset();  // Reset all form data
+                
+                    notyf.success({
+                        message: response.message, 
+                        duration: 3000
+                    });
 
-                             // Redirect after success notification
-                        setTimeout(function() {
-                            window.location.href = '{{ route("purchase-order.index") }}';
-                        }, 200); // Redirect after 3 seconds (same as notification duration)
-                        }else{
-                            notyf.error({
-                                message: response.message,
-                                duration: 5000
-                            });
-                        }   
-                    },
-                    error: function(e) {
-                        submit_btn.prop('disabled', false).html('Update');
-                    
-                        notyf.error({
-                            message: e.responseJSON.message,
-                            duration: 5000
-                        });
-                    }
+                        // Redirect after success notification
+                setTimeout(function() {
+                    window.location.href = '{{ route("purchase-order.index") }}';
+                }, 200); // Redirect after 3 seconds (same as notification duration)
+                }else{
+                    notyf.error({
+                        message: response.message,
+                        duration: 5000
+                    });
+                }   
+            },
+            error: function(e) {
+                submit_btn.prop('disabled', false).html('Update');
+            
+                notyf.error({
+                    message: e.responseJSON.message,
+                    duration: 5000
                 });
-            });
+            }
+        });
+    });
             
 </script>
     

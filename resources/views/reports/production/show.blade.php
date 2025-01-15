@@ -46,13 +46,13 @@
                                             $opeing_stock = $item['before_start_date_production'] - $item['before_start_date_sales'];
                                         
                                             // Round the opening stock to 2 decimal places
-                                            $opeing_stock = round($opeing_stock, 0);
+                                            $opeing_stock = round($opeing_stock, 2);
                                         
                                             // Calculate total
                                             $total = $item['between_dates_production'] + $opeing_stock;
                                         
                                             // Round the total to 2 decimal places
-                                            $total = round($total, 0);
+                                            $total = round($total, 2);
                                         
                                             // Calculate closing stock
                                             $closing_stock = $total - $item['between_dates_sales'];
@@ -66,13 +66,13 @@
                                                 <td>{{ $item['name'] }}</td>
                                                 <td>{{ $item['code'] }}</td>
                                                 {{-- <td>{{ $item['category'] }}</td> --}}
-                                                <td class="text-end">{{ ($opeing_stock > 0) ? number_format($opeing_stock, 0) : '-' }}</td>
-                                                <td class="text-end">{{ number_format($item['between_dates_production'], 0) }}</td>
-                                                <td class="text-end">{{ number_format($total, 0) }}</td>
-                                                <td class="text-end">{{ number_format($item['between_dates_sales'], 0) }}</td>
-                                                <td class="text-end">{{ number_format($closing_stock, 0) }}</td>
-                                                <td class="text-end">{{ number_format($item['cumulative_sale'], 0) }}</td>
-                                                <td class="text-end">{{ number_format($item['cumulative_prod'], 0) }}</td>
+                                                <td class="text-end">{{ ($opeing_stock > 0) ? number_format($opeing_stock, 2) : '-' }}</td>
+                                                <td class="text-end">{{ number_format($item['between_dates_production'], 2) }}</td>
+                                                <td class="text-end">{{ number_format($total, 2) }}</td>
+                                                <td class="text-end">{{ number_format($item['between_dates_sales'], 2) }}</td>
+                                                <td class="text-end">{{ number_format($closing_stock, 2) }}</td>
+                                                <td class="text-end">{{ number_format($item['cumulative_sale'], 2) }}</td>
+                                                <td class="text-end">{{ number_format($item['cumulative_prod'], 2) }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>

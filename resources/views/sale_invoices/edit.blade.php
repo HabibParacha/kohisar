@@ -64,7 +64,7 @@
                                             <option value="">Choose...</option>
                                             @foreach ($partyCustomers as $customer)
                                                 <option value="{{$customer->id}}"
-                                                    @selected($invoice_master->party_id)
+                                                    @selected($invoice_master->party_id == $customer->id)
                                                     >
                                                     {{ $customer->id .'-'.$customer->business_name }}
                                                 </option>
@@ -76,7 +76,8 @@
                                     <div class="mb-3">
                                         <label class="form-label">Farm / Warehouse</label>
                                         <select name="party_warehouse_id"  id="party_warehouse_id" class="select2 form-control">                                                
-                                            <option value="{{ $invoice_master->party_warehouse_id }}">{{ $invoice_master->partyWarehouse->name }}</option>
+                                            <option 
+                                            value="{{ $invoice_master->party_warehouse_id }}">{{ $invoice_master->partyWarehouse->name }}</option>
                                         </select>
                                     </div>                                        
                                 </div>
@@ -86,7 +87,7 @@
                                         <select name="saleman_id"  id="saleman_id" class="select2 form-control">                                                
                                             <option value="">Choose...</option>
                                             @foreach ($userSalemen as $saleman)
-                                                <option  @selected($invoice_master->saleman_id) value="{{$saleman->id}}">
+                                                <option  @selected($invoice_master->saleman_id == $saleman->id ) value="{{$saleman->id}}">
                                                     {{ $saleman->id .'-'.$saleman->name }}
                                                 </option>
                                             @endforeach
@@ -230,13 +231,13 @@
                                                         <option value="fixed" @if($detail->discount_type == 'fixed') selected @endif>Fixed</option>
                                                     </select>
                                                 </td>
-
+                                               
                                                 <td class="text-end">
-                                                    <input type="number" name="discount_unit_price[]" value="{{ $detail->discount_unit_price }}" step="0.01" class="text-end form-control item-discount-unit-price" readonly>
+                                                    <input type="number" name="discount_unit_price[]" value="{{ $detail->discount_amount }}" step="0.01" class="text-end form-control item-discount-unit-price" readonly>
                                                 </td>
 
                                                 <td class="text-end">
-                                                    <input type="number" name="discount_amount[]" value="{{ $detail->discount_amount }}" step="0.01" class="text-end form-control item-discount-amount" readonly>
+                                                    <input type="number" name="discount_amount[]" value="{{  ($detail->per_unit_price -  $detail->discount_amount) * $detail->total_quantity }}" step="0.01" class="text-end form-control item-discount-amount" readonly>
                                                 </td>
 
                                                 <td class="text-end">
@@ -297,7 +298,7 @@
                                                 <input type="number" name="discount_total" id="discount-total" step="0.001" value="0" class="form-control text-end" readonly>
                                             </td>
                                         </tr>
-                                        <tr class="">
+                                        <tr class="d-none">
                                             <th>Withholding Tax </th>
                                             <td>
                                                 <div class="input-group">
@@ -306,7 +307,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr class="">
+                                        <tr class="d-none">
                                             <th>GST</th>
                                             <td>
                                                 <div class="input-group">
@@ -315,22 +316,26 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr class="">
-                                            <th>Freight</th>
+                                        <tr>
+                                            <th>Freight </th>
                                             <td>
-                                                <div class="input-group">
-                                                    <select name="freight_type" id="freight-type" class="form-control">
-                                                        <option value="">Choose...</option>
-                                                        <option value="inclusive">Inclusive <span>party will not pay</span></option>
-                                                        <option value="exclusive">Exclusive <sub>party will pay</sub> </option>
-                                                    </select>
-                                                    <input type="number" name="shipping" id="shipping" step="0.001" class="form-control text-end"  autocomplete="off">
-                                                </div>
+                                                <input type="hidden" name="is_x_freight" id="is-x-freight" value="{{ $invoice_master->is_x_freight }}" readonly>
+                                                <div class="row">
+                                                    <div class="col-md-3 my-2">
+                                                        <label class="label mx-1">X</label>
+                                                        <input type="checkbox"  id="x-freight-checkbox" class="form-check-input" {{ $invoice_master->is_x_freight ? 'checked' : '' }}>
+
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <input type="number" step="0.001" name="shipping" id="total-freight" value="{{ $invoice_master->shipping }}" class="form-control text-end" autocomplete="off">
+
+                                                    </div>
+                                                </div>         
                                             </td>
                                         </tr>
 
 
-                                        <tr class="">
+                                        <tr class="d-none">
                                             <th>Commission</th>
                                             <td>
                                                 <div class="input-group">
@@ -394,8 +399,22 @@
 
 <script>  
    $(document).ready(function () {
-        $('.item-dropdown').trigger('change');// this will trigger the event and update the fields stock balance
-   });
+        // $('.item-dropdown').trigger('change');// this will trigger the event and update the fields stock balance
+        $('.item-dropdown').each(function() {
+            // Get the selected option
+            let selected_item = $(this).find('option:selected');
+            
+            // Get the stock balance (ensure it's a valid number)
+            let stock_balance = parseFloat(selected_item.data('stock')) || 0;
+            
+            // Find the closest row (tr) and update the stock balance in the input field
+            let row = $(this).closest('tr');
+            row.find('.item-stock-balance').val(stock_balance.toFixed(0)); // Remove decimals and set the value
+        });
+        summaryCalculation();
+   
+   
+    });
 
 </script>
 

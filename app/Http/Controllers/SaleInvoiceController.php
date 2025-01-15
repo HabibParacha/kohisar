@@ -7,9 +7,10 @@ use App\Models\Item;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Party;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
-use App\Models\InvoiceDetail;
 
+use App\Models\InvoiceDetail;
 use App\Models\InvoiceMaster;
 use App\Models\PartyWarehouse;
 use Yajra\DataTables\DataTables;
@@ -69,16 +70,18 @@ class SaleInvoiceController extends Controller
                                                 <i class="bx bx-show font-size-16 text-primary me-1"></i> View
                                             </a>
                                         </li>
+                                         <li>
+                                            <a href="'. route('sale-invoice.edit', $row->id).'" class="dropdown-item">
+                                                <i class="bx bx-pencil font-size-16 text-warning me-1"></i> Edit
+                                            </a>
+                                        </li>
+                                         
                                         <li>
                                             <a href="javascript:void(0)" onclick="deleteSaleInvoice(' . $row->id . ')" class="dropdown-item">
                                                 <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
                                             </a>
                                         </li>
-                                        <li>
-                                            <a href="'. route('sale-invoice.edit', $row->id).'" class="dropdown-item">
-                                                <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
-                                            </a>
-                                        </li>
+                                       
                                        
                                     </ul>
                                 </div>
@@ -86,17 +89,7 @@ class SaleInvoiceController extends Controller
     
                    
                     return $btn;
-                    // <li>
-                    //     <a href="'. route('sale-invoice.edit', $row->id).'" class="dropdown-item">
-                    //         <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
-                    //     </a>
-                    // </li>
-               
-                    // <li>
-                    //     <a href="javascript:void(0)" onclick="deletePurchaseOrder(' . $row->id . ')" class="dropdown-item">
-                    //         <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
-                    //     </a>
-                    // </li>
+                   
                     })
     
                     ->rawColumns(['action']) // Mark these columns as raw HTML
@@ -204,7 +197,7 @@ class SaleInvoiceController extends Controller
                 'commission_rate' => $request->input('commission_rate'),
                 'commission_amount' => $request->input('commission_amount'),
                 
-                'shipping_type' => $request->input('freight_type'),
+                'is_x_freight' => $request->input('is_x_freight'),
                 'shipping' => $request->input('shipping'),
                 
                 'grand_total' => $request->input('grand_total'),
@@ -248,7 +241,7 @@ class SaleInvoiceController extends Controller
 
                   'discount_type' =>  $request->discount_type[$i],
                   'discount_value' => $request->discount_value[$i],// this discount is on rate
-                  'discount_amount' => $request->discount_amount[$i],
+                  'discount_amount' => $request->discount_unit_price[$i],
                   'after_discount_total_price' => $request->after_discount_total_price[$i],
 
                   'grand_total' => $request->after_discount_total_price[$i],
@@ -259,8 +252,14 @@ class SaleInvoiceController extends Controller
 
          }
 
+         $voucher_type = DB::table('voucher_types')->where('code','CP')->first();
+         $newVoucherNo =  Voucher::generateVoucherNo( $voucher_type->code);
+
         
-         $this->createJournalEntries($request, $newInvoiceNo, $invoice_master_id);
+         $this->createJournalEntries(
+            $request, $newInvoiceNo, $invoice_master_id, 
+            $newVoucherNo, $voucher_type->code,$voucher_type->name 
+        );
 
           DB::commit();// Commit the transaction
 
@@ -385,6 +384,9 @@ class SaleInvoiceController extends Controller
             'vehicle_no' => $request->input('vehicle_no'),
             'sub_total' => $request->input('sub_total'),
             
+
+
+            
             'discount_amount' =>  $request->input('discount_total'),
             
             'tax_rate' => $request->input('gst_rate'),
@@ -396,7 +398,7 @@ class SaleInvoiceController extends Controller
             'commission_rate' => $request->input('commission_rate'),
             'commission_amount' => $request->input('commission_amount'),
             
-            'shipping_type' => $request->input('freight_type'),
+            'is_x_freight' => $request->input('is_x_freight'),
             'shipping' => $request->input('shipping'),
             
             'grand_total' => $request->input('grand_total'),
@@ -432,12 +434,6 @@ class SaleInvoiceController extends Controller
           ->where('invoice_master_id', $invoiceMaster->id)
           ->delete();
 
-          DB::table('journals')
-          ->where('invoice_master_id', $invoiceMaster->id)
-          ->delete();
-           
-                
-
          for($i=0; $i < count($request->item_id); $i++)
          {
               $invoice_detail = [
@@ -454,9 +450,10 @@ class SaleInvoiceController extends Controller
                   'total_price' => $request->total_price[$i],
 
 
+             
                   'discount_type' =>  $request->discount_type[$i],
                   'discount_value' => $request->discount_value[$i],// this discount is on rate
-                  'discount_amount' => $request->discount_amount[$i],
+                  'discount_amount' => $request->discount_unit_price[$i],
                   'after_discount_total_price' => $request->after_discount_total_price[$i],
 
                   'grand_total' => $request->after_discount_total_price[$i],
@@ -467,8 +464,45 @@ class SaleInvoiceController extends Controller
 
          }
 
+
+
+         $voucher_no = $voucher_code = $voucher_type = null;
+
+         $voucher = Voucher::where('invoice_master_id', $invoiceMaster->id)->first();
+         // If a voucher exists
+         if($voucher)
+         {
+            $voucher_no = $voucher->voucher_no;
+            $voucher_code = $voucher->code;
+            $voucher_type = $voucher->type;
+         }else{
+            $voucher_type = DB::table('voucher_types')->where('code','CP')->first();
+            $voucher_no =  Voucher::generateVoucherNo( $voucher_type->code);
+            $voucher_code = $voucher_type->code;
+            $voucher_type = $voucher_type->name;
+         }
+
+
+         DB::table('voucher_details')
+         ->where('invoice_master_id', $invoiceMaster->id)
+         ->delete();
+
+         DB::table('vouchers')
+         ->where('invoice_master_id', $invoiceMaster->id)
+         ->delete();
+         
+         DB::table('journals')
+         ->where('invoice_master_id', $invoiceMaster->id)
+         ->delete();
+
+
         
-         $this->createJournalEntries($request, $invoiceMaster->invoice_no, $invoiceMaster->id);
+         $this->createJournalEntries(
+            $request, $invoiceMaster->invoice_no, $invoiceMaster->id, 
+            $voucher_no, $voucher_code, $voucher_type
+        );
+
+
 
           DB::commit();// Commit the transaction
 
@@ -530,139 +564,223 @@ class SaleInvoiceController extends Controller
     }
 
 
-    public function createJournalEntries(Request $request, $invoice_no, $invoice_master_id)
+    public function createJournalEntries(Request $request, $invoice_no, $invoice_master_id, $voucher_no, $voucher_code, $voucher_type)
     {
         $narrationAR = 'AR @ ' . $invoice_no . ' amount Rs: ' . number_format($request->input('grand_total') ?? 0, 2);
         $narrationWTH = 'WTH Tax @ ' . $invoice_no . ' amount Rs: ' . number_format($request->input('wth_amount') ?? 0, 2).' ('.$request->input('wth_rate').')%';
         $narrationGST = 'GST Tax @ ' . $invoice_no . ' amount Rs: ' . number_format($request->input('gst_amount') ?? 0, 2).' ('.$request->input('gst_rate').')%';
         $narrationCOMM = 'Commission @ ' . $invoice_no . ' amount Rs: ' . number_format($request->input('commission_amount') ?? 0, 2).' ('.$request->input('commission_rate').')%';
-        $narrationShipping = 'Shipping @ ' . $invoice_no . ' amount Rs: ' . number_format($request->input('shipping') ?? 0, 2);
+        $narrationXshipping = 'Freight Paid on behalf of Kohisar Mill @ ' . $invoice_no . ' amount Rs: ' . number_format($request->input('shipping') ?? 0, 2);
+        $narrationShipping = 'Freight Paid @ ' . $invoice_no . ' amount Rs: ' . number_format($request->input('shipping') ?? 0, 2);
         $narrationInventory = 'Inventory @ ' . $invoice_no . ' amount Rs: ' . number_format($request->input('inventory') ?? 0, 2);
 
+        $customer_id = $request->input('party_id');
 
 
-       $journalDebit = [
-           'date' => $request->input('date'),
-           'voucher_no' => $invoice_no,
-           'type' => 'invoice',
-           
-           'chart_of_account_id' => env('AR'),
-           'narration' => $narrationAR,
-           
-           'customer_id' => $request->input('party_id'),
-           'invoice_master_id' => $invoice_master_id,
-           
-           'debit' => $request->input('grand_total'),
-           'trace' => '',
-           'created_by' => Auth::user()->id,
-           'created_at' => now(),
-       ];
+        $journalDebit_AR = [
+            'date' => $request->input('date'),
+            'voucher_no' => $invoice_no,
+            'type' => 'invoice',
+            
+            'chart_of_account_id' => env('AR'),
+            'narration' => $narrationAR,
+            
+            'customer_id' => $customer_id,
+            'invoice_master_id' => $invoice_master_id,
+            
+            'debit' => $request->input('grand_total'),
+            'trace' => '',
+            'created_by' => Auth::user()->id,
+            'created_at' => now(),
+        ];
+        DB::table('journals')->insert($journalDebit_AR);
+
+        $journalCredit_inventory = [
+            'date' => $request->input('date'),
+            'voucher_no' => $invoice_no,
+            'type' => 'invoice',
+            
+            'chart_of_account_id' => env('FINISHED_GOOD'),
+            'narration' => $narrationInventory,
+            
+            'customer_id' => $request->input('party_id'),
+            'invoice_master_id' => $invoice_master_id,
+            
+            'credit' => $request->input('inventory'),
+            'trace' => '',
+            'created_by' => Auth::user()->id,
+            'created_at' => now(),
+        ];
+        DB::table('journals')->insert($journalCredit_inventory); 
+
+
+
+        // Debit: AR Customer
+        //Credit: OUTPUT_FREIGHT
+        if($request->input('is_x_freight') == '1')
+        {
+           $journalCredit_shipping = [
+                'date' => $request->input('date'),
+                'voucher_no' => $invoice_no,
+                'type' => 'invoice',             
+                'chart_of_account_id' => env('AR'),
+                'narration' => $narrationShipping,
+
+                'customer_id' => $customer_id,
+                'invoice_master_id' => $invoice_master_id,
+
+                'credit' => $request->input('shipping'),
+                'trace' => '',
+                'created_by' => Auth::user()->id,
+                'created_at' => now(),
+           ];
+           DB::table('journals')->insert($journalCredit_shipping); 
+
+
+           $journalDebit_output_freight = [
+                'date' => $request->input('date'),
+                'voucher_no' => $invoice_no,
+                'type' => 'invoice',
+
+                'chart_of_account_id' => env('OUTPUT_FREIGHT'),
+                'narration' => $narrationXshipping,
+
+                'customer_id' => $customer_id,
+                'invoice_master_id' => $invoice_master_id,
+
+                'debit' => $request->input('shipping'),
+                'trace' => '',
+                'created_by' => Auth::user()->id,
+                'created_at' => now(),
+           ];
+           DB::table('journals')->insert($journalDebit_output_freight); 
+
+        }
        
-       DB::table('journals')->insert($journalDebit); 
+        // voucher plus journal 
+        // Debit: OUTPUT_FREIGHT
+        //Credit: PETTY_CASH
+        else{
+
+           
+
+            $voucher = [
+                'date' => $request->date,
+                'voucher_no' => $voucher_no,
+                'code' => $voucher_code,
+                'type' => $voucher_type,
+                'invoice_master_id' => $invoice_master_id,
+
+                'narration' => $narrationShipping,
+                'total_amount' => $request->shipping,
+                'created_by' => Auth::user()->id,
+            ];
+            $voucher_id = DB::table('vouchers')->insertGetId($voucher);
+             
+            $voucher_DR = [
+                'voucher_id' => $voucher_id,
+                'date' => $request->date,
+                'voucher_no' => $voucher_no,
+                'code' => $voucher_code,
+                'type' => $voucher_type,
+                'chart_of_account_id' => env('OUTPUT_FREIGHT'),
+                'invoice_master_id' => $invoice_master_id,
+
+                'customer_id' => $customer_id,
+                'narration' => $narrationShipping,
+                'debit' => $request->shipping,
+                'created_at' => now(),
+            ];
+            DB::table('voucher_details')->insert($voucher_DR);
+
+            $voucher_DR['created_by'] = Auth::user()->id; // Add created_by only for journals
+            DB::table('journals')->insert($voucher_DR);
+
+            $voucher_CR = [
+                'voucher_id' => $voucher_id,
+                'date' => $request->date,
+                'voucher_no' => $voucher_no,
+                'code' => $voucher_code,
+                'type' => $voucher_type,
+                'chart_of_account_id' => env('PETTY_CASH'),
+                'invoice_master_id' => $invoice_master_id,
+
+                'customer_id' => $customer_id,
+                'narration' => $narrationShipping,
+                'credit' => $request->shipping,
+                'created_at' => now(),
+            ];
+            DB::table('voucher_details')->insert($voucher_CR);
+
+            $voucher_CR['created_by'] = Auth::user()->id; // Add created_by only for journals
+            DB::table('journals')->insert($voucher_CR);
+
+
+        }
 
 
       
        //wth: withholding tax
-       $journalCredit_wth_tax = [
-           'date' => $request->input('date'),
-           'voucher_no' => $invoice_no,
-           'type' => 'invoice',
-           
-           'chart_of_account_id' => env("SALE_TAX"),
-           'narration' => $narrationWTH,
-           
-           'customer_id' => $request->input('party_id'),
-           'invoice_master_id' => $invoice_master_id,
-           
-           'credit' => $request->input('wth_amount'),
-           'trace' => '',
-           'created_by' => Auth::user()->id,
-           'created_at' => now(),
-       ];
-       DB::table('journals')->insert($journalCredit_wth_tax); 
-
-
-       $journalCredit_gst_tax = [
-           'date' => $request->input('date'),
-           'voucher_no' => $invoice_no,
-           'type' => 'invoice',
-           
-           'chart_of_account_id' => env("GST_TAX"),
-           'narration' => $narrationGST,
-           
-           'customer_id' => $request->input('party_id'),
-           'invoice_master_id' => $invoice_master_id,
-           
-           'credit' => $request->input('gst_amount'),
-           'trace' => '',
-           'created_by' => Auth::user()->id,
-           'created_at' => now(),
-       ];
-       DB::table('journals')->insert($journalCredit_gst_tax); 
-
-      if($request->input('commission_amount') > 0)
-      {
-       $journalCredit_commission = [
-           'date' => $request->input('date'),
-           'voucher_no' => $invoice_no,
-           'type' => 'invoice',
-           
-           'chart_of_account_id' => env('COMMISSION'),
-           'narration' => $narrationCOMM,
-           
-           'customer_id' => $request->input('party_id'),
-           'invoice_master_id' => $invoice_master_id,
-           
-           'credit' => $request->input('commission_amount'),
-           'trace' => '',
-           'created_by' => Auth::user()->id,
-           'created_at' => now(),
-       ];
-       DB::table('journals')->insert($journalCredit_commission); 
-      }
-
-       if($request->input('freight_type') == 'inclusive')
-       {
-           $journalCredit_shipping = [
-               'date' => $request->input('date'),
-               'voucher_no' => $invoice_no,
-               'type' => 'invoice',
-               
-               'chart_of_account_id' => env("SHIPPING"),
-               'narration' => $narrationShipping,
-               
-               'customer_id' => $request->input('party_id'),
-               'invoice_master_id' => $invoice_master_id,
-               
-               'credit' => $request->input('shipping'),
-               'trace' => '',
-               'created_by' => Auth::user()->id,
-               'created_at' => now(),
-           ];
-   
-   
-           DB::table('journals')->insert($journalCredit_shipping); 
-
-       }
+       /*
+            $journalCredit_wth_tax = [
+                'date' => $request->input('date'),
+                'voucher_no' => $invoice_no,
+                'type' => 'invoice',
+                
+                'chart_of_account_id' => env("SALE_TAX"),
+                'narration' => $narrationWTH,
+                
+                'customer_id' => $request->input('party_id'),
+                'invoice_master_id' => $invoice_master_id,
+                
+                'credit' => $request->input('wth_amount'),
+                'trace' => '',
+                'created_by' => Auth::user()->id,
+                'created_at' => now(),
+            ];
+            DB::table('journals')->insert($journalCredit_wth_tax); 
         
+            $journalCredit_gst_tax = [
+                'date' => $request->input('date'),
+                'voucher_no' => $invoice_no,
+                'type' => 'invoice',
+                
+                'chart_of_account_id' => env("GST_TAX"),
+                'narration' => $narrationGST,
+                
+                'customer_id' => $request->input('party_id'),
+                'invoice_master_id' => $invoice_master_id,
+                
+                'credit' => $request->input('gst_amount'),
+                'trace' => '',
+                'created_by' => Auth::user()->id,
+                'created_at' => now(),
+            ];
+            DB::table('journals')->insert($journalCredit_gst_tax); 
+       
+            if($request->input('commission_amount') > 0)
+            {
+                $journalCredit_commission = [
+                    'date' => $request->input('date'),
+                    'voucher_no' => $invoice_no,
+                    'type' => 'invoice',
+                    
+                    'chart_of_account_id' => env('COMMISSION'),
+                    'narration' => $narrationCOMM,
+                    
+                    'customer_id' => $request->input('party_id'),
+                    'invoice_master_id' => $invoice_master_id,
+                    
+                    'credit' => $request->input('commission_amount'),
+                    'trace' => '',
+                    'created_by' => Auth::user()->id,
+                    'created_at' => now(),
+                ];
+                DB::table('journals')->insert($journalCredit_commission); 
+            }
+         */
 
-       $journalCredit_inventory = [
-           'date' => $request->input('date'),
-           'voucher_no' => $invoice_no,
-           'type' => 'invoice',
-           
-           'chart_of_account_id' => env('FINISHED_GOOD'),
-           'narration' => $narrationInventory,
-           
-           'customer_id' => $request->input('party_id'),
-           'invoice_master_id' => $invoice_master_id,
-           
-           'credit' => $request->input('inventory'),
-           'trace' => '',
-           'created_by' => Auth::user()->id,
-           'created_at' => now(),
-       ];
-       DB::table('journals')->insert($journalCredit_inventory); 
+      
 
     }
 }

@@ -101,10 +101,22 @@
     });
 
 
-    $(document).on('change','#freight-type', function(e){
+    $('#x-freight-checkbox').on('click', function(e){
+        toggleXFreightValue();
         summaryCalculation();
-
     });
+    $('#total-freight').on('keyup', function(e){
+        summaryCalculation();
+    });
+
+    function toggleXFreightValue(){
+        let xfreightCheckbox = $('#x-freight-checkbox').prop('checked');
+        if(xfreightCheckbox){
+            $('#is-x-freight').val('1');
+        }else{
+            $('#is-x-freight').val('0');
+        }
+    }
 
 
     
@@ -302,6 +314,8 @@
 
         let inventory = 0;
 
+        let x_freight_checkbox = $('#x-freight-checkbox').prop('checked');
+        let total_freight = parseFloat($('#total-freight').val()) || 0;
 
         $('.item-total-price').each(function(){
             let item_total_price = parseFloat($(this).val()) || 0;
@@ -348,19 +362,18 @@
             $('#commission-amount').val(commission_amount.toFixed(2));
         }
 
-        let freight_type = $('#freight-type').val();
-        shipping = parseFloat($('#shipping').val())||0;
+        inventory = total_after_discount - commission_amount;
+        grand_total = total_after_discount + wth_amount + gst_amount;
+        // if(x_freight_checkbox)
+        // {
+        //     inventory = total_after_discount - commission_amount;
+        //     grand_total = total_after_discount + wth_amount + gst_amount;
 
-        if(freight_type == 'exclusive')
-        {
-            inventory = total_after_discount - commission_amount;
-            grand_total = total_after_discount + wth_amount + gst_amount + shipping;
+        // }else{
+        //     inventory = total_after_discount - (commission_amount + shipping);
+        //     grand_total = total_after_discount + wth_amount + gst_amount;
 
-        }else{
-            inventory = total_after_discount - (commission_amount + shipping);
-            grand_total = total_after_discount + wth_amount + gst_amount;
-
-        }
+        // }
 
 
         $('#grand-total').val(grand_total.toFixed(2));

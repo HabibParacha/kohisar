@@ -161,7 +161,9 @@
                                             <th  width="200" class="text-start" >Item</th> 
                                             <th  width="50" class="text-center">Unit wgt.</th> 
                                             <th  width="50" class="text-center">Qty</th> 
-                                            <th  width="100" class="text-center">Total  wgt.</th> 
+                                            <th  width="50" class="text-center">Total  wgt.</th> 
+                                            <th  width="50" class="text-center">Selling</th> 
+                                            <th  width="50" class="text-center">Total Price</th> 
                                          
                                             <th class="text-center" width="20"></th>
                                         
@@ -183,6 +185,30 @@
 
                         </div>
 
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            {{-- <label for="form-label">Descripion</label> --}}
+                        </div>
+                        
+                       
+                        <div class="col-md-6 d-flex align-items-top">
+                            <table id="summary-table" class="table">
+
+                                <tr class="">
+                                    <th width="50%">Total Amount  </th>
+                                    <td width="50%">
+                                        <input type="number" name="grand_total" id="grand-total" step="0.001" value="0" class="form-control text-end" readonly>
+                                    </td>
+                                </tr>  
+                                <tr class="">
+                                    <th width="50%">Total Weight</th>
+                                    <td width="50%">
+                                        <input type="number" name="net_weight" id="total-wgt" value="0" step="0.001" class="form-control text-end" readonly>
+                                    </td>
+                                </tr>           
+                            </table>
+                        </div>
                     </div>
                     <div class="row  mt-2">
                         <div class="col-md-4">
@@ -226,12 +252,14 @@
         
         let unit_id = selected_item.data('unit-id');
         let unit_weight = parseFloat(selected_item.data('unit-weight')) || 0;
-       
+        let sell_price = parseFloat(selected_item.data('sell-price')) || 0;
+
 
         let row =  $(this).closest('tr');
         
         let unit_dropdown = row.find('.item-unit-dropdown');
         row.find('.item-unit-weight').val(unit_weight.toFixed(2));
+        row.find('.item-per-unit-price').val(sell_price.toFixed(0));//remove decimal
 
 
 
@@ -251,9 +279,15 @@
 
         let quantity = parseFloat(row.find('.item-total-quantity').val()) || 0;
         let unit_weight = parseFloat(row.find('.item-unit-weight').val()) || 0;
+        let per_unit_price = parseFloat(row.find('.item-per-unit-price').val()) || 0;
 
         let net_weight = quantity*unit_weight;
         row.find('.item-net-weight').val(net_weight.toFixed(2));
+
+        let total_price = quantity * per_unit_price;
+        row.find('.item-total-price').val(total_price.toFixed(2));
+
+        summaryCalculation();
     }
 
     $('#btn-add-more').on('click', function(e){
@@ -262,6 +296,25 @@
         appendNewRow();
        
     });
+
+    function summaryCalculation()
+    {
+        let grand_total = 0;
+        let total_weight = 0;
+
+
+        $('.item-total-price').each(function(){
+            grand_total += parseFloat($(this).val()) || 0;
+        });
+        $('#grand-total').val(grand_total);
+
+        $('.item-net-weight').each(function(){
+            total_weight += parseFloat($(this).val()) || 0;
+        });
+        $('#total-wgt').val(total_weight);
+
+
+    }
     
    
    
@@ -277,7 +330,14 @@
                     <select  name="item_id[]" class="form-control select2 item-dropdown" style="width:100%">                                                
                         <option value="" >Choose...</option>
                         @foreach ($itemGoods as $item)
-                            <option value="{{$item->id}}" data-stock="{{ $item->balance }}"  data-unit-weight="{{ $item->unit_weight }}">{{ $item->code.'-'.$item->category_name .'-'.$item->name }}</option>
+                            <option 
+                            value="{{$item->id}}" 
+                            data-stock="{{ $item->balance }}"  
+                            data-unit-weight="{{ $item->unit_weight }}"
+                            data-sell-price="{{ $item->sell_price }}"
+
+                            
+                            >{{ $item->code.'-'.$item->category_name .'-'.$item->name }}</option>
                         @endforeach
 
                     </select>
@@ -294,12 +354,17 @@
                 <td class="text-end">
                     <input type="number" name="net_weight[]" step="0.0001" class=" text-end form-control item-net-weight" readonly>  
                 </td>
-                
-                
+                 <td class="text-end">
+                    <input type="number" name="per_unit_price[]" step="0.0001" class=" text-end form-control item-per-unit-price">  
+                </td>
+                 <td class="text-end">
+                    <input type="number" name="total_price[]" step="0.0001" class=" text-end form-control item-total-price" readonly>  
+                </td>
                 
                 <td class="text-center">  
                     <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
                 </td>
+                
             </tr>
 
         `;

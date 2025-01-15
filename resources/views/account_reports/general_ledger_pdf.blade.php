@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $coaName }} Gernal Ledger </title>
+    <title>{{ $coaName }} General Ledger </title>
     <style type="text/css">
         .style1 {
             font-size: 20px
@@ -31,7 +31,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <div align="center"><strong>Gernal Ledger {{ ($journals->isNotEmpty()) ? $journals[0]->chartOfAccount->name :'' }}</strong></div>
+                    <div align="center"><strong>General Ledger {{ ($journals->isNotEmpty()) ? $journals[0]->chartOfAccount->name :'' }}</strong></div>
                 </td>
             </tr>
             <tr>

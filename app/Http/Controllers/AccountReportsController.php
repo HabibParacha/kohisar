@@ -146,7 +146,7 @@ class AccountReportsController extends Controller
 
 
 
-    public function gernalLedgerPDF(Request $request)
+    public function generalLedgerPDF(Request $request)
     {
 
         $this->validateDateRange($request);
@@ -191,7 +191,7 @@ class AccountReportsController extends Controller
 
         $journals = $query->get(); 
         
-        $pdf = PDF::loadView('account_reports.gernal_ledger_pdf', compact('coaName','journals','broughtForward'));
+        $pdf = PDF::loadView('account_reports.general_ledger_pdf', compact('coaName','journals','broughtForward'));
         $pdf->setpaper('A4', 'landscape');
 
         return $pdf->stream();

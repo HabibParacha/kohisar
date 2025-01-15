@@ -219,7 +219,7 @@
                                                 <input type="number" name="discount_total" id="discount-total" step="0.001" value="0" class="form-control text-end" readonly>
                                             </td>
                                         </tr>
-                                        <tr class="">
+                                        <tr class="d-none">
                                             <th>Withholding Tax </th>
                                             <td>
                                                 <div class="input-group">
@@ -228,7 +228,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr class="">
+                                        <tr class="d-none">
                                             <th>GST</th>
                                             <td>
                                                 <div class="input-group">
@@ -237,7 +237,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr class="">
+                                        {{-- <tr class="">
                                             <th>Freight</th>
                                             <td>
                                                 <div class="input-group">
@@ -249,10 +249,27 @@
                                                     <input type="number" name="shipping" id="shipping" step="0.001" class="form-control text-end"  autocomplete="off">
                                                 </div>
                                             </td>
+                                        </tr> --}}
+                                        <tr>
+                                            <th>Freight </th>
+                                            <td>
+                                                <input type="readonly" name="is_x_freight" id="is-x-freight" value="0" readonly>
+                                                <div class="row">
+                                                    <div class="col-md-3 my-2">
+                                                        <label class="label mx-1">X</label>
+                                                        <input type="checkbox"  id="x-freight-checkbox" class="form-check-input">
+
+                                                    </div>
+                                                    <div class="col-md-9">
+                                                        <input type="number" step="0.001" name="shipping" id="total-freight" class="form-control text-end" autocomplete="off">
+
+                                                    </div>
+                                                </div>         
+                                            </td>
                                         </tr>
 
 
-                                        <tr class="">
+                                        <tr class="d-none">
                                             <th>Commission</th>
                                             <td>
                                                 <div class="input-group">

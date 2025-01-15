@@ -139,7 +139,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('account-reports/request', [AccountReportsController::class, 'request'])->name('account-reports.request');
     Route::post('account-reports/voucher-pdf', [AccountReportsController::class, 'voucherPDF'])->name('account-reports.voucherPDF');
     Route::post('account-reports/cashbook-pdf', [AccountReportsController::class, 'cashbookPDF'])->name('account-reports.cashbookPDF');
-    Route::post('account-reports/gernal-ledger-pdf', [AccountReportsController::class, 'gernalLedgerPDF'])->name('account-reports.gernalLedgerPDF');
+    Route::post('account-reports/general-ledger-pdf', [AccountReportsController::class, 'generalLedgerPDF'])->name('account-reports.generalLedgerPDF');
     Route::post('account-reports/daybook-pdf', [AccountReportsController::class, 'daybookPDF'])->name('account-reports.daybookPDF');
     Route::post('account-reports/trial-balance-pdf', [AccountReportsController::class, 'trialBalancePDF'])->name('account-reports.trialBalancePDF');
     Route::post('account-reports/customer-balance-pdf', [AccountReportsController::class, 'customerBalancePDF'])->name('account-reports.customerBalancePDF');

@@ -50,9 +50,9 @@
                             </li>
                            
                             <li class="nav-item" role="presentation">
-                                <a class="nav-link" data-bs-toggle="tab" href="#tab-gernal-ledger" role="tab" aria-selected="false" tabindex="-1">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tab-general-ledger" role="tab" aria-selected="false" tabindex="-1">
                                     <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
-                                    <span class="d-none d-sm-block">Gernal ledger</span>   
+                                    <span class="d-none d-sm-block">General ledger</span>   
                                 </a>
                             </li>
 
@@ -222,7 +222,7 @@
                                     <button type="submit" class="btn btn-success w-lg float-right mt-2" id="trail-balance-pdf">Trail Balance PDF</button>
                                 </div>
 
-                                <div class="tab-pane col-12 col-md-4" id="tab-gernal-ledger" role="tabpanel">
+                                <div class="tab-pane col-12 col-md-4" id="tab-general-ledger" role="tabpanel">
                                     <div class="mb-1 mt-1">
                                         <label >Chart of Accounts</label>
                                         <select name="coa_id" id="coa-id" class="select2 form-control" style="width: 100%">
@@ -232,7 +232,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <button type="submit" class="btn btn-success w-lg float-right mt-2" id="gernal-ledger-pdf">Gernal Ledger PDF</button>
+                                    <button type="submit" class="btn btn-success w-lg float-right mt-2" id="general-ledger-pdf">General Ledger PDF</button>
                                 </div>
 
                                 <div class="tab-pane col-12 col-md-4" id="tab-customer-balance" role="tabpanel">
@@ -376,10 +376,10 @@
                 $('#form').attr('action', '{{ route('account-reports.cashbookPDF') }}');
                 $('#form').submit();
             });
-            $('#gernal-ledger-pdf').click(function(e) {
+            $('#general-ledger-pdf').click(function(e) {
                 e.preventDefault();
                 $('#form').attr('target','_blank');
-                $('#form').attr('action', '{{ route('account-reports.gernalLedgerPDF') }}');
+                $('#form').attr('action', '{{ route('account-reports.generalLedgerPDF') }}');
                 $('#form').submit();
             });
             $('#daybook-pdf').click(function(e) {
