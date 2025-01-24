@@ -126,6 +126,7 @@ return new class extends Migration
             $table->string('discount_type')->nullable();
             $table->decimal('discount_value', 15, 2)->nullable();
             $table->decimal('discount_amount', 15, 2)->nullable();  
+            $table->decimal('discount_unit_price', 15, 2)->nullable();  
             $table->decimal('after_discount_total_price', 15, 2)->nullable();  
             
             $table->decimal('tax_rate', 15, 2)->nullable();

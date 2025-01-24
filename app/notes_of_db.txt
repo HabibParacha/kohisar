@@ -40,3 +40,5 @@ ALTER TABLE `invoice_master` ADD `is_x_freight` VARCHAR(2) NULL AFTER `commissio
 ALTER TABLE `vouchers` ADD `invoice_master_id` BIGINT(20) NULL AFTER `chart_of_account_id`;
 ALTER TABLE `voucher_details` ADD `invoice_master_id` BIGINT(20) NULL AFTER `chart_of_account_id`;
 ---------------------------------------------System updated--------------------------------------------
+ALTER TABLE `invoice_detail` ADD `discount_unit_price` DECIMAL(15,2) NULL AFTER `discount_amount`;
+---------------------------------------------System updated--------------------------------------------

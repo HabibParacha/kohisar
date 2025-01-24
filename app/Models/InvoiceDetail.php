@@ -40,6 +40,7 @@ class InvoiceDetail extends Model
         'discount_type',
         'discount_value',
         'discount_amount',
+        'discount_unit_price',
         'after_discount_total_price',
         'tax_rate',
         'tax_value',

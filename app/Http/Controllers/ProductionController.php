@@ -50,6 +50,11 @@ class ProductionController extends Controller
                     // Status toggle column
 
                     ->addColumn('recipe_name', function($row){
+                        if($row->recipe->is_active == 0)
+                        {
+                            return  $row->recipe->name . ' <span class="badge bg-danger">Inactive</span>';
+                        }
+
                         return  $row->recipe->name ?? 'N/A';
                     })
                    
@@ -76,13 +81,19 @@ class ProductionController extends Controller
 
                                         if($row->is_lock == 0)
                                         {
-                                            $btn .='
-                                            <li>
-                                                <a href="'. route('production.edit', $row->id).'" class="dropdown-item">
-                                                    <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
-                                                </a>
-                                            </li>
-                                             <li>
+                                           // if recipe is inactive then edit button will not be shown  
+                                           if($row->recipe->is_active == 1)
+                                            {
+                                                $btn .='
+                                                <li>
+                                                    <a href="'. route('production.edit', $row->id).'" class="dropdown-item">
+                                                        <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
+                                                    </a>
+                                                </li>';
+                                            }
+                                            
+
+                                           $btn .=' <li>
                                                 <a href="'.route('production.posting',$row->id) .'"  class="dropdown-item '.($row->output_qty == 0 ? "disabled":'') .'">
                                                     <i class="fas fa-check-double font-size-16 text-warning me-1"></i> Posting
                                                 </a>
@@ -115,7 +126,7 @@ class ProductionController extends Controller
                    
                     })
     
-                    ->rawColumns(['action']) // Mark these columns as raw HTML
+                    ->rawColumns(['action','recipe_name']) // Mark these columns as raw HTML
                     ->make(true);
             }
     
@@ -311,9 +322,17 @@ class ProductionController extends Controller
         $goodItems  = Item::where('type','Good')->get();
         $units = Unit::all();
         $recipes = Recipe::where('is_active',1)->get();
+
+        
         
         try {
-            $production = InvoiceMaster::with(['productionDetails','outputDetails'])->find($id);
+            $production = InvoiceMaster::with(['productionDetails','outputDetails'])
+            ->find($id);
+            
+            
+            
+            
+            
             return view('productions.edit', compact('production','goodItems','units','recipes'));
 
         } catch (\Exception $e) {

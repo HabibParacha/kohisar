@@ -15,7 +15,7 @@
         let tableBody = $('#table tbody');
 
         let row = `
-              <tr class="">
+                <tr class="">
                     <td class="text-end"><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
     
                     <td class=""> 

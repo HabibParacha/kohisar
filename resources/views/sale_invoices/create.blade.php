@@ -172,7 +172,7 @@
                                     </thead>
                                     <tbody id="sortable-table">
 
-                                        
+                                       
                                        
                                     </tbody> 
                                     <tfoot>
@@ -253,7 +253,7 @@
                                         <tr>
                                             <th>Freight </th>
                                             <td>
-                                                <input type="readonly" name="is_x_freight" id="is-x-freight" value="0" readonly>
+                                                <input type="hidden" name="is_x_freight" id="is-x-freight" value="0" readonly>
                                                 <div class="row">
                                                     <div class="col-md-3 my-2">
                                                         <label class="label mx-1">X</label>

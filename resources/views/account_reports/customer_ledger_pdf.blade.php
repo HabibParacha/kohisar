@@ -100,7 +100,7 @@
                             
                             <td>
                                 {{-- if journal entry is of invoice --}}
-                                @if($journal->type == "sale_order")
+                                @if($journal->type == "invoice" || $journal->type == "sale_order" )
                                     <table style="border-collapse:collapse;" width="100%" border="0">
 
                                         <tr>
@@ -115,15 +115,9 @@
                                                 <td width="20%" style="text-align:left" >{{ $detail->item->name }}</td>
                                                 <td width="20%" style="text-align:right" >{{ number_format($detail->total_quantity,0)}}</td>
                                                 <td width="20%" style="text-align:right" >{{ number_format($detail->per_unit_price,1) }}</td>
-                                                @php
-                                                    $discount = 0;
-                                                    if($detail->discount_value)
-                                                    {
-                                                        $discount = 100-($detail->discount_value / $detail->per_unit_price * 100);
-                                                    }
-                                                @endphp
-                                                <td width="20%" style="text-align:right" >{{ number_format($discount,2) }}</td>
-                                                <td width="30%" style="text-align:right" >{{ $detail->grand_total}}</td>
+                                               
+                                                <td width="20%" style="text-align:right" >{{ number_format($detail->discount_value,2) }}</td>
+                                                <td width="30%" style="text-align:right" >{{ $detail->discount_amount}}</td>
                                             </tr>
                                         @endforeach
                                     </table>

@@ -242,6 +242,7 @@ class SaleInvoiceController extends Controller
                   'discount_type' =>  $request->discount_type[$i],
                   'discount_value' => $request->discount_value[$i],// this discount is on rate
                   'discount_amount' => $request->discount_unit_price[$i],
+                  'discount_unit_price' => $request->discount_unit_price[$i],
                   'after_discount_total_price' => $request->after_discount_total_price[$i],
 
                   'grand_total' => $request->after_discount_total_price[$i],
@@ -454,6 +455,8 @@ class SaleInvoiceController extends Controller
                   'discount_type' =>  $request->discount_type[$i],
                   'discount_value' => $request->discount_value[$i],// this discount is on rate
                   'discount_amount' => $request->discount_unit_price[$i],
+                  'discount_unit_price' => $request->discount_unit_price[$i],
+                  
                   'after_discount_total_price' => $request->after_discount_total_price[$i],
 
                   'grand_total' => $request->after_discount_total_price[$i],

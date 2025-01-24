@@ -127,7 +127,7 @@
                                         <label class="form-label">Date</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
-                                            <input type="date" name="date" id="date" class="form-control" value="{{ date('Y-m-d') }}">
+                                            <input type="date" name="date" id="date" class="form-control" value="{{ $production->date }}">
                                         </div>
                                        
                                     </div> 
@@ -137,7 +137,7 @@
                                         <label class="form-label">Expiry Date</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
-                                            <input type="date" name="expiry_date"  class="form-control" value="{{ date('Y-m-d') }}">
+                                            <input type="date" name="expiry_date"  class="form-control" value="{{ $production->expiry_date }}">
                                         </div>
                                        
                                     </div> 
@@ -527,7 +527,7 @@
                 productionSummaryCalculation();
 
             }).fail(function(xhr) {
-                alert('Error fetching brand details: ' + xhr.responseText);
+                alert('Error fetching details: ' + xhr.responseText);
             })
             .always(function() {
                 $('#progressModal').modal('hide'); // Hide the progress bar after the request completes or fails
