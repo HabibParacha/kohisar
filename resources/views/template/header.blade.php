@@ -82,6 +82,7 @@
                                 <a class="dropdown-item" href="{{ route('report.raw-material-history.request') }}">Raw Material History</a>
                                 <a class="dropdown-item" href="{{ route('report.material-received-history.request') }}">Material Received History</a>
                                 <a class="dropdown-item" href="{{ route('report.raw-material-stock-level.request') }}">Material Stock Level</a>
+                                <a class="dropdown-item" href="{{ route('average-costing.itemHistoryRequest') }}">Item Average History</a>
 
                             </div>
                         </div><!-- /btn-group -->

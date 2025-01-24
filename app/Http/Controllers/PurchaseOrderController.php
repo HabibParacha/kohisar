@@ -841,7 +841,64 @@ class PurchaseOrderController extends Controller
     }
 
    
-    
+    public function calculateItemAvgCost()
+    {
+        $item = Item::find(12);
+        
+        $transactions = InvoiceDetail::where('item_id',12)
+        ->whereIn('type',['receipt','production'])
+        ->orderBy('id','asc')
+        ->orderBy('date','asc')
+        ->get();
+
+        $stock_weight = 0;
+        $stock_value = 0;
+        $avg_cost = 0;
+
+        $data = [];
+        
+        foreach($transactions as $transaction)
+        {
+
+            if($transaction->type == 'receipt')
+            {
+                $stock_value += $transaction->total_price_stock;
+                $stock_weight += $transaction->net_weight;
+
+                $avg_cost = $stock_value / $stock_weight;
+                
+            }
+            else if($transaction->type == 'production')
+            {           
+                $stock_value -= $transaction->net_weight * $avg_cost;
+                $stock_weight -= $transaction->net_weight;
+ 
+            }
+
+
+            $data[] = [
+                'date' => $transaction->date,
+                'type' => $transaction->type,
+                'qty_in' => ($transaction->type == 'receipt') ? $transaction->net_weight : '-',
+                'qty_out' => ($transaction->type == 'production') ? $transaction->net_weight : '-',
+                'balance' => $stock_weight,
+                'balance' => number_format($stock_weight, 2),
+                'avg_cost' => ($transaction->type == 'receipt') ? number_format($avg_cost, 2):'-',
+                // 'avg_cost' => number_format($avg_cost, 2),
+                'stock_value' => number_format($stock_value, 2),
+            ];
+
+
+           
+        }
+        
+        // return response()->json($data);
+
+        return view('reports.item_average_price_history.show', compact('data'));
+
+
+        
+    }
 
 
   

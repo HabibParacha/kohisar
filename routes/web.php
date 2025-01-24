@@ -27,6 +27,7 @@ use App\Http\Controllers\SaleInvoiceController;
 use App\Http\Controllers\BalanceSheetController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\AccountReportsController;
+use App\Http\Controllers\AverageCostingController;
 use App\Http\Controllers\ChartOfAccountController;
 use App\Http\Controllers\OpeningBalanceController;
 use App\Http\Controllers\PartyWarehouseController;
@@ -78,9 +79,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/recipes/{id}/detail-with-stock', [RecipeController::class, 'getRecipeDetailWithStock'])->name('getRecipeDetailWithStock');
     Route::resource('recipe', RecipeController::class);
 
-    Route::resource('purchase-order', PurchaseOrderController::class);
-    Route::get('purchase-order/test/create', [PurchaseOrderController::class,'createTest'])->name('purcahse-order.createTest');//********************** */
 
+
+    Route::get('purchase-order/test/create', [PurchaseOrderController::class,'createTest'])->name('purcahse-order.createTest');//********************** */
+    Route::resource('purchase-order', PurchaseOrderController::class);
+
+    Route::get('average-costing/item-history/request', [AverageCostingController::class, 'itemHistoryRequest'])->name('average-costing.itemHistoryRequest');
+    Route::post('average-costing/item-history/show', [AverageCostingController::class, 'itemHistoryShow'])->name('average-costing.itemHistoryShow');
     
     Route::resource('sale-order', SaleOrderController::class);
 
