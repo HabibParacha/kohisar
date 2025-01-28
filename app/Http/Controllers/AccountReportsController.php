@@ -86,8 +86,8 @@ class AccountReportsController extends Controller
                 ->when($request->endDate, function ($query, $endDate) {
                     return $query->where('date', '<=', $endDate);
                 })
-                ->orderByDesc('id')
                 ->orderByDesc('date')
+                ->orderByDesc('id')
                 ->with('details');  //relationship
                 
 
@@ -132,8 +132,8 @@ class AccountReportsController extends Controller
                 ->when($request->endDate, function ($query, $endDate) {
                     return $query->where('date', '<=', $endDate);
                 })
-                ->orderBy('id')
                 ->orderBy('date')
+                ->orderBy('id')
                 ->with(['customer','supplier']);  //relationship
                 
             $journals = $query->get(); 
@@ -183,8 +183,8 @@ class AccountReportsController extends Controller
                 ->when($request->endDate, function ($query, $endDate) {
                     return $query->where('date', '<=', $endDate);
                 })
-                ->orderBy('id')
                 ->orderBy('date')
+                ->orderBy('id')
                 ->with(['customer','supplier']);  //relationship
                 
 
@@ -228,8 +228,8 @@ class AccountReportsController extends Controller
                 })
                 
                 ->whereIn('chart_of_account_id',$levelFourAccounts)
-                ->orderBy('id')
                 ->orderBy('date')
+                ->orderBy('id')
                 ->with(['customer','supplier']);  //relationship
                 
 

@@ -52,7 +52,7 @@ class ProductionController extends Controller
                     ->addColumn('recipe_name', function($row){
                         if($row->recipe->is_active == 0)
                         {
-                            return  $row->recipe->name . ' <span class="badge bg-danger">Inactive</span>';
+                            return  '('.$row->recipe->id.')-'.$row->recipe->name . ' <span class="badge bg-danger">Inactive</span>';
                         }
 
                         return  $row->recipe->name ?? 'N/A';

@@ -100,6 +100,7 @@
                                 <table id="table" class="table table-striped table-sm " style="width:100%">
                                     <thead>
                                         <tr>
+                                            <th width="5%">Id</th>
                                             <th width="10%">Item</th>
                                             <th width="10%">Name</th>
                                             <th width="15%">Description</th>
@@ -179,6 +180,7 @@
                     }
                 },
                 columns: [
+                    { data: 'id' },
                     { data: 'item_name' },
                     { data: 'name' },
                     { data: 'description' },

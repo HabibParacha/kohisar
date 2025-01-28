@@ -84,9 +84,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('purchase-order/test/create', [PurchaseOrderController::class,'createTest'])->name('purcahse-order.createTest');//********************** */
     Route::resource('purchase-order', PurchaseOrderController::class);
 
-    Route::get('average-costing/item-history/request', [AverageCostingController::class, 'itemHistoryRequest'])->name('average-costing.itemHistoryRequest');
-    Route::post('average-costing/item-history/show', [AverageCostingController::class, 'itemHistoryShow'])->name('average-costing.itemHistoryShow');
-    
+   
     Route::resource('sale-order', SaleOrderController::class);
 
     Route::get('sale-order/{id}/create-sale-invoice', [SaleInvoiceController::class, 'createFromSaleOrder'])->name('sale-invoice.createFromSaleOrder');
@@ -141,36 +139,45 @@ Route::middleware(['auth'])->group(function () {
     // START::Account Section 
     
 
-    Route::get('account-reports/request', [AccountReportsController::class, 'request'])->name('account-reports.request');
-    Route::post('account-reports/voucher-pdf', [AccountReportsController::class, 'voucherPDF'])->name('account-reports.voucherPDF');
-    Route::post('account-reports/cashbook-pdf', [AccountReportsController::class, 'cashbookPDF'])->name('account-reports.cashbookPDF');
-    Route::post('account-reports/general-ledger-pdf', [AccountReportsController::class, 'generalLedgerPDF'])->name('account-reports.generalLedgerPDF');
-    Route::post('account-reports/daybook-pdf', [AccountReportsController::class, 'daybookPDF'])->name('account-reports.daybookPDF');
-    Route::post('account-reports/trial-balance-pdf', [AccountReportsController::class, 'trialBalancePDF'])->name('account-reports.trialBalancePDF');
-    Route::post('account-reports/customer-balance-pdf', [AccountReportsController::class, 'customerBalancePDF'])->name('account-reports.customerBalancePDF');
-    Route::post('account-reports/supplier-balance-pdf', [AccountReportsController::class, 'supplierBalancePDF'])->name('account-reports.supplierBalancePDF');
-    Route::post('account-reports/expense-pdf', [AccountReportsController::class, 'expensePDF'])->name('account-reports.expensePDF');
-    Route::post('account-reports/customer-ledger-pdf', [AccountReportsController::class, 'customerLedgerPDF'])->name('account-reports.customerLedgerPDF');
-    Route::post('account-reports/supplier-ledger-pdf', [AccountReportsController::class, 'supplierLedgerPDF'])->name('account-reports.supplierLedgerPDF');
-    Route::post('account-reports/balance-sheet-pdf', [AccountReportsController::class, 'balanceSheetPDF'])->name('account-reports.balanceSheetPDF');
-    
-    
+        Route::get('account-reports/request', [AccountReportsController::class, 'request'])->name('account-reports.request');
+        Route::post('account-reports/voucher-pdf', [AccountReportsController::class, 'voucherPDF'])->name('account-reports.voucherPDF');
+        Route::post('account-reports/cashbook-pdf', [AccountReportsController::class, 'cashbookPDF'])->name('account-reports.cashbookPDF');
+        Route::post('account-reports/general-ledger-pdf', [AccountReportsController::class, 'generalLedgerPDF'])->name('account-reports.generalLedgerPDF');
+        Route::post('account-reports/daybook-pdf', [AccountReportsController::class, 'daybookPDF'])->name('account-reports.daybookPDF');
+        Route::post('account-reports/trial-balance-pdf', [AccountReportsController::class, 'trialBalancePDF'])->name('account-reports.trialBalancePDF');
+        Route::post('account-reports/customer-balance-pdf', [AccountReportsController::class, 'customerBalancePDF'])->name('account-reports.customerBalancePDF');
+        Route::post('account-reports/supplier-balance-pdf', [AccountReportsController::class, 'supplierBalancePDF'])->name('account-reports.supplierBalancePDF');
+        Route::post('account-reports/expense-pdf', [AccountReportsController::class, 'expensePDF'])->name('account-reports.expensePDF');
+        Route::post('account-reports/customer-ledger-pdf', [AccountReportsController::class, 'customerLedgerPDF'])->name('account-reports.customerLedgerPDF');
+        Route::post('account-reports/supplier-ledger-pdf', [AccountReportsController::class, 'supplierLedgerPDF'])->name('account-reports.supplierLedgerPDF');
+        Route::post('account-reports/balance-sheet-pdf', [AccountReportsController::class, 'balanceSheetPDF'])->name('account-reports.balanceSheetPDF');
+        
+    // END::Account Section
+
     // START::Report Section 
-    Route::get('report/raw-material-stock',[ReportController::class,'fetchRawMaterailStock'])->name('report.fetchRawMaterailStock');    
-    Route::get('report/finished-goods-stock',[ReportController::class,'fetchFinishedGoodsStock'])->name('report.fetchFinishedGoodsStock');    
-    
-    Route::get('report/production/request', [ReportController::class, 'productionRequest'])->name('report.production.request');
-    Route::post('report/production/show', [ReportController::class, 'productionShow'])->name('report.production.show');
+        Route::get('report/raw-material-stock',[ReportController::class,'fetchRawMaterailStock'])->name('report.fetchRawMaterailStock');    
+        Route::get('report/finished-goods-stock',[ReportController::class,'fetchFinishedGoodsStock'])->name('report.fetchFinishedGoodsStock');    
+        
+        Route::get('report/production/request', [ReportController::class, 'productionRequest'])->name('report.production.request');
+        Route::post('report/production/show', [ReportController::class, 'productionShow'])->name('report.production.show');
 
 
-    Route::get('report/raw-material-history/request', [ReportController::class, 'rawMaterialHistoryRequest'])->name('report.raw-material-history.request');
-    Route::post('report/raw-material-history/show', [ReportController::class, 'rawMaterialHistroyShow'])->name('report.raw-material-history.show');
+        Route::get('report/raw-material-history/request', [ReportController::class, 'rawMaterialHistoryRequest'])->name('report.raw-material-history.request');
+        Route::post('report/raw-material-history/show', [ReportController::class, 'rawMaterialHistroyShow'])->name('report.raw-material-history.show');
+        
+        Route::get('report/material-received-history/request', [ReportController::class, 'materialReceivedHistoryRequest'])->name('report.material-received-history.request');
+        Route::post('report/material-received-history/show', [ReportController::class, 'materialReceivedHistoryshow'])->name('report.material-received-history.show');
+        
+        Route::get('report/raw-material-stock-level/request', [ReportController::class, 'rawMaterialStockLevelRequest'])->name('report.raw-material-stock-level.request');
+        Route::post('report/raw-material-stock-level/show', [ReportController::class, 'rawMaterialStockLevelShow'])->name('report.raw-material-stock-level.show');
+    // END::Report Section
+    Route::get('average-costing/item-history/request', [AverageCostingController::class, 'itemHistoryRequest'])->name('average-costing.itemHistoryRequest');
+    Route::post('average-costing/item-history/show', [AverageCostingController::class, 'itemHistoryShow'])->name('average-costing.itemHistoryShow');
     
-    Route::get('report/material-received-history/request', [ReportController::class, 'materialReceivedHistoryRequest'])->name('report.material-received-history.request');
-    Route::post('report/material-received-history/show', [ReportController::class, 'materialReceivedHistoryshow'])->name('report.material-received-history.show');
     
-    Route::get('report/raw-material-stock-level/request', [ReportController::class, 'rawMaterialStockLevelRequest'])->name('report.raw-material-stock-level.request');
-    Route::post('report/raw-material-stock-level/show', [ReportController::class, 'rawMaterialStockLevelShow'])->name('report.raw-material-stock-level.show');
+    Route::get('average-costing/items-list/request', [AverageCostingController::class, 'itemsListRequest'])->name('average-costing.itemsListRequest');
+    Route::post('average-costing/items-list/show', [AverageCostingController::class, 'itemsListShow'])->name('average-costing.itemsListShow');
+
     // User Permissions
     Route::get('role-permissions/ajax', [RolePermissionsController::class, 'ajax'])->name('role-permissions.ajax');
     Route::resource('role-permissions', RolePermissionsController::class);
