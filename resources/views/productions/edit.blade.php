@@ -94,7 +94,7 @@
                                             <option value="">Choose...</option>
                                             @foreach ($recipes as $recipe)
                                                 <option @if( $recipe->id == $production->recipe_id) selected @endif 
-                                                    value="{{$recipe->id}}">{{ $recipe->name }}</option>
+                                                    value="{{$recipe->id}}">{{ '('.$recipe->id.') '.$recipe->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>                                        

@@ -156,7 +156,7 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
-          // Validate the request data
+        // Validate the request data
         $validator = Validator::make($request->all(), [
             'party_id' => 'required',
             'bag_type_id' => 'required',
@@ -621,11 +621,11 @@ class PurchaseOrderController extends Controller
              
              $rawMaterial_DR = $grand_total; //DR => 100
              $AP_CR = $grand_total;// CR => 100
-             $narration1 = 'Raw material purchased @ '.$newInvoiceNo. ' amount Rs: ' . number_format($grand_total, 2);
+             $narration1 = 'Raw material purchased @ '.$newInvoiceNo;
 
              $AP_DR = $shipping; // DR => 10
              $pettyCash_CR = $shipping;  // CR => 10
-             $narration2 = 'Freight paid on behalf of supplier @ '.$newInvoiceNo. ' amount Rs: ' . number_format($shipping, 2);
+             $narration2 = 'Freight paid on behalf of supplier @ '.$newInvoiceNo;
 
              // $rawMaterial_DR
              DB::table('journals')->insert([
@@ -721,8 +721,8 @@ class PurchaseOrderController extends Controller
              $rawMaterial_DR = $grand_total + $shipping; //DR => 110
              $AP_CR = $grand_total;// CR => 100
              $freightExp_CR = $shipping;// CR => 10
-             $narration1 = 'Raw material purchased @ '.$newInvoiceNo. ' amount Rs: ' . number_format($grand_total, 2);
-             $shipping1 = 'Freight paid @ '.$newInvoiceNo. ' amount Rs: ' . number_format($shipping, 2);
+             $narration1 = 'Raw material purchased @ '.$newInvoiceNo;
+             $shipping1 = 'Freight paid @ '.$newInvoiceNo;
 
 
              $freightExp_DR = $shipping;// DR => 10

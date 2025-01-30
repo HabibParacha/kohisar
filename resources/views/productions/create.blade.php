@@ -90,7 +90,7 @@
                                         <select name="recipe_id" id="recipe_id" class="select2 form-control" autofocus>                                                
                                             <option value="">Choose...</option>
                                             @foreach ($recipes as $recipe)
-                                                <option value="{{$recipe->id}}">{{ $recipe->name }}</option>
+                                                <option value="{{$recipe->id}}">{{ '('.$recipe->id.') '.$recipe->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>                                        

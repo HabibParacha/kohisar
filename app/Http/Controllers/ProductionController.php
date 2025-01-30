@@ -483,11 +483,14 @@ class ProductionController extends Controller
 
             $production = InvoiceMaster::find($id);
 
-            $recipe = 'Recipe: ' .$production->recipe->name;
-            $batches = ' Total Batches: '.number_format($production->production_material_tons,0);
-            $cost = ' Cost: '.$production->grand_total;
+            $invoice_no = $production->invoice_no;
+            $recipe = ', Recipe: ' .$production->recipe->name;
+            $batches = ', Total Batches: '.number_format($production->production_material_tons,0);
+            $cost = ', Cost: '.$production->grand_total;
+            $bags = ', Bags: '.$production->output_bags;
+            
 
-            $narration = $recipe . $batches . $cost;
+            $narration = $invoice_no. $recipe . $batches . $cost. $bags;
             
 
             $journalCredit = [

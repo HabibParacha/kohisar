@@ -355,8 +355,8 @@
                 }
               
             });
-            $('#output-bags').val(output_bags.toFixed(0));
-            $('#surplus-bags').val(surplus_bags.toFixed(0));
+            $('#output-bags').val(output_bags.toFixed(2));
+            $('#surplus-bags').val(surplus_bags.toFixed(2));
 
 
             $('.output-quantity-weight').each(function(){
