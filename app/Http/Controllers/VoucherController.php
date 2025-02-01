@@ -219,7 +219,7 @@ class VoucherController extends Controller
                   // 'party_id' => '',//  client is both a customer and supplier
                   'customer_id' => $request->customer_id[$i],
                   'supplier_id' => $request->supplier_id[$i],
-                  'narration' => $request->narration[$i],
+                  'narration' => $request->narration[$i].', '.$request->reference_no[$i],
                   'reference_no' => $request->reference_no[$i],
                   'debit' => $request->debit[$i],
                   'credit' => $request->credit[$i],
@@ -332,8 +332,8 @@ class VoucherController extends Controller
                     'chart_of_account_id' => $request->chart_of_account_id_main,
                     'customer_id' => $request->customer_id[$i],
                     'supplier_id' => $request->supplier_id[$i],
-                    // 'narration' => $request->narration_main,
-                    'narration' => $narration,
+                    'narration' => $request->narration[$i].', '.$request->reference_no[$i],
+                    // 'narration' => $narration,
                     'created_at' => now(),
                     'updated_at' => NULL,
                 ];
@@ -348,8 +348,8 @@ class VoucherController extends Controller
                     // 'party_id' => '',//  client is both a customer and supplier
                     'customer_id' => $request->customer_id[$i],
                     'supplier_id' => $request->supplier_id[$i],
-                    // 'narration' => $request->narration[$i],
-                    'narration' => $narration,
+                    'narration' => $request->narration[$i].', '.$request->reference_no[$i],
+                    // 'narration' => $narration,
                     'reference_no' => $request->reference_no[$i],
                     'created_at' => now(),
                     'updated_at' => NULL,
@@ -552,7 +552,7 @@ class VoucherController extends Controller
                    // 'party_id' => '',//  client is both a customer and supplier
                    'customer_id' => $request->customer_id[$i],
                    'supplier_id' => $request->supplier_id[$i],
-                   'narration' => $request->narration[$i],
+                   'narration' => $request->narration[$i].', '.$request->reference_no[$i],
                    'reference_no' => $request->reference_no[$i],
                    'debit' => $request->debit[$i],
                    'credit' => $request->credit[$i],

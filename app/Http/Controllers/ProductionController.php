@@ -490,7 +490,7 @@ class ProductionController extends Controller
             $bags = ', Bags: '.$production->output_bags;
             
 
-            $narration = $invoice_no. $recipe . $batches . $cost. $bags;
+            $narration = $invoice_no. $recipe . $batches . $bags;
             
 
             $journalCredit = [

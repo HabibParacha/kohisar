@@ -617,109 +617,112 @@ class SaleInvoiceController extends Controller
         DB::table('journals')->insert($journalCredit_inventory); 
 
 
-
-        // Debit: AR Customer
-        //Credit: OUTPUT_FREIGHT
-        if($request->input('is_x_freight') == '1')
+        if($request->input('shipping') != null && $request->input('shipping') > 0)
         {
-           $journalCredit_shipping = [
-                'date' => $request->input('date'),
-                'voucher_no' => $invoice_no,
-                'type' => 'invoice',             
-                'chart_of_account_id' => env('AR'),
-                'narration' => $narrationShipping,
+            // Debit: AR Customer
+            //Credit: OUTPUT_FREIGHT
+            if($request->input('is_x_freight') == '1')
+            {
+                $journalCredit_shipping = [
+                    'date' => $request->input('date'),
+                    'voucher_no' => $invoice_no,
+                    'type' => 'invoice',             
+                    'chart_of_account_id' => env('AR'),
+                    'narration' => $narrationShipping,
 
-                'customer_id' => $customer_id,
-                'invoice_master_id' => $invoice_master_id,
+                    'customer_id' => $customer_id,
+                    'invoice_master_id' => $invoice_master_id,
 
-                'credit' => $request->input('shipping'),
-                'trace' => '',
-                'created_by' => Auth::user()->id,
-                'created_at' => now(),
-           ];
-           DB::table('journals')->insert($journalCredit_shipping); 
+                    'credit' => $request->input('shipping'),
+                    'trace' => '',
+                    'created_by' => Auth::user()->id,
+                    'created_at' => now(),
+                ];
+                DB::table('journals')->insert($journalCredit_shipping); 
 
 
-           $journalDebit_output_freight = [
-                'date' => $request->input('date'),
-                'voucher_no' => $invoice_no,
-                'type' => 'invoice',
+                $journalDebit_output_freight = [
+                        'date' => $request->input('date'),
+                        'voucher_no' => $invoice_no,
+                        'type' => 'invoice',
 
-                'chart_of_account_id' => env('OUTPUT_FREIGHT'),
-                'narration' => $narrationXshipping,
+                        'chart_of_account_id' => env('OUTPUT_FREIGHT'),
+                        'narration' => $narrationXshipping,
 
-                'customer_id' => $customer_id,
-                'invoice_master_id' => $invoice_master_id,
+                        'customer_id' => $customer_id,
+                        'invoice_master_id' => $invoice_master_id,
 
-                'debit' => $request->input('shipping'),
-                'trace' => '',
-                'created_by' => Auth::user()->id,
-                'created_at' => now(),
-           ];
-           DB::table('journals')->insert($journalDebit_output_freight); 
+                        'debit' => $request->input('shipping'),
+                        'trace' => '',
+                        'created_by' => Auth::user()->id,
+                        'created_at' => now(),
+                ];
+                DB::table('journals')->insert($journalDebit_output_freight); 
 
+            }
+        
+            // voucher plus journal 
+            // Debit: OUTPUT_FREIGHT
+            //Credit: PETTY_CASH
+            else{
+
+            
+
+                $voucher = [
+                    'date' => $request->date,
+                    'voucher_no' => $voucher_no,
+                    'code' => $voucher_code,
+                    'type' => $voucher_type,
+                    'invoice_master_id' => $invoice_master_id,
+
+                    'narration' => $narrationShipping,
+                    'total_amount' => $request->shipping,
+                    'created_by' => Auth::user()->id,
+                ];
+                $voucher_id = DB::table('vouchers')->insertGetId($voucher);
+                
+                $voucher_DR = [
+                    'voucher_id' => $voucher_id,
+                    'date' => $request->date,
+                    'voucher_no' => $voucher_no,
+                    'code' => $voucher_code,
+                    'type' => $voucher_type,
+                    'chart_of_account_id' => env('OUTPUT_FREIGHT'),
+                    'invoice_master_id' => $invoice_master_id,
+
+                    'customer_id' => $customer_id,
+                    'narration' => $narrationShipping,
+                    'debit' => $request->shipping,
+                    'created_at' => now(),
+                ];
+                DB::table('voucher_details')->insert($voucher_DR);
+
+                $voucher_DR['created_by'] = Auth::user()->id; // Add created_by only for journals
+                DB::table('journals')->insert($voucher_DR);
+
+                $voucher_CR = [
+                    'voucher_id' => $voucher_id,
+                    'date' => $request->date,
+                    'voucher_no' => $voucher_no,
+                    'code' => $voucher_code,
+                    'type' => $voucher_type,
+                    'chart_of_account_id' => env('PETTY_CASH'),
+                    'invoice_master_id' => $invoice_master_id,
+
+                    'customer_id' => $customer_id,
+                    'narration' => $narrationShipping,
+                    'credit' => $request->shipping,
+                    'created_at' => now(),
+                ];
+                DB::table('voucher_details')->insert($voucher_CR);
+
+                $voucher_CR['created_by'] = Auth::user()->id; // Add created_by only for journals
+                DB::table('journals')->insert($voucher_CR);
+
+
+            }
         }
-       
-        // voucher plus journal 
-        // Debit: OUTPUT_FREIGHT
-        //Credit: PETTY_CASH
-        else{
-
-           
-
-            $voucher = [
-                'date' => $request->date,
-                'voucher_no' => $voucher_no,
-                'code' => $voucher_code,
-                'type' => $voucher_type,
-                'invoice_master_id' => $invoice_master_id,
-
-                'narration' => $narrationShipping,
-                'total_amount' => $request->shipping,
-                'created_by' => Auth::user()->id,
-            ];
-            $voucher_id = DB::table('vouchers')->insertGetId($voucher);
-             
-            $voucher_DR = [
-                'voucher_id' => $voucher_id,
-                'date' => $request->date,
-                'voucher_no' => $voucher_no,
-                'code' => $voucher_code,
-                'type' => $voucher_type,
-                'chart_of_account_id' => env('OUTPUT_FREIGHT'),
-                'invoice_master_id' => $invoice_master_id,
-
-                'customer_id' => $customer_id,
-                'narration' => $narrationShipping,
-                'debit' => $request->shipping,
-                'created_at' => now(),
-            ];
-            DB::table('voucher_details')->insert($voucher_DR);
-
-            $voucher_DR['created_by'] = Auth::user()->id; // Add created_by only for journals
-            DB::table('journals')->insert($voucher_DR);
-
-            $voucher_CR = [
-                'voucher_id' => $voucher_id,
-                'date' => $request->date,
-                'voucher_no' => $voucher_no,
-                'code' => $voucher_code,
-                'type' => $voucher_type,
-                'chart_of_account_id' => env('PETTY_CASH'),
-                'invoice_master_id' => $invoice_master_id,
-
-                'customer_id' => $customer_id,
-                'narration' => $narrationShipping,
-                'credit' => $request->shipping,
-                'created_at' => now(),
-            ];
-            DB::table('voucher_details')->insert($voucher_CR);
-
-            $voucher_CR['created_by'] = Auth::user()->id; // Add created_by only for journals
-            DB::table('journals')->insert($voucher_CR);
-
-
-        }
+            
 
 
       
