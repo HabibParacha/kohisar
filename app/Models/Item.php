@@ -112,7 +112,7 @@ class Item extends Model
             'qty_out' => $transactions->where('type', 'production')->sum('net_weight'),
             'balance' => $stock_weight,
             'avg_cost' => round($avg_cost,2),
-            'stock_value' => $stock_weight * $avg_cost,
+            'stock_value' => round($stock_weight * $avg_cost,2),
         ];
         
 
