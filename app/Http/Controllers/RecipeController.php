@@ -375,12 +375,54 @@ class RecipeController extends Controller
     }
 
 
+    // public function getRecipeDetailWithStock1($id)
+    // {
+     
+    //     try {
+    //         $recipe = Recipe::findOrFail($id);
+    //         $recipeDetails = DB::table('v_recipe_detail_stock')->where('recipe_id',$id)->get();
+
+    //         return response()->json([
+    //             'recipe' => $recipe,
+    //             'recipeDetails' => $recipeDetails,
+    //         ]);
+
+    //     } catch (\Exception $e) {
+    //         // Return a JSON response with an error message
+    //         return response()->json([
+    //             'message' => $e->getMessage(),
+    //             'success' => false,
+    //         ], 500);
+    //     }
+    // }
+
+    
     public function getRecipeDetailWithStock($id)
     {
-     
+      
         try {
             $recipe = Recipe::findOrFail($id);
-            $recipeDetails = DB::table('v_recipe_detail_stock')->where('recipe_id',$id)->get();
+
+            $recipeDetails = [];
+
+            foreach($recipe->recipeDetails as $detail)
+            {
+                $averageCost = Item::averageCost($detail->item_id);
+
+                $recipeDetails [] = [
+                    'item_id' => $detail->item_id,
+                    'name' => $detail->item->name,
+                    'base_unit' => $detail->item->unit->base_unit,
+                    'quantity' => $detail->quantity,
+                    'balance' => $averageCost['balance'],
+                    'purchase_unit_price' => $averageCost['avg_cost'],
+                ];
+            }
+            
+
+            
+
+            // $recipeDetails = DB::table('v_recipe_detail_stock')->where('recipe_id',$id)->get();
 
             return response()->json([
                 'recipe' => $recipe,

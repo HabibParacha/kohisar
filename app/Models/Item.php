@@ -106,14 +106,14 @@ class Item extends Model
 
             }
         }
-        
+       
         $data = [
-            'qty_in' =>  number_format($transactions->where('type','receipt')->sum('net_weight'),2),
-            'qty_out' =>  number_format($transactions->where('type','production')->sum('net_weight'),2),
-            'balance' => number_format($stock_weight, 2),
-            'avg_cost' =>  number_format($avg_cost,2),
-            'stock_value' =>  number_format($stock_weight*$avg_cost,2),
-        ]; 
+            'qty_in' => $transactions->where('type', 'receipt')->sum('net_weight'),
+            'qty_out' => $transactions->where('type', 'production')->sum('net_weight'),
+            'balance' => $stock_weight,
+            'avg_cost' => round($avg_cost,2),
+            'stock_value' => $stock_weight * $avg_cost,
+        ];
         
 
         return $data;

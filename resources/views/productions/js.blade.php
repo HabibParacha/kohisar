@@ -116,7 +116,7 @@
                                 <input type="number" name="production_quantity_weight[]" step="0.0001" class="production-quantity-weight text-end" readonly>
                             </td>
                             <td class="text-end">
-                                <input type="number" name="" step="0.0001" class="stock-quantity text-end" value="${detail.balance}" readonly>
+                                <input type="number" step="0.01" class="stock-quantity text-end" value="${detail.balance}" readonly>
                             </td> 
                             <td class="text-end ">
                                 <input type="number" name="production_unit_cost[]" step="0.0001" class="stock-unit-cost text-end" value="${detail.purchase_unit_price }" readonly>
