@@ -17,17 +17,18 @@ class PermissionSeeder extends Seeder
 
     public function run()
     {
- 
+        //  'User Permissions' => 'role-permissions',
+
         $sections = [
             'User' => 'user',
-            'User Permissions' => 'role-permissions',
             'Category' => 'category',
+            'Brand' => 'brand',
             'Tax' => 'tax',
             'Unit' => 'unit',
             'Party' => 'party',
             'Item' => 'item',
             'Recipe' => 'recipe',
-            'Bill Receipt' => 'bill-receipt',
+            'Bill Receipt' => 'bill-receipt',//purchase order
             'Sale Order' => 'sale-order',
             'Sale Invoice' => 'sale-invoice',
             'Production' => 'production',
@@ -55,24 +56,42 @@ class PermissionSeeder extends Seeder
             }
         }
 
+        
 
-        $additionalPermissions = [
-            ['section' => 'Reports', 'action' => 'Cashbook', 'route_name' => 'account-reports.cashbookPDF'],
-            ['section' => 'Reports', 'action' => 'General Ledger', 'route_name' => 'account-reports.generalLedgerPDF'],
-            ['section' => 'Reports', 'action' => 'Daybook', 'route_name' => 'account-reports.daybookPDF'],
-            ['section' => 'Reports', 'action' => 'Trail Balance', 'route_name' => 'account-reports.trialBalancePDF'],
-            ['section' => 'Reports', 'action' => 'Customer Balance', 'route_name' => 'account-reports.customerBalancePDF'],
-            ['section' => 'Reports', 'action' => 'Supplier Balance', 'route_name' => 'account-reports.supplierBalancePDF'],
-            ['section' => 'Reports', 'action' => 'Expense', 'route_name' => 'account-reports.expensePDF'],
-            ['section' => 'Reports', 'action' => 'Customer Ledger', 'route_name' => 'account-reports.customerLedgerPDF'],
-            ['section' => 'Reports', 'action' => 'Supplier Ledger', 'route_name' => 'account-reports.supplierLedgerPDF'],
-            ['section' => 'Reports', 'action' => 'Raw Material Stock', 'route_name' => 'reports.fetchRawMaterailStock'],
-            ['section' => 'Reports', 'action' => 'Finished Goods Stock', 'route_name' => 'reports.fetchFinishedGoodsStock'],
+        $accountReports = [
+            ['section' => 'Account Reports', 'action' => 'Request', 'route_name' => 'account-reports.request'],
+            ['section' => 'Account Reports', 'action' => 'Voucher PDF', 'route_name' => 'account-reports.voucherPDF'],
+            ['section' => 'Account Reports', 'action' => 'Cashbook PDF', 'route_name' => 'account-reports.cashbookPDF'],
+            ['section' => 'Account Reports', 'action' => 'General Ledger PDF', 'route_name' => 'account-reports.generalLedgerPDF'],
+            ['section' => 'Account Reports', 'action' => 'Daybook PDF', 'route_name' => 'account-reports.daybookPDF'],
+            ['section' => 'Account Reports', 'action' => 'Trial Balance PDF', 'route_name' => 'account-reports.trialBalancePDF'],
+            ['section' => 'Account Reports', 'action' => 'Customer Balance PDF', 'route_name' => 'account-reports.customerBalancePDF'],
+            ['section' => 'Account Reports', 'action' => 'Supplier Balance PDF', 'route_name' => 'account-reports.supplierBalancePDF'],
+            ['section' => 'Account Reports', 'action' => 'Expense PDF', 'route_name' => 'account-reports.expensePDF'],
+            ['section' => 'Account Reports', 'action' => 'Customer Ledger PDF', 'route_name' => 'account-reports.customerLedgerPDF'],
+            ['section' => 'Account Reports', 'action' => 'Supplier Ledger PDF', 'route_name' => 'account-reports.supplierLedgerPDF'],
+            ['section' => 'Account Reports', 'action' => 'Balance Sheet PDF', 'route_name' => 'account-reports.balanceSheetPDF'],
         ];
 
         
+        $inventoryReports = [
+            ['section' => 'Inventory Reports', 'action' => 'Finished Goods Stock', 'route_name' => 'report.fetchFinishedGoodsStock'],
+            ['section' => 'Inventory Reports', 'action' => 'Production Report', 'route_name' => 'report.production.request'],
+            // ['section' => 'Inventory Reports', 'action' => 'Production Show', 'route_name' => 'report.production.show'],
+            ['section' => 'Inventory Reports', 'action' => 'Raw Material History', 'route_name' => 'report.raw-material-history.request'],
+            // ['section' => 'Inventory Reports', 'action' => 'Raw Material History Show', 'route_name' => 'report.raw-material-history.show'],
+            ['section' => 'Inventory Reports', 'action' => 'Material Received History', 'route_name' => 'report.material-received-history.request'],
+            // ['section' => 'Inventory Reports', 'action' => 'Material Received History Show', 'route_name' => 'report.material-received-history.show'],
+            ['section' => 'Inventory Reports', 'action' => 'Raw Material Stock Level', 'route_name' => 'report.raw-material-stock-level.request'],
+            // ['section' => 'Inventory Reports', 'action' => 'Raw Material Stock Level Show', 'route_name' => 'report.raw-material-stock-level.show'],
+            ['section' => 'Inventory Reports', 'action' => 'Average Costing Item History', 'route_name' => 'average-costing.itemHistoryRequest'],
+            // ['section' => 'Inventory Reports', 'action' => 'Average Costing Item History Show', 'route_name' => 'average-costing.itemHistoryShow'],
+            ['section' => 'Inventory Reports', 'action' => 'Average Costing Items List', 'route_name' => 'average-costing.itemsListRequest'],
+            // ['section' => 'Inventory Reports', 'action' => 'Average Costing Items List Show', 'route_name' => 'average-costing.itemsListShow'],
+        ];
         
-        $permissions = array_merge($permissions, $additionalPermissions);
+        
+        $permissions = array_merge($permissions, $accountReports, $inventoryReports);
 
 
         DB::table('permissions')->insert($permissions);

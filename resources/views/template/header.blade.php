@@ -76,14 +76,13 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">Inventory Reports <i
                                     class="mdi mdi-chevron-down"></i></button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ route('report.fetchRawMaterailStock') }}">Raw Material</a>
                                 <a class="dropdown-item" href="{{ route('report.fetchFinishedGoodsStock') }}">Finshed Good Stock</a>
                                 <a class="dropdown-item" href="{{ route('report.production.request') }}">Production Report</a>
                                 <a class="dropdown-item" href="{{ route('report.raw-material-history.request') }}">Raw Material History</a>
                                 <a class="dropdown-item" href="{{ route('report.material-received-history.request') }}">Material Received History</a>
                                 <a class="dropdown-item" href="{{ route('report.raw-material-stock-level.request') }}">Material Stock Level</a>
                                 <a class="dropdown-item" href="{{ route('average-costing.itemHistoryRequest') }}">Item Average History</a>
-                                <a class="dropdown-item" href="{{ route('average-costing.itemsListRequest') }}">Items Average Price List</a>
+                                <a class="dropdown-item" href="{{ route('average-costing.itemsListRequest') }}">Raw Material Avg. Prices</a>
 
                             </div>
                         </div><!-- /btn-group -->

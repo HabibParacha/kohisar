@@ -64,13 +64,34 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/refresh-session', [SessionController::class, 'refreshSession']);
     Route::post('/logout', [SessionController::class, 'logout']);
 
-    Route::resource('customer', CustomerController::class);
-    Route::resource('brand', BrandController::class);
-    Route::resource('category', CategoryController::class);
-    Route::resource('tax', TaxController::class);
-    Route::resource('warehouse', WarehouseController::class);
-    Route::resource('unit', UnitController::class);
 
+
+    Route::get('user/download-sample-file', [UserController::class, 'downloadSampleFile'])->name('user.downloadSampleFile');
+    Route::post('user/upload-file', [UserController::class, 'uploadFile'])->name('user.uploadFile');
+
+    Route::middleware(['check.permission'])->group(function () {
+        Route::resource('user', UserController::class);
+        Route::resource('category', CategoryController::class);
+        Route::resource('brand', BrandController::class);
+        Route::resource('unit', UnitController::class);
+        Route::resource('tax', TaxController::class);    
+    });
+
+
+
+    //START:: Basic Section
+
+   
+    //END:: Basic Section
+
+    // User Permissions
+    Route::get('role-permissions/ajax', [RolePermissionsController::class, 'ajax'])->name('role-permissions.ajax');
+    Route::resource('role-permissions', RolePermissionsController::class);
+
+    
+
+    Route::get('party-index/{type?}', [PartyController::class, 'index'])->name('party-index');
+    Route::resource('party', PartyController::class);
 
     Route::get('items/get-all', [ItemController::class, 'getAllItems'])->name('items.getAll');
     Route::resource('item', ItemController::class);
@@ -79,12 +100,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/recipes/{id}/detail-with-stock', [RecipeController::class, 'getRecipeDetailWithStock'])->name('getRecipeDetailWithStock');
     Route::resource('recipe', RecipeController::class);
 
-
-
     Route::get('purchase-order/test/create', [PurchaseOrderController::class,'createTest'])->name('purcahse-order.createTest');//********************** */
     Route::resource('purchase-order', PurchaseOrderController::class);
 
-   
     Route::resource('sale-order', SaleOrderController::class);
 
     Route::get('sale-order/{id}/create-sale-invoice', [SaleInvoiceController::class, 'createFromSaleOrder'])->name('sale-invoice.createFromSaleOrder');
@@ -96,6 +114,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('expense', ExpenseController::class);
 
+    Route::get('voucher/create-jv', [VoucherController::class, 'createJournalVoucher'])->name('voucher.createJournalVoucher');
+    Route::post('voucher/store-jv', [VoucherController::class, 'storeJournalVoucher'])->name('voucher.storeJournalVoucher');
+    Route::resource('voucher', VoucherController::class);
 
     Route::get('chart-of-account/get-by-category/{id}', [ChartOfAccountController::class, 'getByCategory'])->name('chart-of-account.getByCategory');
     Route::resource('chart-of-account', ChartOfAccountController::class);
@@ -103,42 +124,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('balance-sheet/request', [BalanceSheetController::class, 'request'])->name('balance-sheet.request');
     Route::post('balance-sheet/show', [BalanceSheetController::class, 'show'])->name('balance-sheet.show');
-
-   
-
-    
-
-
-   
-
-
-    Route::get('party-index/{type?}', [PartyController::class, 'index'])->name('party-index');
-    Route::resource('party', PartyController::class);
     
     Route::get('party-warehouse/fetch-list/{party_id}', [PartyWarehouseController::class, 'fetchList'])->name('party-warehouse.fetchList');
     Route::resource('party-warehouse', PartyWarehouseController::class);
-    
-    
-    
-    Route::get('user/download-sample-file', [UserController::class, 'downloadSampleFile'])->name('user.downloadSampleFile');
-    Route::post('user/upload-file', [UserController::class, 'uploadFile'])->name('user.uploadFile');
-    Route::resource('user', UserController::class);
     
     Route::get('/admin-dashboard', AdminDashboard::class)->name('admin-dashboard');
     Route::get('/saleman-dashboard', SalemanDashboard::class)->name('saleman-dashboard');
 
 
-
-    Route::get('voucher/create-jv', [VoucherController::class, 'createJournalVoucher'])->name('voucher.createJournalVoucher');
-    Route::post('voucher/store-jv', [VoucherController::class, 'storeJournalVoucher'])->name('voucher.storeJournalVoucher');
-    Route::resource('voucher', VoucherController::class);
-
     Route::resource('finished-goods-stock', FinishedGoodsStockController::class);
 
-
     // START::Account Section 
-    
-
         Route::get('account-reports/request', [AccountReportsController::class, 'request'])->name('account-reports.request');
         Route::post('account-reports/voucher-pdf', [AccountReportsController::class, 'voucherPDF'])->name('account-reports.voucherPDF');
         Route::post('account-reports/cashbook-pdf', [AccountReportsController::class, 'cashbookPDF'])->name('account-reports.cashbookPDF');
@@ -151,10 +147,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('account-reports/customer-ledger-pdf', [AccountReportsController::class, 'customerLedgerPDF'])->name('account-reports.customerLedgerPDF');
         Route::post('account-reports/supplier-ledger-pdf', [AccountReportsController::class, 'supplierLedgerPDF'])->name('account-reports.supplierLedgerPDF');
         Route::post('account-reports/balance-sheet-pdf', [AccountReportsController::class, 'balanceSheetPDF'])->name('account-reports.balanceSheetPDF');
-        
     // END::Account Section
 
-    // START::Report Section 
+    // START::Inventory Section 
         Route::get('report/raw-material-stock',[ReportController::class,'fetchRawMaterailStock'])->name('report.fetchRawMaterailStock');    
         Route::get('report/finished-goods-stock',[ReportController::class,'fetchFinishedGoodsStock'])->name('report.fetchFinishedGoodsStock');    
         
@@ -170,7 +165,8 @@ Route::middleware(['auth'])->group(function () {
         
         Route::get('report/raw-material-stock-level/request', [ReportController::class, 'rawMaterialStockLevelRequest'])->name('report.raw-material-stock-level.request');
         Route::post('report/raw-material-stock-level/show', [ReportController::class, 'rawMaterialStockLevelShow'])->name('report.raw-material-stock-level.show');
-    // END::Report Section
+    // END::Inventory Section
+    
     Route::get('average-costing/item-history/request', [AverageCostingController::class, 'itemHistoryRequest'])->name('average-costing.itemHistoryRequest');
     Route::post('average-costing/item-history/show', [AverageCostingController::class, 'itemHistoryShow'])->name('average-costing.itemHistoryShow');
     
@@ -178,9 +174,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('average-costing/items-list/request', [AverageCostingController::class, 'itemsListRequest'])->name('average-costing.itemsListRequest');
     Route::post('average-costing/items-list/show', [AverageCostingController::class, 'itemsListShow'])->name('average-costing.itemsListShow');
 
-    // User Permissions
-    Route::get('role-permissions/ajax', [RolePermissionsController::class, 'ajax'])->name('role-permissions.ajax');
-    Route::resource('role-permissions', RolePermissionsController::class);
 
 
 });

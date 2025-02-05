@@ -22,7 +22,7 @@ class CheckPermission
         $routeName = $request->route()->getName(); // e.g., 'item.create'
         
         $hasPermission = DB::table('role_permissions')
-        ->where('role_id', 3)
+        ->where('role_id', $user->role_id)
         ->where('route_name', $routeName) // Direct match
         ->where('is_allowed', 1)
         ->exists();

@@ -86,7 +86,7 @@
                     </a>
                 </li>
               
-                <li class="">
+                {{-- <li class="">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="bx bx-file"></i>
                         <span key="t-ecommerce">Reports</span>
@@ -98,7 +98,7 @@
                         
 
                     </ul>
-                </li>
+                </li> --}}
                 <li class="">
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="bx bx-cog"></i>
@@ -123,9 +123,8 @@
                     <ul class="sub-menu" aria-expanded="false">
                       
                         <li> <a href="{{ route('user.index') }}" key="t-products">Users</a></li>
-                        <li> <a href="{{ route('warehouse.index') }}" key="t-products">Warehouses</a></li>
                         <li> <a href="{{ route('tax.index') }}" key="t-products">Taxes</a></li>
-                        {{-- <li> <a href="{{ route('role-permissions.index') }}" key="t-products">Roles Permissions</a></li> --}}
+                        <li> <a href="{{ route('role-permissions.index') }}" key="t-products">Roles Permissions</a></li>
 
                     </ul>
                 </li>
