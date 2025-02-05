@@ -68,5 +68,58 @@ class Item extends Model
         return $this->hasMany(RecipeDetail::class);
     }
 
+
+    public static function averageCost($item_id)
+    {
+        $transactions = InvoiceDetail::select('id','item_id','date','type','net_weight','total_price_stock')
+        ->where('item_id',$item_id)
+        ->whereIn('type',['receipt','production'])
+        ->orderBy('date','asc')
+        ->orderBy('id','asc')
+        ->get();
+
+        $stock_weight = 0;
+        $stock_value = 0;
+        $avg_cost = 0;
+
+
+        if($transactions->sum('net_weight') > 0)
+        {
+            foreach($transactions as $transaction)
+            {
+
+                if($transaction->type == 'receipt')
+                {
+                    $stock_value += $transaction->total_price_stock;
+                    $stock_weight += $transaction->net_weight;
+
+                    if($stock_weight > 0)
+                        $avg_cost = $stock_value / $stock_weight;
+                    
+                }
+                else if($transaction->type == 'production')
+                {           
+                    $stock_value -= $transaction->net_weight * $avg_cost;
+                    $stock_weight -= $transaction->net_weight;
+     
+                }
+
+            }
+        }
+        
+        $data = [
+            'qty_in' =>  number_format($transactions->where('type','receipt')->sum('net_weight'),2),
+            'qty_out' =>  number_format($transactions->where('type','production')->sum('net_weight'),2),
+            'balance' => number_format($stock_weight, 2),
+            'avg_cost' =>  number_format($avg_cost,2),
+            'stock_value' =>  number_format($stock_weight*$avg_cost,2),
+        ]; 
+        
+
+        return $data;
+
+
+    }
+
     
 }

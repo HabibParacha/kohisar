@@ -59,6 +59,9 @@
                 <!-- start page title -->
                 <form id="production-store" method="POST" enctype="multipart/form-data">
                     @csrf
+                    @method('PUT') <!-- For PUT method -->
+                    <input type="hidden" name="id" id="invoice_master_id" value="{{ $production->id }}"> <!-- Hidden field to ID -->
+
                     <div class="card">
                         <div class="card-body">
                             {{-- <h4 class="card-title mb-4">Purchase Order</h4> --}}
@@ -71,7 +74,7 @@
                                         <label class="form-label">Production  No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-receipt"></span> </div>
-                                            <input type="text" name="invoice_no"  class="form-control" value="{{ $newInvoiceNo }}" readonly>
+                                            <input type="text" name="invoice_no"  class="form-control" value="{{ $production->invoice_no }}" readonly>
                                         </div> 
                                     </div> 
                                 </div>
@@ -80,7 +83,7 @@
                                         <label class="form-label">batch No</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-barcode" ></span> </div>
-                                            <input type="text" name="batch_no"  class="form-control" autocomplete="off">
+                                            <input type="text" name="batch_no" value="{{ $production->batch_no }}" class="form-control" autocomplete="off">
                                         </div> 
                                     </div> 
                                 </div>
@@ -90,20 +93,11 @@
                                         <select name="recipe_id" id="recipe_id" class="select2 form-control" autofocus>                                                
                                             <option value="">Choose...</option>
                                             @foreach ($recipes as $recipe)
-                                                <option value="{{$recipe->id}}">{{ '('.$recipe->id.') '.$recipe->name }}</option>
+                                                <option @if( $recipe->id == $production->recipe_id) selected @endif 
+                                                    value="{{$recipe->id}}">{{ '('.$recipe->id.') '.$recipe->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>                                        
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-2">
-                                        <label class="form-label">Total Tons</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="mdi mdi-weight"></span> </div>
-                                            <input type="number" name="production_material_tons" id="production_material_tons" step="0.0001" class="form-control" disabled>
-                                        </div> 
-                                        <span id="production_material_tons_message" class="text-danger">Please Select Recipe</span>
-                                    </div> 
                                 </div>
                                 <div class="col-md-3">
                                     <div class="mb-3">
@@ -117,13 +111,23 @@
                                         </select>
                                     </div>                                        
                                 </div>
+                               
+                                <div class="col-md-3">
+                                    <div class="mb-2">
+                                        <label class="form-label">Total Tons</label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><span class="mdi mdi-weight"></span> </div>
+                                            <input type="number" name="production_material_tons" value="{{ number_format($production->production_material_tons,0) }}"  id="production_material_tons" step="0.0001" class="form-control">
+                                        </div> 
+                                    </div> 
+                                </div>
 
                                 <div class="col-md-3">
                                     <div class="mb-3">
                                         <label class="form-label">Date</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
-                                            <input type="date" name="date" id="date" class="form-control" value="{{ date('Y-m-d') }}">
+                                            <input type="date" name="date" id="date" class="form-control" value="{{ $production->date }}">
                                         </div>
                                        
                                     </div> 
@@ -133,7 +137,7 @@
                                         <label class="form-label">Expiry Date</label>
                                         <div class="input-group">
                                             <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
-                                            <input type="date" name="expiry_date"  class="form-control" value="{{ date('Y-m-d') }}">
+                                            <input type="date" name="expiry_date"  class="form-control" value="{{ $production->expiry_date }}">
                                         </div>
                                        
                                     </div> 
@@ -168,8 +172,8 @@
                                                     <th width="10%" class="text-end">Recipe QTY</th> 
                                                     <th width="10%" class="text-end">Production QTY</th> 
                                                     <th width="10%" class="text-end">Stock QTY</th> 
-                                                    <th width="10%" class="text-end">Unit Cost</th> 
-                                                    <th width="10%" class="text-end ">Total Cost</th> 
+                                                    <th width="10%" class="text-end d-none">Unit Cost</th> 
+                                                    <th width="10%" class="text-end d-none">Total Cost</th> 
                                                     <th width="20%" class="text-center">status</th> 
                                                 
                                                 </tr>
@@ -185,7 +189,7 @@
                                                     <td><input type="number" id="materail_production_qty_total" class="text-end fw-bold" readonly></td>
                                                     <td><input type="number" id="materail_stock_qty_total" class="text-end fw-bold" readonly></td>
                                                     <td class="d-none"><input type="number" id="materail_avg_unit_price" class="text-end fw-bold" readonly></td>
-                                                    <td class="d-none"><input type="number" id="materail_total_cost" class="text-end fw-bold" readonly></td>
+                                                    <td class="text-end d-none"><input type="number" id="materail_total_cost" class="text-end fw-bold" readonly></td>
                                                     <td></td>
                                                     
                                                 </tr>
@@ -225,7 +229,56 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="sortable-table">
-                                                
+                                                @foreach ($production->outputDetails as $detail)
+                                                    <tr>
+                                                        <td><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
+                                                        <td class="text-center"> 
+                                                            <input class="form-check-input surplus-checkbox" type="checkbox" @if($detail->is_surplus == 1) checked @endif>
+                                                            <input name="is_surplus[]" class="is-surplus-value" type="hidden" value="{{ ($detail->is_surplus == 1)? 1 : 0 }}">
+                                                        </td>
+                                                        <td> 
+                                                            <select  name="output_item_id[]" class="form-control select2 output-item-dropdown" style="width:100%" >                                                
+                                                                <option value="" >Choose...</option>
+                                                                @foreach ($goodItems as $item)
+                                                                    <option 
+                                                                    @if($item->id == $detail->item_id) selected @endif
+                                                                    value="{{$item->id}}" data-unit-id="{{ $item->unit_id }}"  data-unit-weight="{{ $item->unit_weight }}">{{ $item->code.'-'.$item->category->name .'-'.$item->name }}</option>
+                                                                @endforeach
+                                        
+                                                            </select>
+                                        
+                                                        </td>
+                                                            
+                                                        <td class="d-none"> 
+                                                            <select name="output_unit_id[]"  class="form-control select2 output-item-unit-dropdown" style="width:100%">                                                
+                                                                <option>Choose...</option>
+                                                                @foreach ($units as $unit)
+                                                                    <option value="{{$unit->id}}" data-base-unit-value="{{ $unit->base_unit_value }}" >{{ $unit->base_unit }}</option>
+                                                                @endforeach
+                                                            </select>
+                                        
+                                                        </td> 
+                                        
+                                                        <td>
+                                                            <input type="number" name="output_unit_weight[]" value="{{ $detail->unit_weight }}" step="0.0001" class="form-control output-unit-weight" readonly>  
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="output_quantity[]" value="{{ $detail->total_quantity }}" step="0.0001" class="form-control output-quantity">  
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="output_quantity_weight[]" value="{{ $detail->net_weight }}" step="0.0001" class="form-control output-quantity-weight" readonly>  
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="output_per_unit_cost[]" value="{{ $detail->per_unit_price * $detail->unit_weight }}" step="0.0001" class="form-control output-per-unit-cost" readonly>  
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="output_total_cost[]" value="{{ $detail->grand_total }}" step="0.0001" class="form-control output-total-cost" readonly>  
+                                                        </td>
+                                                        <td class="text-center">  
+                                                            <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach    
                                                
                                             </tbody> 
                                         </table>
@@ -250,61 +303,58 @@
                     <div class="row mt-3">
                         
                         <div class="col-md-6 d-flex justify-content-end offset-md-6">
-                       <div class="card">
-                           
-                           
-                            <div class="card-body">
-                                <h4 class="card-title mb-4">Summary</h4>
-                                <table id="summary-table" class="table">
-                                    <tr>
-                                        <th width="50%">Production <sub>KG's</sub></th>
-                                        <td width="50%">
-                                            <input type="number" name="production_sub_total_weight" id="production-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
-                                        </td>
-                                    </tr>  
-                                    <tr>
-                                        <th width="50%">Output <sub>KG's</sub></th>
-                                        {{-- <td width="50%">
-                                        </td> --}}
-                                        <td>
-                                            <div class="input-group">
+                        <div class="card">
+                            
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">Summary</h4>
+                                    <table id="summary-table" class="table">
+                                        <tr>
+                                            <th width="50%">Production <sub>KG's</sub></th>
+                                            <td width="50%">
+                                                <input type="number" name="production_sub_total_weight" id="production-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                            </td>
+                                        </tr>  
+                                        <tr>
+                                            <th width="50%">Output <sub>KG's</sub></th>
+                                            {{-- <td width="50%">
+                                            </td> --}}
+                                            <td>
+                                                <div class="input-group">
+                                                        <span class="input-group-text"> KG's</span>
+                                                        <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+
+                                                </div>
+                                                <div class="input-group ">
+                                                    <span class="input-group-text">Bags</span>
+                                                    <input type="number" name="output_bags" id="output-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                </div>
+                                            </td>
+                                        </tr>  
+                                        <tr>
+                                            <th width="50%">Surplus <sub>KG's</sub></th>
+                                            <td width="50%">
+                                                <div class="input-group">
                                                     <span class="input-group-text"> KG's</span>
-                                                    <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                    <input type="number" name="surplus_sub_total_weight" id="surplus-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
 
-                                            </div>
-                                            <div class="input-group ">
-                                                <span class="input-group-text">Bags</span>
-                                                <input type="number" name="output_bags" id="output-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
-                                            </div>
-                                        </td>
-                                    </tr>  
-                                    <tr>
-                                        <th width="50%">Surplus <sub>KG's</sub></th>
-                                        <td width="50%">
-                                            <div class="input-group">
-                                                <span class="input-group-text"> KG's</span>
-                                                <input type="number" name="surplus_sub_total_weight" id="surplus-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
-
-                                            </div>
-                                            <div class="input-group ">
-                                                <span class="input-group-text">Bags</span>
-                                                <input type="number" name="surplus_bags" id="surplus-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
-                                            </div>
-                                        </td>
-                                    </tr>  
-                                    <tr>
-                                        <th width="50%">Prod. Cost</th>
-                                        <td width="50%">
-                                            <input type="number" name="total_production_cost" id="total-production-cost" value="0" class="form-control text-end border-0 fw-bold" readonly>
-                                        </td>
-                                    </tr>  
-                                
-                        
-                                
-                                </table>
+                                                </div>
+                                                <div class="input-group ">
+                                                    <span class="input-group-text">Bags</span>
+                                                    <input type="number" name="surplus_bags" id="surplus-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                </div>
+                                            </td>
+                                        </tr>  
+                                        <tr>
+                                            <th width="50%">Prod. Cost</th>
+                                            <td width="50%">
+                                                <input type="number" name="total_production_cost" id="total-production-cost" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                            </td>
+                                        </tr>  
+                                    
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                       </div>
                     </div>  
 
                     
@@ -396,56 +446,129 @@
 
 
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    
-<script>
-     $(document).ready(function () {
-       
-        // appendNewRow();
-    });
-    //tfoot of material table
-    
-
-    $('#production-store').on('keydown', function(e) {
-        if (e.key === 'Enter') {
-        e.preventDefault(); // Prevent the default behavior (form submission)
-        }
-    });
-</script>    
-
-@include('productions.js')
-
-<script>
-    
+    @include('productions.js')  
   
+
+
+
+
+<script>
+    $(document).ready(function () {
+
+    
+        let recipe_id = $('#recipe_id option:selected').val();
+
+        let tons = parseFloat($('#production_material_tons').val());
+
+        getRecipeDetailWithStockEdit(recipe_id);
+
+        
+    });
+
+
+
+
+    function getRecipeDetailWithStockEdit(id) {
+            $.get("{{ route('getRecipeDetailWithStock', ':id') }}".replace(':id', id), {
+                beforeSend: function() {
+                }
+            }).done(function(response) {
+                $('#material-table tbody').empty();
+                
+                let tons = parseFloat($('#production_material_tons').val());
+                // Loop through the response data and append rows to the table
+                response.recipeDetails.forEach(function(detail) {
+
+                    let prodcution_qty = parseFloat(((detail.quantity) * tons));
+                    let balance_val = parseFloat(detail.balance);
+                    let stock_val = balance_val+prodcution_qty;
+                    let total_cost = (prodcution_qty*detail.purchase_unit_price).toFixed(2);
+                    
+                    
+
+                    $('#material-table tbody').append(
+                        `<tr>
+                            <td class="text-start">
+                                <input type="hidden" name="production_item_id[]" value="${detail.item_id}" readonly>
+                                <input type="text" value="${detail.name}" readonly>
+                            </td>
+                            <td class="d-none">
+                                <input type="text" name="production_unit_id[]" value="${detail.base_unit}" readonly>
+                            </td>    
+                            <td class="text-end">
+                                <input type="number" name="" step="0.0001" class="recipe-quantity text-end" value="${detail.quantity}" readonly>
+                            </td>
+                            <td class="text-end">
+                                <input type="number" name="production_quantity_weight[]" value="${prodcution_qty}" step="0.0001" class="production-quantity-weight text-end" readonly>
+                            </td>
+                            <td class="text-center">
+                                <input type="number" name="" step="0.0001" class="stock-quantity text-end" value="${stock_val.toFixed(2)}" readonly>
+                            </td> 
+                               </td> 
+                            <td class="text-end d-none">
+                                <input type="number" name="production_unit_cost[]" step="0.0001" class="stock-unit-cost text-end" value="${detail.purchase_unit_price }" readonly>
+                            </td> 
+                            <td class="text-end d-none">
+                                <input type="number" name="production_item_total_cost[]" step="0.0001" class="stock-total-cost text-end" value="${total_cost}" readonly>
+                            </td> 
+                           
+                            <td class="text-center">
+                                <span class="stock-status-tick  bx bxs-check-circle text-success    fs-4"></span>
+                                <span class="stock-status-cross bx bxs-x-circle     text-danger     fs-4 d-none"></span>
+                            </td>
+                        </tr>`
+                    );
+                });
+
+                $('#production_material_tons').focus();
+                checkStockQuantity();// check stock and production quantity
+                summaryCalculation();
+
+                productionSummaryCalculation();
+
+            }).fail(function(xhr) {
+                alert('Error fetching details: ' + xhr.responseText);
+            })
+            .always(function() {
+                $('#progressModal').modal('hide'); // Hide the progress bar after the request completes or fails
+            });
+
+        }
+
+
+
+
+
+
+    
     $('#submit-production-store').on('click', function(e){
 
+
+        e.preventDefault();
+
+       let prodcution_weight =  parseFloat($('#production-sub-total-weight').val()) || 0;
+       let output_weight =  parseFloat($('#output-sub-total-weight').val()) || 0;
+       let difference = output_weight - prodcution_weight;
+
+       if(prodcution_weight == 0)
+       {
+            alert("Add Total Tons Value");
+            return;
+            
+       }
+    
+
+       $('#productionQty').text(prodcution_weight.toFixed(2));
+       $('#outputQty').text(output_weight.toFixed(2));
+       $('#quantityDifference').text(difference.toFixed(2));
+
+       if(prodcution_weight != output_weight)
+       {
+        $('#quantityMismatchModal').modal('show');   
+       }
+       else{
         storeProduction();
-
-    //     e.preventDefault();
-
-        //    let prodcution_weight =  parseFloat($('#production-sub-total-weight').val()) || 0;
-        //    let output_weight =  parseFloat($('#output-sub-total-weight').val()) || 0;
-        //    let difference = output_weight - prodcution_weight;
-
-        //    if(prodcution_weight == 0)
-        //    {
-        //         alert("Add Total Tons Value");
-        //         return;
-                
-        //    }
-        
-
-        //    $('#productionQty').text(prodcution_weight.toFixed(2));
-        //    $('#outputQty').text(output_weight.toFixed(2));
-        //    $('#quantityDifference').text(difference.toFixed(2));
-
-        //    if(prodcution_weight != output_weight)
-        //    {
-        //     $('#quantityMismatchModal').modal('show');   
-        //    }
-        //    else{
-        //     storeProduction();
-    //    }
+       }
  
     });
     $('#yes-proceed-btn').on('click',function(e){
@@ -467,9 +590,11 @@
        
         var submit_btn = $('#submit-production-store');
         let createformData = new FormData($('#production-store')[0]);
+        let invoice_master_id = $('#invoice_master_id').val(); // Get the ID of the brand being edited
+
         $.ajax({
             type: "POST",
-            url: "{{ route('production.store') }}",
+            url: "{{ route('production.update', ':id') }}".replace(':id', invoice_master_id), // Using route name
             dataType: 'json',
             contentType: false,
             processData: false,
@@ -494,7 +619,7 @@
 
                     // Redirect after success notification
                     setTimeout(function() {
-                        window.location.href = '{{ route("production.create") }}';
+                        window.location.href = '{{ route("production.index") }}';
                     }, 200); // Redirect after 3 seconds (same as notification duration)
 
 
@@ -519,6 +644,7 @@
    
             
 </script>
+
 {{-- END:: Store Data using AJAX --}}
 
 

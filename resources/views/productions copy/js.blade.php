@@ -118,10 +118,10 @@
                             <td class="text-end">
                                 <input type="number" name="" step="0.0001" class="stock-quantity text-end" value="${detail.balance}" readonly>
                             </td> 
-                            <td class="text-end ">
+                            <td class="text-end d-none">
                                 <input type="number" name="production_unit_cost[]" step="0.0001" class="stock-unit-cost text-end" value="${detail.purchase_unit_price }" readonly>
                             </td> 
-                            <td class="text-end">
+                            <td class="text-end d-none">
                                 <input type="number" name="production_item_total_cost[]" step="0.0001" class="stock-total-cost text-end" value="" readonly>
                             </td> 
                            

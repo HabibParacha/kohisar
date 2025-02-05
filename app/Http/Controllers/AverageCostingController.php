@@ -79,7 +79,7 @@ class AverageCostingController extends Controller
     }
 
 
-    public function itemsListShow(Request $request)
+    public function itemsListShow1(Request $request)
     {
         $items = Item::where('type','Raw')->get();
         $data = [];
@@ -139,6 +139,32 @@ class AverageCostingController extends Controller
                     'avg_cost' =>  '-',
                 ]; 
             }
+           
+           
+        }
+       
+        return view('reports.average_costing_items_list.show', compact('data'));
+    }
+
+    public function itemsListShow(Request $request)
+    {
+        $items = Item::where('type','Raw')->get();
+        $data = [];
+        foreach($items as $item)
+        {
+
+            $itemData = Item::averageCost($item->id);
+
+
+            $data[] =[
+                'name' => $item->name,
+                'qty_in' =>  $itemData['qty_in'],
+                'qty_out' =>  $itemData['qty_out'],
+                'balance' =>  $itemData['balance'],
+                'stock_value' =>  $itemData['stock_value'],
+                'avg_cost' =>  $itemData['avg_cost'],
+                
+            ];   
            
            
         }

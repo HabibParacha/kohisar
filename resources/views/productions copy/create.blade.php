@@ -168,8 +168,8 @@
                                                     <th width="10%" class="text-end">Recipe QTY</th> 
                                                     <th width="10%" class="text-end">Production QTY</th> 
                                                     <th width="10%" class="text-end">Stock QTY</th> 
-                                                    <th width="10%" class="text-end">Unit Cost</th> 
-                                                    <th width="10%" class="text-end ">Total Cost</th> 
+                                                    <th width="10%" class="text-end d-none">Unit Cost</th> 
+                                                    <th width="10%" class="text-end d-none">Total Cost</th> 
                                                     <th width="20%" class="text-center">status</th> 
                                                 
                                                 </tr>
