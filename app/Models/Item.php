@@ -108,9 +108,9 @@ class Item extends Model
         }
        
         $data = [
-            'qty_in' => $transactions->where('type', 'receipt')->sum('net_weight'),
-            'qty_out' => $transactions->where('type', 'production')->sum('net_weight'),
-            'balance' => $stock_weight,
+            'qty_in' => round($transactions->where('type', 'receipt')->sum('net_weight'),2),
+            'qty_out' => round($transactions->where('type', 'production')->sum('net_weight'),2),
+            'balance' => round($stock_weight,2),
             'avg_cost' => round($avg_cost,2),
             'stock_value' => round($stock_weight * $avg_cost,2),
         ];

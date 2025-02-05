@@ -90,22 +90,26 @@ class ProductionController extends Controller
                                                         <i class="bx bx-pencil font-size-16 text-secondary me-1"></i> Edit
                                                     </a>
                                                 </li>';
+
+                                                $btn .='
+                                                    <li>
+                                                        <a href="javascript:void(0)" onclick="posting('.$row->id.')" class="dropdown-item">
+                                                            <i class="fas fa-check-double font-size-16 text-warning me-1"></i> Posting
+                                                        </a>
+                                                    </li>
+                                                ';
                                             }
                                             
 
-                                           $btn .=' <li>
-                                                <a href="'.route('production.posting',$row->id) .'"  class="dropdown-item '.($row->output_qty == 0 ? "disabled":'') .'">
-                                                    <i class="fas fa-check-double font-size-16 text-warning me-1"></i> Posting
-                                                </a>
-                                            </li>';
+                                          
                                         }else{
                                             $btn .='
-                                             <li>
-                                                <a href="'.route('production.unposting',$row->id) .'"  class="dropdown-item '.($row->output_qty == 0 ? "disabled":'') .'">
-                                                    <i class="fas fa-check-double font-size-16 text-danger me-1"></i> UnPosting
+                                            <li>
+                                                <a href="javascript:void(0)" onclick="unposting('.$row->id.')" class="dropdown-item">
+                                                    <i class="fas fa-check-double font-size-16 text-danger me-1"></i> Unposting
                                                 </a>
                                             </li>
-                                            ';
+                                        ';
                                         }
                                        
                                        
@@ -117,7 +121,11 @@ class ProductionController extends Controller
                    
                     return $btn;
 
-                    
+                //     $btn .=' <li>
+                //     <a href="'.route('production.posting',$row->id) .'"  class="dropdown-item '.($row->output_qty == 0 ? "disabled":'') .'">
+                //         <i class="fas fa-check-double font-size-16 text-warning me-1"></i> Posting
+                //     </a>
+                // </li>';
                     //  <li>
                     //     <a href="javascript:void(0)" onclick="deleteProduction(' . $row->id . ')" class="dropdown-item">
                     //         <i class="bx bx-trash font-size-16 text-danger me-1"></i> Delete
@@ -531,11 +539,11 @@ class ProductionController extends Controller
             DB::commit();
 
              // Return a JSON response with a success message
-            //  return response()->json([
-            //     'success' => true,
-            //     'message' => 'Production Posting successfully.',
-            // ],200);
-            return redirect()->back();
+             return response()->json([
+                'success' => true,
+                'message' => 'Production Posting successfully.',
+            ],200);
+            // return redirect()->back();
 
 
         } catch (\Exception $e) {
@@ -559,7 +567,10 @@ class ProductionController extends Controller
                 'is_lock' => 0
             ]);
             DB::commit();
-            return redirect()->back();
+            return response()->json([
+                'success' => true,
+                'message' => 'Production Unposting successfully.',
+            ],200);
 
         } catch (\Exception $e) {
             DB::rollBack();

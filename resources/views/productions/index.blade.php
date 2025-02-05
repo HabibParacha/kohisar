@@ -146,8 +146,9 @@
 
 
     <script>
+        var table =null;
          $(document).ready(function() {
-            var table = $('#table').DataTable({
+            table = $('#table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -256,11 +257,60 @@
                     }
                 });
             });
+
+
+
+           
+
+            
         });
         function deletePurchaseOrder(id) {
             $('#submit-production-destroy').data('id', id);
             $('#delete-production').modal('show');
         }
+
+        function posting(id)
+        {
+            let url = "{{ route('production.posting',':id') }}".replace(':id',id);
+            $.get( url, function (response){
+                if(response.success == true){
+             
+                table.ajax.reload();
+         
+                notyf.success({
+                    message: response.message, 
+                    duration: 3000
+                });
+                }else{
+                    notyf.error({
+                        message: response.message,
+                        duration: 5000
+                    });
+                }  
+            });  
+        }
+
+        function unposting(id)
+        {
+            let url = "{{ route('production.unposting',':id') }}".replace(':id',id);
+            $.get( url, function (response){
+                if(response.success == true){
+             
+                table.ajax.reload();
+         
+                notyf.success({
+                    message: response.message, 
+                    duration: 3000
+                });
+                }else{
+                    notyf.error({
+                        message: response.message,
+                        duration: 5000
+                    });
+                }  
+            });  
+        }
+        
 
 
         
