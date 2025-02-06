@@ -83,81 +83,82 @@ class FinishedGoodsStockController extends Controller
      */
     public function store(Request $request)
     {
-        
-        // Start a transaction
-        DB::beginTransaction();
+        {
 
-        try { 
-                $validator = Validator::make($request->all(), [
-                    'item_id.*' => 'required',
-                    'unit_weight.*' => 'required',
-                    'total_quantity.*' => 'required',
-                    'net_weight.*' => 'required',  
-                ]);
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $validator->errors()->first()
-                ]);
-            }
-
-            $newInvoiceNo = InvoiceMaster::generateInvoiceNo('OB','output');// defined in model
-
-            $invoice_master = [
-                'date' => $request->input('date'),
-                'invoice_no' => $newInvoiceNo,
-                'batch_no' => $request->input('batch_no'),
-                'type' => 'output',
-                'description' => "opening Balance",
-            ];
-
-            $invoice_master_id  = DB::table('invoice_master')->insertGetId($invoice_master);
-
-            //output
-            
-
-            for($i=0; $i < count($request->item_id); $i++)
-            {
-                
-                $invoice_detail = [
-                    'invoice_master_id' => $invoice_master_id,
+            // Start a transaction
+            DB::beginTransaction();
+    
+            try { 
+                    $validator = Validator::make($request->all(), [
+                        'item_id.*' => 'required',
+                        'unit_weight.*' => 'required',
+                        'total_quantity.*' => 'required',
+                        'net_weight.*' => 'required',  
+                    ]);
+                if ($validator->fails()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $validator->errors()->first()
+                    ]);
+                }
+    
+                $newInvoiceNo = InvoiceMaster::generateInvoiceNo('OB','output');// defined in model
+    
+                $invoice_master = [
                     'date' => $request->input('date'),
                     'invoice_no' => $newInvoiceNo,
+                    'batch_no' => $request->input('batch_no'),
                     'type' => 'output',
-                    'item_id' => $request->item_id[$i],
-                    'unit_weight' => $request->unit_weight[$i],
-                    'total_quantity' => $request->total_quantity[$i],
-                    'net_weight' => $request->net_weight[$i],
+                    'description' => "opening Balance",
                 ];
-
-                DB::table('invoice_detail')->insertGetId($invoice_detail);
-
-            }
-
-            
+    
+                $invoice_master_id  = DB::table('invoice_master')->insertGetId($invoice_master);
+    
+                //output
+               
+    
+                for($i=0; $i < count($request->item_id); $i++)
+                {
+                    
+                    $invoice_detail = [
+                        'invoice_master_id' => $invoice_master_id,
+                        'date' => $request->input('date'),
+                        'invoice_no' => $newInvoiceNo,
+                        'type' => 'output',
+                        'item_id' => $request->item_id[$i],
+                        'unit_weight' => $request->unit_weight[$i],
+                        'total_quantity' => $request->total_quantity[$i],
+                        'net_weight' => $request->net_weight[$i],
+                    ];
+    
+                    DB::table('invoice_detail')->insertGetId($invoice_detail);
+    
+                }
+    
                 
-
-            DB::commit();// Commit the transaction
-
-            // Return a JSON response with a success message
-            return response()->json([
-                'success' => true,
-                'message' => 'Production added successfully.',
-            ],200);
-        
-
+                   
+    
+                DB::commit();// Commit the transaction
+    
+                // Return a JSON response with a success message
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Production added successfully.',
+                ],200);
             
-        } catch (\Exception $e) {
-            
-            DB::rollBack();// Rollback the transaction if there's an error
-
-            // Return a JSON response with an error message
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+    
+                
+            } catch (\Exception $e) {
+                
+                DB::rollBack();// Rollback the transaction if there's an error
+    
+                // Return a JSON response with an error message
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
         }
-        
     }
 
     /**
