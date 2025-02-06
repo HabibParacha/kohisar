@@ -264,12 +264,15 @@ input[type=number]{
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
-
+      
         
         @yield('content')
+    
         
-
+        
         <!-- END layout-wrapper -->
+       
+        
 
                                             
         <div id="appModal" class="modal fade bs-example-modal-center" tabindex="-1" role="dialog" aria-hidden="true">
@@ -321,6 +324,11 @@ input[type=number]{
                 },
             });
         </script>
+        @if(Session::get('success'))
+            <script>
+                notyf.error("Your Are Not Authorized Please Contact Admin");
+            </script>
+        @endif
 
 {{-- <script>
     // Set up inactivity timer (15 minutes = 900,000 ms)

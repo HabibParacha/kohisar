@@ -35,8 +35,8 @@ class SaleInvoiceController extends Controller
         try{
             if ($request->ajax()) {
                 $data = InvoiceMaster::where('type','invoice')
-                ->orderBy('id','desc')
                 ->orderBy('date','desc')
+                ->orderBy('id','desc')
                 ->get();
     
                 return Datatables::of($data)
@@ -201,6 +201,8 @@ class SaleInvoiceController extends Controller
                 'shipping' => $request->input('shipping'),
                 
                 'grand_total' => $request->input('grand_total'),
+                'total_purchase_price' => $request->input('grand_total_purchase_price'),
+                'profit_loss' => $request->input('grand_total') - $request->input('grand_total_purchase_price'),
             
             
                 'description' => $request->input('description'),
@@ -236,7 +238,9 @@ class SaleInvoiceController extends Controller
                   'net_weight' => $request->net_weight[$i],
                   
                   'per_unit_price' => $request->per_unit_price[$i],
+                  'purchase_unit_price' => $request->purchase_unit_price[$i],
                   'total_price' => $request->total_price[$i],
+                  'total_purchase_price' => $request->total_purchase_price[$i],
 
 
                   'discount_type' =>  $request->discount_type[$i],
@@ -403,6 +407,8 @@ class SaleInvoiceController extends Controller
             'shipping' => $request->input('shipping'),
             
             'grand_total' => $request->input('grand_total'),
+            'total_purchase_price' => $request->input('grand_total_purchase_price'),
+            'profit_loss' => $request->input('grand_total') - $request->input('grand_total_purchase_price'),
         
         
             'description' => $request->input('description'),
@@ -448,7 +454,11 @@ class SaleInvoiceController extends Controller
                   'net_weight' => $request->net_weight[$i],
                   
                   'per_unit_price' => $request->per_unit_price[$i],
+                  'purchase_unit_price' => $request->purchase_unit_price[$i],
+
                   'total_price' => $request->total_price[$i],
+                  'total_purchase_price' => $request->total_purchase_price[$i],
+
 
 
              
@@ -609,12 +619,31 @@ class SaleInvoiceController extends Controller
             'customer_id' => $request->input('party_id'),
             'invoice_master_id' => $invoice_master_id,
             
-            'credit' => $request->input('inventory'),
+            'credit' => $request->input('grand_total_purchase_price'),
             'trace' => '',
             'created_by' => Auth::user()->id,
             'created_at' => now(),
         ];
         DB::table('journals')->insert($journalCredit_inventory); 
+
+
+        $journalCredit_RetainEarning = [
+            'date' => $request->input('date'),
+            'voucher_no' => $invoice_no,
+            'type' => 'invoice',
+            
+            'chart_of_account_id' => env('FINISHED_GOOD_RETAINED_EARNING'),
+            'narration' => $narrationInventory,
+            
+            'customer_id' => $request->input('party_id'),
+            'invoice_master_id' => $invoice_master_id,
+            
+            'credit' => $request->input('grand_total') - $request->input('grand_total_purchase_price'),
+            'trace' => '',
+            'created_by' => Auth::user()->id,
+            'created_at' => now(),
+        ];
+        DB::table('journals')->insert($journalCredit_RetainEarning); 
 
 
         if($request->input('shipping') != null && $request->input('shipping') > 0)

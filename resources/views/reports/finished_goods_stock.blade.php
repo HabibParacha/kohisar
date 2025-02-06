@@ -52,6 +52,8 @@
                                             <th class="text-end"  width="10%">QTY IN <sub>Bags</sub></th>
                                             <th class="text-end"  width="10%">QTY OUT<sub>Bags</sub></th>
                                             <th class="text-end"  width="10%">BALANCE <sub>Bags</sub></th>
+                                            <th class="text-end"  width="10%">Unit Cost <sub>Bags</sub></th>
+                                            <th class="text-end"  width="10%">Selling Price<sub>Bags</sub></th>
                                         
                                         </tr>
                                     </thead>
@@ -63,6 +65,8 @@
                                             <td class="text-end">{{ number_format($value->qty_in,0) }}</td>
                                             <td class="text-end">{{ number_format($value->qty_out,0) }}</td>
                                             <td class="text-end balance">{{  number_format($value->balance,0) }}</td>
+                                            <td class="text-end">{{  number_format($value->purchase_price,0) }}</td>
+                                            <td class="text-end">{{  number_format($value->sell_price,0) }}</td>
                                         </tr>
                                             
                                         @endforeach

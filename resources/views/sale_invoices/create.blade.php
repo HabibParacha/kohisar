@@ -294,6 +294,13 @@
                                                 <input type="text" id="inventory" name="inventory" class="form-control text-end"  step="0.001" readonly>
                                             </td>
                                         </tr>  
+
+                                        <tr class="">
+                                            <th width="50%">Cost</th>
+                                            <td width="50%">
+                                                <input type="number" id="grand-total-purchase-price" name="grand_total_purchase_price" class="form-control text-end"  step="0.001" readonly>
+                                            </td>
+                                        </tr>  
                             
                                        
                                     </table>

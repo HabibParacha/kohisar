@@ -89,6 +89,7 @@
                                 <table id="table" class="table table-striped table-sm " style="width:100%">
                                     <thead>
                                         <tr>
+                                            <th>#</th>
                                             <th>Date</th>
                                             <th>Recipe</th>
                                             <th>Production No</th>
@@ -160,6 +161,7 @@
                     }
                 },
                 columns: [
+                    { data: 'id' },
                     { data: 'date' },
                     { data: 'recipe_name' },
                     { data: 'invoice_no' },

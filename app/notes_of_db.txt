@@ -42,3 +42,8 @@ ALTER TABLE `voucher_details` ADD `invoice_master_id` BIGINT(20) NULL AFTER `cha
 ---------------------------------------------System updated--------------------------------------------
 ALTER TABLE `invoice_detail` ADD `discount_unit_price` DECIMAL(15,2) NULL AFTER `discount_amount`;
 ---------------------------------------------System updated--------------------------------------------
+ALTER TABLE `invoice_detail` ADD `purchase_unit_price` DECIMAL(15,2) NULL AFTER `after_discount_total_price`;
+ALTER TABLE `invoice_detail` ADD `total_purchase_price` DECIMAL(15,2) NULL AFTER `purchase_unit_price`;
+
+ALTER TABLE `invoice_master` ADD `total_purchase_price` DECIMAL(15,2) NULL AFTER `grand_total`;
+ALTER TABLE `invoice_master` ADD `profit_loss` DECIMAL(15,2) NULL AFTER `total_purchase_price`;

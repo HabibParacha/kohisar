@@ -69,8 +69,11 @@ return new class extends Migration
             $table->decimal('shipping', 15, 2)->nullable();
 
             $table->decimal('grand_total', 14, 2)->nullable();
+            $table->decimal('total_purchase_price', 14, 2)->nullable();
+            $table->decimal('profit_loss', 14, 2)->nullable();
             
             
+
             $table->decimal('production_qty', 15, 2)->nullable()->comment('in kgs');
             $table->decimal('output_qty', 15, 2)->nullable()->comment('in kgs');
             $table->decimal('surplus_qty', 15, 2)->nullable()->comment('in kgs');
@@ -128,6 +131,10 @@ return new class extends Migration
             $table->decimal('discount_amount', 15, 2)->nullable();  
             $table->decimal('discount_unit_price', 15, 2)->nullable();  
             $table->decimal('after_discount_total_price', 15, 2)->nullable();  
+            
+            
+            $table->decimal('purchase_unit_price', 15, 2)->nullable();  
+            $table->decimal('total_purchase_price', 15, 2)->nullable();  
             
             $table->decimal('tax_rate', 15, 2)->nullable();
             $table->decimal('tax_value', 15, 2)->nullable();

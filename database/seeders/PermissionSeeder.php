@@ -89,9 +89,15 @@ class PermissionSeeder extends Seeder
             ['section' => 'Inventory Reports', 'action' => 'Average Costing Items List', 'route_name' => 'average-costing.itemsListRequest'],
             // ['section' => 'Inventory Reports', 'action' => 'Average Costing Items List Show', 'route_name' => 'average-costing.itemsListShow'],
         ];
+
+        $posting = [
+            ['section' => 'Production Posting', 'action' => 'Posting', 'route_name' => 'production.posting'],
+            ['section' => 'Production Posting', 'action' => 'Un-posting', 'route_name' => 'production.unposting'],
+
+        ];
         
         
-        $permissions = array_merge($permissions, $accountReports, $inventoryReports);
+        $permissions = array_merge($permissions, $accountReports, $inventoryReports, $posting);
 
 
         DB::table('permissions')->insert($permissions);

@@ -26,6 +26,7 @@
                                  data-stock="{{ $item->balance }}"  
                                  data-unit-weight="{{ $item->unit_weight }}"
                                  data-sell-price="{{ $item->sell_price }}"
+                                 data-purchase-price="{{ $item->purchase_price }}"
                                 >
                                  {{ $item->code.'-'.$item->category_name .'-'.$item->name }}</option>
                             @endforeach
@@ -47,6 +48,7 @@
                         <input type="number" name="net_weight[]" step="0.0001" class=" text-end form-control item-net-weight" readonly>  
                     </td>
                     <td class="text-end">
+                         <input type="number" name="purchase_unit_price[]" step="0.0001" class="text-end form-control item-purchase-unit-price" readonly>  
                         <input type="number" name="per_unit_price[]" step="0.0001" class=" text-end form-control item-per-unit-price">  
                     </td>
                     <td class="text-end">
@@ -75,6 +77,8 @@
                     
 
                     <td class="text-end"> 
+                        <input type="number" name="total_purchase_price[]" step="0.0001" class="text-end form-control item-total-purchase-price" readonly>  
+
                         <input type="number" name="after_discount_total_price[]" class=" text-end form-control item-after-discount" readonly>  
                     </td>
                     
@@ -183,6 +187,7 @@
         let unit_weight = parseFloat(selected_item.data('unit-weight')) || 0;
         let stock_balance = parseFloat(selected_item.data('stock')) || 0;
         let sell_price = parseFloat(selected_item.data('sell-price')) || 0;
+        let purchase_price = parseFloat(selected_item.data('purchase-price')) || 0;
 
         let row =  $(this).closest('tr');
         
@@ -190,6 +195,7 @@
         row.find('.item-unit-weight').val(unit_weight.toFixed(2));
         row.find('.item-stock-balance').val(stock_balance.toFixed(0));//remove decimal
         row.find('.item-per-unit-price').val(sell_price.toFixed(0));//remove decimal
+        row.find('.item-purchase-unit-price').val(purchase_price.toFixed(2));//remove decimal
 
 
 
@@ -218,6 +224,7 @@
 
         let quantity = parseFloat(row.find('.item-total-quantity').val()) || 0;
         let per_unit_price = parseFloat(row.find('.item-per-unit-price').val()) || 0;
+        let purchase_unit_price = parseFloat(row.find('.item-purchase-unit-price').val()) || 0;
         let unit_weight = parseFloat(row.find('.item-unit-weight').val()) || 0;
         let stock_balance = parseFloat(row.find('.item-stock-balance').val()) || 0;
 
@@ -241,12 +248,16 @@
 
 
         //Amount: start    
+            let total_purchase_price = quantity * purchase_unit_price;
+            row.find('.item-total-purchase-price').val(total_purchase_price.toFixed(2));
+            
             let total_price = quantity * per_unit_price;
             row.find('.item-total-price').val(total_price.toFixed(2));
 
 
             let net_weight = quantity*unit_weight;
             row.find('.item-net-weight').val(net_weight.toFixed(2));
+            
 
         //Amount: end    
 
@@ -314,6 +325,8 @@
 
         let inventory = 0;
 
+        let grand_total_purchase_price = 0;
+
         let x_freight_checkbox = $('#x-freight-checkbox').prop('checked');
         let total_freight = parseFloat($('#total-freight').val()) || 0;
 
@@ -326,6 +339,14 @@
             let item_discount_value = parseFloat($(this).val()) || 0;
             total_after_discount+= item_discount_value;
         });
+
+
+        $('.item-total-purchase-price').each(function(){
+            grand_total_purchase_price += parseFloat($(this).val()) || 0;
+        });
+
+
+
 
         $('#sub-total').val(total_after_discount.toFixed(2));
 
@@ -379,6 +400,8 @@
         $('#grand-total').val(grand_total.toFixed(2));
 
         $('#inventory').val(inventory.toFixed(2));
+        $('#grand-total-purchase-price').val(grand_total_purchase_price.toFixed(2));
+
 
         invoiceDetailSummary();
 

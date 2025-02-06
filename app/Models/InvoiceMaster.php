@@ -65,7 +65,9 @@ class InvoiceMaster extends Model
         'shipping',
         
         'grand_total',
-        
+        'total_purchase_price',
+        'profit_loss',
+
         'production_qty',
         'output_qty',
         'surplus_qty',

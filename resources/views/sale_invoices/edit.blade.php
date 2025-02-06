@@ -214,6 +214,7 @@
                                                 </td>
 
                                                 <td class="text-end">
+                                                    <input type="number" name="purchase_unit_price[]" value="{{ $detail->purchase_unit_price }}" step="0.0001" class="text-end form-control item-purchase-unit-price" readonly>  
                                                     <input type="number" name="per_unit_price[]" value="{{ $detail->per_unit_price }}" step="0.0001" class="text-end form-control item-per-unit-price">
                                                 </td>
 
@@ -241,6 +242,8 @@
                                                 </td>
 
                                                 <td class="text-end">
+                                                    <input type="number" name="total_purchase_price[]" value="{{ $detail->total_purchase_price }}" step="0.0001" class="text-end form-control item-total-purchase-price" readonly>  
+
                                                     <input type="number" name="after_discount_total_price[]" value="{{ $detail->after_discount_total_price }}" step="0.0001" class="text-end form-control item-after-discount" readonly>
                                                 </td>
 
@@ -319,15 +322,15 @@
                                         <tr>
                                             <th>Freight </th>
                                             <td>
-                                                <input type="hidden" name="is_x_freight" id="is-x-freight" value="{{ $invoice_master->is_x_freight }}" readonly>
+                                                <input type="hidden" name="is_x_freight" id="is-x-freight" value="0" readonly>
                                                 <div class="row">
                                                     <div class="col-md-3 my-2">
                                                         <label class="label mx-1">X</label>
-                                                        <input type="checkbox"  id="x-freight-checkbox" class="form-check-input" {{ $invoice_master->is_x_freight ? 'checked' : '' }}>
+                                                        <input type="checkbox"  id="x-freight-checkbox" class="form-check-input">
 
                                                     </div>
                                                     <div class="col-md-9">
-                                                        <input type="number" step="0.001" name="shipping" id="total-freight" value="{{ $invoice_master->shipping }}" class="form-control text-end" autocomplete="off">
+                                                        <input type="number" step="0.001" name="shipping" id="total-freight" class="form-control text-end" autocomplete="off">
 
                                                     </div>
                                                 </div>         
@@ -357,7 +360,14 @@
                                         <tr class="">
                                             <th width="50%">Inventory</th>
                                             <td width="50%">
-                                                <input type="text" id="inventory" name="inventory" class="form-control text-end"  step="0.001" readonly>
+                                                <input type="number" id="inventory" name="inventory" class="form-control text-end"  step="0.001" readonly>
+                                            </td>
+                                        </tr>  
+
+                                        <tr class="">
+                                            <th width="50%">Cost</th>
+                                            <td width="50%">
+                                                <input type="number" id="grand-total-purchase-price" name="grand_total_purchase_price" class="form-control text-end"  step="0.001" readonly>
                                             </td>
                                         </tr>  
                             

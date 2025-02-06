@@ -56,7 +56,6 @@
                                             <th class="text-end"  width="10%">RECEIVED <sub>KG's</sub> </th>
                                             <th class="text-end"  width="10%">USAGE <sub>KG's</sub></th>
                                             <th class="text-end"  width="10%">CLOSING BALANCE <sub>KG's</sub></th>
-                                            <th class="text-end"  width="10%">AVG UNIT PRICE</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -82,7 +81,6 @@
                                                 <td class="text-end">{{ number_format($received, 2) }}</td>
                                                 <td class="text-end">{{ number_format($usage, 2) }}</td>
                                                 <td class="text-end balance">{{ number_format($closingBalance, 2) }}</td>
-                                                <td class="text-end balance">{{ (number_format($avg_unit_price, 2)) ?? '-' }}</td>
                                             </tr>
                                             
                                         @endforeach

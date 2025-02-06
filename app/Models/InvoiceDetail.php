@@ -42,6 +42,11 @@ class InvoiceDetail extends Model
         'discount_amount',
         'discount_unit_price',
         'after_discount_total_price',
+        
+        
+        'purchase_unit_price',
+        'total_purchase_price',
+
         'tax_rate',
         'tax_value',
         'grand_total'

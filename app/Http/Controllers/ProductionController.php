@@ -30,8 +30,8 @@ class ProductionController extends Controller
         try{
             if ($request->ajax()) {
                 $query = InvoiceMaster::where('type', 'production')
-                ->orderBy('id', 'desc')
-                ->orderBy('date', 'desc');
+                ->orderBy('date', 'desc')
+                ->orderBy('id', 'desc');
 
                 if ($request->recipe_id) {
                     $query->where('recipe_id', $request->recipe_id );
@@ -270,6 +270,9 @@ class ProductionController extends Controller
     
                     DB::table('invoice_detail')->insertGetId($invoice_detail);
     
+                    DB::table('items')
+                    ->where('id', $request->output_item_id[$i])
+                    ->update(['purchase_price' => $request->output_per_unit_cost[$i]]);
                 }
 
             }
@@ -444,6 +447,11 @@ class ProductionController extends Controller
                     ];
     
                     DB::table('invoice_detail')->insertGetId($invoice_detail);
+
+
+                    DB::table('items')
+                    ->where('id', $request->output_item_id[$i])
+                    ->update(['purchase_price' => $request->output_per_unit_cost[$i]]);
     
                 }
                

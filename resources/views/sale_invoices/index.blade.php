@@ -53,6 +53,7 @@
                                 <table id="table" class="table table-striped table-sm " style="width:100%">
                                     <thead>
                                         <tr>
+                                            <th>#</th>
                                             <th>Date</th>
                                             <th>Receipt No</th>
                                             <th>Customer Name</th>
@@ -115,6 +116,7 @@
                 serverSide: true,
                 ajax: "{{ route('sale-invoice.index') }}",
                 columns: [
+                    { data: 'id' },
                     { data: 'date' },
                     { data: 'invoice_no' },
                     { data: 'party_business_name' },

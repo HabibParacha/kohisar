@@ -29,9 +29,10 @@ class CheckPermission
 
        
         if (!$hasPermission) {
-            abort(403, 'Unauthorized action.');
-            return view('403');
-
+            // abort(403, 'Unauthorized action.');
+            // return view('403');
+             // Return a JSON response with a success message
+            return redirect()->back()->with('success','Your Are Not Authorized Please Contact Admin');
         }
 
         
