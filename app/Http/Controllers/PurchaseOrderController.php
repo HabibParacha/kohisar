@@ -350,7 +350,7 @@ class PurchaseOrderController extends Controller
 
             */
             $selectedItemBag = InvoiceDetail::where('invoice_master_id', $id)
-            >where('grand_total',null)
+            ->where('grand_total',null)
             ->first();
 
             return view('purchase_orders.edit', 

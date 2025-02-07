@@ -339,24 +339,24 @@
                                             <th width="50%">Total Bags</th>
                                             <td width="50%">
                                                 <div class="row">
-                                                    <div class="col-md-6" >
+                                                    <div class="col-md-6">
                                                         <select class="form-control form-select" name="bag_type_id" id="" style="border: 1px solid rgb(219, 96, 96)">
                                                             <option value="">Choose...</option>
                                                             @foreach ($itemBags as $item)
                                                                 <option value="{{ $item->id }}"
-                                                                    @selected($selectedItemBag->id == $item->id)
-
-                                                                    >{{ $item->name }}</option>
+                                                                    @if (isset($selectedItemBag) && $selectedItemBag->item_id == $item->id)
+                                                                        selected
+                                                                    @endif
+                                                                >{{ $item->name }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <input type="number" step="0.001" name="total_bags" id="total-bags" value="0" class="form-control text-end" readonly>
-
+                                                        <input type="number" step="0.001" name="total_bags" id="total-bags" value="{{ isset($selectedItemBag) ? $selectedItemBag->total_quantity : 0 }}" class="form-control text-end" readonly>
                                                     </div>
                                                 </div>
                                             </td>
-                                        </tr>  
+                                        </tr>
                             
                                        
                                     </table>
