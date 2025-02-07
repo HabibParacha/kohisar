@@ -256,10 +256,7 @@ class PurchaseOrderController extends Controller
                       'invoice_no' => $newInvoiceNo,
                       'type' => 'receipt',
                       'item_id' => $request->bag_type_id,
-                      'gross_weight' => $itemBag->unit_weight * $request->total_bags,
                       'total_quantity' => $request->total_bags,
-                      'unit_weight' => $itemBag->unit_weight,
-                      'net_weight' => $itemBag->unit_weight * $request->total_bags,
                   ]);
               }
                 
@@ -517,10 +514,7 @@ class PurchaseOrderController extends Controller
                    'invoice_no' => $invoiceMaster->invoice_no,
                    'type' => 'receipt',
                    'item_id' => $request->bag_type_id,
-                   'gross_weight' => $itemBag->unit_weight * $request->total_bags,
                    'total_quantity' => $request->total_bags,
-                   'unit_weight' => $itemBag->unit_weight,
-                   'net_weight' => $itemBag->unit_weight * $request->total_bags,
                ]);
            }
 
