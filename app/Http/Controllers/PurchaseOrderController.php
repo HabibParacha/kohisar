@@ -341,11 +341,22 @@ class PurchaseOrderController extends Controller
 
             $itemBags = Item::where('type','Good')->where('category_id',7)->get();
 
+            /*
+                This requirnment was added later so we have to fix it 
+                What i did is add an item at bottom name bag and i passed an entry
+                of that item manully now bag dont have and grand total only we
+                need to add inventroy of bag and one invoice will
+                have one type of bag so finding the item that has zero grand total
+
+            */
+            $selectedItemBag = InvoiceDetail::where('invoice_master_id', $id)
+            >where('grand_total',null)
+            ->first();
 
             return view('purchase_orders.edit', 
             compact(
                 'invoice_master','invoice_detail',
-                'suppliers','items','taxes','units','paymentTerms','itemBags'
+                'suppliers','items','taxes','units','paymentTerms','itemBags','selectedItemBag'
             ));
 
         } catch (\Exception $e) {

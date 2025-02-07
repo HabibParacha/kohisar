@@ -343,7 +343,10 @@
                                                         <select class="form-control form-select" name="bag_type_id" id="" style="border: 1px solid rgb(219, 96, 96)">
                                                             <option value="">Choose...</option>
                                                             @foreach ($itemBags as $item)
-                                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                                <option value="{{ $item->id }}"
+                                                                    @selected($selectedItemBag->id == $item->id)
+
+                                                                    >{{ $item->name }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
