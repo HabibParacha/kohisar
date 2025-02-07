@@ -126,28 +126,7 @@ class PurchaseOrderController extends Controller
             'suppliers','items','taxes','units','paymentTerms','newInvoiceNo','itemTypes','itemBags'
         ));
     }
-    public function createTest()
-    {
-        
-        $suppliers = Party::whereIn('party_type',['supplier','both'])->get();
-        $items = Item::all();
-        $taxes = Tax::all();
-        $units = Unit::all();
-
-        $paymentTerms = $this->paymentTerms();
-        $newInvoiceNo = InvoiceMaster::generateInvoiceNo('PR','receipt');
- 
-        
-
-        $itemController = new ItemController;
-        $itemTypes = $itemController->itemTypes();
-        
-        return view('purchase_orders.test.create', 
-        compact(
-            'suppliers','items','taxes','units','paymentTerms','newInvoiceNo','itemTypes'
-        ));
-    }
-
+  
     /**
      * Store a newly created resource in storage.
      *

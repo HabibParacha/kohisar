@@ -18,13 +18,26 @@ class UserSeeder extends Seeder
     {
         DB::table('users')->insert([
             [
-                'name' => 'admin',
+                'role_id' => null,
+                'is_super_admin' => 1,
+                'name' => 'Super Admin',
                 'mobile_no' => '033309874587',
-                'email' => 'demo@extbooks.com',
+                'email' => 'super@extbooks.com',
                 'type' => 'admin',
                 'password' => Hash::make('123456'),
                 'hint' => '123456',  
-            ]
+            ],
+
+            [
+                'role_id' => null,
+                'is_super_admin' => 0,
+                'name' => 'Admin',
+                'mobile_no' => '033309874000',
+                'email' => 'admin@extbooks.com',
+                'type' => 'admin',
+                'password' => Hash::make('123456'),
+                'hint' => '123456',  
+            ],
             
            
         ]);

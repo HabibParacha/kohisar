@@ -19,8 +19,13 @@ class CheckPermission
     public function handle(Request $request, Closure $next)
     {
         $user = Auth::user();
-        $routeName = $request->route()->getName(); // e.g., 'item.create'
         
+        if($user->is_super_admin == 1)
+        {
+            return $next($request);
+        }
+        
+        $routeName = $request->route()->getName(); // e.g., 'item.create'
         $hasPermission = DB::table('role_permissions')
         ->where('role_id', $user->role_id)
         ->where('route_name', $routeName) // Direct match

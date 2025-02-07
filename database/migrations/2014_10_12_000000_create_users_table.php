@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->unsignedBigInteger('is_super_admin')->default(0);
             $table->string('name');
             $table->string('mobile_no')->nullable();            
             $table->string('email')->unique();
