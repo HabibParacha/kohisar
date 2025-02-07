@@ -138,7 +138,7 @@ class PurchaseOrderController extends Controller
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'party_id' => 'required',
-            'bag_type_id' => 'required',
+            // 'bag_type_id' => 'required',
             'item_id.*' =>'required',
             'gross_weight.*' =>'required',
             'per_unit_price.*' =>'required',
@@ -246,22 +246,23 @@ class PurchaseOrderController extends Controller
            }
 
               // Add empty bag item in invoice detail
-
-                $itemBag = Item::find($request->bag_type_id);
-                $item_bag = [
-                    'invoice_master_id' => $invoice_master_id,
-                    'date' => $request->input('date'),
-                    'invoice_no' => $newInvoiceNo,
-                    'type' => 'receipt',
-                    'item_id' => $request->bag_type_id,
-                    'gross_weight' => $itemBag->unit_weight * $request->total_bags,
-                    'total_quantity' => $request->total_bags,
-                    'unit_weight' => $itemBag->unit_weight,
-                    'net_weight' => $itemBag->unit_weight * $request->total_bags,
-                ];
-
-
-                DB::table('invoice_detail')->insertGetId($item_bag);
+                
+              $itemBag = Item::find($request->bag_type_id);
+              if($itemBag)
+              {
+                   DB::table('invoice_detail')->insert([
+                      'invoice_master_id' => $invoice_master_id,
+                      'date' => $request->input('date'),
+                      'invoice_no' => $newInvoiceNo,
+                      'type' => 'receipt',
+                      'item_id' => $request->bag_type_id,
+                      'gross_weight' => $itemBag->unit_weight * $request->total_bags,
+                      'total_quantity' => $request->total_bags,
+                      'unit_weight' => $itemBag->unit_weight,
+                      'net_weight' => $itemBag->unit_weight * $request->total_bags,
+                  ]);
+              }
+                
 
            
 
@@ -338,10 +339,13 @@ class PurchaseOrderController extends Controller
             $invoice_master = InvoiceMaster::findOrFail($id);
             $invoice_detail = InvoiceDetail::where('invoice_master_id', $id)->get();
 
+            $itemBags = Item::where('type','Good')->where('category_id',7)->get();
+
+
             return view('purchase_orders.edit', 
             compact(
                 'invoice_master','invoice_detail',
-                'suppliers','items','taxes','units','paymentTerms'
+                'suppliers','items','taxes','units','paymentTerms','itemBags'
             ));
 
         } catch (\Exception $e) {
@@ -492,6 +496,21 @@ class PurchaseOrderController extends Controller
 
                 DB::table('invoice_detail')->insertGetId($invoice_detail);
 
+           }
+           $itemBag = Item::find($request->bag_type_id);
+           if($itemBag)
+           {
+                DB::table('invoice_detail')->insert( [
+                   'invoice_master_id' => $invoiceMaster->id,
+                   'date' => $request->input('date'),
+                   'invoice_no' => $invoiceMaster->invoice_no,
+                   'type' => 'receipt',
+                   'item_id' => $request->bag_type_id,
+                   'gross_weight' => $itemBag->unit_weight * $request->total_bags,
+                   'total_quantity' => $request->total_bags,
+                   'unit_weight' => $itemBag->unit_weight,
+                   'net_weight' => $itemBag->unit_weight * $request->total_bags,
+               ]);
            }
 
            $this->createVoucherJournals($request, $invoiceMaster->id, $invoiceMaster->invoice_no);

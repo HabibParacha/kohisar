@@ -339,19 +339,22 @@
                                             <th width="50%">Total Bags</th>
                                             <td width="50%">
                                                 <div class="row">
-                                                    <div class="col-md-6">
-                                                        <select class="form-control form-select" name="bag_type_name" id="">
-                                                            <option @selected($invoice_master->bag_type_name == 'Jute') value="Jute">Jute</option>
-                                                            <option @selected($invoice_master->bag_type_name == 'Plastic')  value="Plastic">Plastic</option>
+                                                    <div class="col-md-6" >
+                                                        <select class="form-control form-select" name="bag_type_id" id="" style="border: 1px solid rgb(219, 96, 96)">
+                                                            <option value="">Choose...</option>
+                                                            @foreach ($itemBags as $item)
+                                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <input type="number" step="0.001" name="total_bags" id="total-bags" value="{{ number_format($invoice_master->total_bags,2) }}" class="form-control text-end" readonly>
+                                                        <input type="number" step="0.001" name="total_bags" id="total-bags" value="0" class="form-control text-end" readonly>
 
                                                     </div>
                                                 </div>
                                             </td>
-                                        </tr>   
+                                        </tr>  
+                            
                                        
                                     </table>
                                 </div>
