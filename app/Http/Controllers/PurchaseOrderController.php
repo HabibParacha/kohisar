@@ -135,6 +135,8 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
+       
+
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'party_id' => 'required',
@@ -254,7 +256,7 @@ class PurchaseOrderController extends Controller
                       'invoice_master_id' => $invoice_master_id,
                       'date' => $request->input('date'),
                       'invoice_no' => $newInvoiceNo,
-                      'type' => 'receipt',
+                      'type' => 'output',//setting this becuase it is just an adjustment
                       'item_id' => $request->bag_type_id,
                       'total_quantity' => $request->total_bags,
                   ]);
@@ -512,7 +514,7 @@ class PurchaseOrderController extends Controller
                    'invoice_master_id' => $invoiceMaster->id,
                    'date' => $request->input('date'),
                    'invoice_no' => $invoiceMaster->invoice_no,
-                   'type' => 'receipt',
+                   'type' => 'output',//setting this becuase it is just an adjustment 
                    'item_id' => $request->bag_type_id,
                    'total_quantity' => $request->total_bags,
                ]);
