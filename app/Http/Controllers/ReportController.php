@@ -45,11 +45,23 @@ class ReportController extends Controller
 
     public function fetchFinishedGoodsStock()
     {
-        $data = DB::table('v_finished_goods_stock_report')->get();
+        $data = DB::table('v_finished_goods_stock_report')
+        ->whereIn('category_id',[1,2,3,4])
+        ->get();
 
         return view('reports.finished_goods_stock', compact('data'));
 
     }
+
+    public function fetchEmptyBagsStock()
+    {
+        $data = DB::table('v_finished_goods_stock_report')
+        ->where('category_id',6)
+        ->get();
+
+        return view('reports.empty_bags_stock', compact('data'));
+    }
+    
 
     public function productionRequest(Request $request)
     {
@@ -316,4 +328,6 @@ class ReportController extends Controller
 
         return view('reports.raw_material_stock_level.show', compact('data','startDate','endDate'));
     }
+
+    
 }

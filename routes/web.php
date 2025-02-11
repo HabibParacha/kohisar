@@ -153,6 +153,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('report/raw-material-stock',[ReportController::class,'fetchRawMaterailStock'])->name('report.fetchRawMaterailStock');    
         Route::get('report/finished-goods-stock',[ReportController::class,'fetchFinishedGoodsStock'])->name('report.fetchFinishedGoodsStock');    
         
+        Route::get('report/empth-bags-stock',[ReportController::class,'fetchEmptyBagsStock'])->name('report.fetchEmptyBagsStock');    
+        
         Route::get('report/production/request', [ReportController::class, 'productionRequest'])->name('report.production.request');
         Route::post('report/production/show', [ReportController::class, 'productionShow'])->name('report.production.show');
 
