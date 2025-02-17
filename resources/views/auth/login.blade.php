@@ -108,7 +108,7 @@
                                 </ul>
                             </div>
                             <p class="text-center">
-                            <p> &copy; Copyright {{ date('Y') }} Extensive Books All rights reserved. </p>
+                            <p> &copy; Copyright {{ date('Y') }} Extensive Books Extensive Books All rights reservedAll rights reserved. </p>
                             </p>
                         </form>
                     </div>
