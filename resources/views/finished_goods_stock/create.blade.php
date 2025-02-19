@@ -67,81 +67,7 @@
                                     </div> 
                                 </div>
 
-                                {{-- <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Customers</label>
-                                        <select name="party_id"  id="party_id" class="select2 form-control">                                                
-                                            <option value="">Choose...</option>
-                                            @foreach ($partyCustomers as $customer)
-                                                <option value="{{$customer->id}}">
-                                                    {{ $customer->id .'-'.$customer->business_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>                                        
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Farm / Warehouse</label>
-                                        <select name="party_warehouse_id"  id="party_warehouse_id" class="select2 form-control">                                                
-                                            
-                                        </select>
-                                    </div>                                        
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Saleman</label>
-                                        <select name="saleman_id"  id="saleman_id" class="select2 form-control">                                                
-                                            <option value="">Choose...</option>
-                                            @foreach ($userSalemen as $saleman)
-                                                <option value="{{$saleman->id}}">
-                                                    {{ $saleman->id .'-'.$saleman->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>                                        
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Invoice No</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bx-receipt"></span> </div>
-                                            <input type="text" name="invoice_no" id="invoice_no" class="form-control" value="{{ $newInvoiceNo }}" readonly>
-                                        </div> 
-                                    </div> 
-                                </div>            
                              
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Date</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bx-calendar" ></span> </div>
-                                            <input type="date" name="date" id="date" class="form-control" value="{{ date('Y-m-d') }}">
-                                        </div>
-                                       
-                                    </div> 
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Vehicle No</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bxs-truck" ></span> </div>
-                                            <input type="text" name="vehicle_no"  class="form-control">
-                                        </div> 
-                                    </div> 
-                                </div>
-
-                                <div class="col-md-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Reference No</label>
-                                        <div class="input-group">
-                                            <div class="input-group-text"><span class="bx bxs-spreadsheet" ></span> </div>
-                                            <input type="text" name="reference_no"class="form-control">
-                                        </div> 
-                                    </div> 
-                                </div> --}}
-                               
-                                
                               
                                 
                             </div>
@@ -162,7 +88,7 @@
                                             <th  width="50" class="text-center">Unit wgt.</th> 
                                             <th  width="50" class="text-center">Qty</th> 
                                             <th  width="50" class="text-center">Total  wgt.</th> 
-                                            <th  width="50" class="text-center">Selling</th> 
+                                            <th  width="50" class="text-center">Cost Price</th> 
                                             <th  width="50" class="text-center">Total Price</th> 
                                          
                                             <th class="text-center" width="20"></th>
@@ -172,7 +98,48 @@
                                     <tbody id="sortable-table">
 
                                        
-                        
+                                        <tr class="">
+                                            <td class="text-end"><a style="cursor:grab"><i style="font-size:25px" class="mdi mdi-drag handle text-dark"></i></a> </td>
+                            
+                                            <td class=""> 
+                                                <select  name="item_id[]" class="form-control select2 item-dropdown" style="width:100%">                                                
+                                                    <option value="" >Choose...</option>
+                                                    @foreach ($itemGoods as $item)
+                                                        <option 
+                                                        value="{{$item->id}}" 
+                                                        data-stock="{{ $item->balance }}"  
+                                                        data-unit-weight="{{ $item->unit_weight }}"
+                            
+                                                        
+                                                        >{{ $item->code.'-'.$item->category_name .'-'.$item->name }}</option>
+                                                    @endforeach
+                            
+                                                </select>
+                            
+                                            </td> 
+                                            
+                                            <td class="text-end">
+                                                <input type="number" name="unit_weight[]" step="0.0001" class=" text-end form-control item-unit-weight" readonly>  
+                                            </td>
+                                            
+                                            <td class="text-end">
+                                                <input type="number" name="total_quantity[]" step="0.0001" class=" text-end form-control item-total-quantity" >  
+                                            </td>
+                                            <td class="text-end">
+                                                <input type="number" name="net_weight[]" step="0.0001" class=" text-end form-control item-net-weight" readonly>  
+                                            </td>
+                                             <td class="text-end">
+                                                <input type="number" name="cost_unit_price[]" step="0.0001" class=" text-end form-control item-cost-unit-price">  
+                                            </td>
+                                             <td class="text-end">
+                                                <input type="number" name="cost_price[]" step="0.0001" class=" text-end form-control item-cost-price" readonly>  
+                                            </td>
+                                            
+                                            <td class="text-center">  
+                                                <a href="#"><span style="font-size:18px" class="bx bx-trash text-danger remove-item"></span></a>
+                                            </td>
+                                            
+                                        </tr>
                                        
                                     </tbody> 
                                 </table>
@@ -204,7 +171,7 @@
                                 <tr class="">
                                     <th width="50%">Total Weight</th>
                                     <td width="50%">
-                                        <input type="number" name="net_weight" id="total-wgt" value="0" step="0.001" class="form-control text-end" readonly>
+                                        <input type="number" name="total_net_weight" id="total-wgt" value="0" step="0.001" class="form-control text-end" readonly>
                                     </td>
                                 </tr>           
                             </table>
@@ -239,11 +206,11 @@
     {{-- @include('opeining_balances.js') --}}
 
 <script>  
-    $(document).ready(function () {
+    // $(document).ready(function (e) {
       
-        appendNewRow();
+    //     appendNewRow();
 
-    });
+    // });
 
 
     $(document).on('change', '.item-dropdown', function(e){
@@ -252,14 +219,12 @@
         
         let unit_id = selected_item.data('unit-id');
         let unit_weight = parseFloat(selected_item.data('unit-weight')) || 0;
-        let sell_price = parseFloat(selected_item.data('sell-price')) || 0;
 
 
         let row =  $(this).closest('tr');
         
         let unit_dropdown = row.find('.item-unit-dropdown');
         row.find('.item-unit-weight').val(unit_weight.toFixed(2));
-        row.find('.item-per-unit-price').val(sell_price.toFixed(0));//remove decimal
 
 
 
@@ -269,7 +234,7 @@
         calculation(row);  
     });
 
-    $(document).on('keyup','.item-total-quantity',function(){
+    $(document).on('keyup','.item-total-quantity, .item-cost-unit-price',function(){
         let row = $(this).closest('tr');
 
         calculation(row);  
@@ -279,13 +244,14 @@
 
         let quantity = parseFloat(row.find('.item-total-quantity').val()) || 0;
         let unit_weight = parseFloat(row.find('.item-unit-weight').val()) || 0;
-        let per_unit_price = parseFloat(row.find('.item-per-unit-price').val()) || 0;
+        let cost_unit_price = parseFloat(row.find('.item-cost-unit-price').val()) || 0;
 
-        let net_weight = quantity*unit_weight;
+
+        let net_weight = quantity * unit_weight;
         row.find('.item-net-weight').val(net_weight.toFixed(2));
 
-        let total_price = quantity * per_unit_price;
-        row.find('.item-total-price').val(total_price.toFixed(2));
+        let cost_price = quantity * cost_unit_price;
+        row.find('.item-cost-price').val(cost_price.toFixed(2));
 
         summaryCalculation();
     }
@@ -303,7 +269,7 @@
         let total_weight = 0;
 
 
-        $('.item-total-price').each(function(){
+        $('.item-cost-price').each(function(){
             grand_total += parseFloat($(this).val()) || 0;
         });
         $('#grand-total').val(grand_total);
@@ -335,6 +301,7 @@
                             data-stock="{{ $item->balance }}"  
                             data-unit-weight="{{ $item->unit_weight }}"
                             data-sell-price="{{ $item->sell_price }}"
+                            data-cost-price="{{ $item->purchase_price }}"
 
                             
                             >{{ $item->code.'-'.$item->category_name .'-'.$item->name }}</option>
@@ -355,10 +322,10 @@
                     <input type="number" name="net_weight[]" step="0.0001" class=" text-end form-control item-net-weight" readonly>  
                 </td>
                  <td class="text-end">
-                    <input type="number" name="per_unit_price[]" step="0.0001" class=" text-end form-control item-per-unit-price">  
+                    <input type="number" name="cost_unit_price[]" step="0.0001" class=" text-end form-control item-cost-unit-price">  
                 </td>
                  <td class="text-end">
-                    <input type="number" name="total_price[]" step="0.0001" class=" text-end form-control item-total-price" readonly>  
+                    <input type="number" name="cost_price[]" step="0.0001" class=" text-end form-control item-cost-price" readonly>  
                 </td>
                 
                 <td class="text-center">  
