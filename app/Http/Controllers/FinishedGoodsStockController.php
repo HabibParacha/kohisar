@@ -8,6 +8,7 @@ use App\Models\InvoiceMaster;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -154,6 +155,40 @@ class FinishedGoodsStockController extends Controller
                     ]);
     
                 }
+
+                $journalDebit = [
+                    'date' => $request->input('date'),
+                    'voucher_no' => $newInvoiceNo,
+                    'type' => 'invoice',
+                    
+                    'chart_of_account_id' => env('FINISHED_GOOD'),
+                    'narration' => 'Opening Balance',
+                    
+                    'invoice_master_id' => $invoice_master_id,
+                    
+                    'debit' => $request->input('grand_total'),
+                    'trace' => '',
+                    'created_by' => Auth::user()->id,
+                    'created_at' => now(),
+                ];
+                DB::table('journals')->insert($journalDebit);
+        
+                $journalCredit = [
+                    'date' => $request->input('date'),
+                    'voucher_no' => $newInvoiceNo,
+                    'type' => 'invoice',
+                    
+                    'chart_of_account_id' => 311006,
+                    'narration' => 'Opening Balance',
+                    
+                    'invoice_master_id' => $invoice_master_id,
+                    
+                    'credit' => $request->input('grand_total'),
+                    'trace' => '',
+                    'created_by' => Auth::user()->id,
+                    'created_at' => now(),
+                ];
+                DB::table('journals')->insert($journalCredit); 
                
                 
                    
