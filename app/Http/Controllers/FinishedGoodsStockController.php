@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Models\InvoiceMaster;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -94,6 +96,8 @@ class FinishedGoodsStockController extends Controller
                         'unit_weight.*' => 'required',
                         'total_quantity.*' => 'required',
                         'net_weight.*' => 'required',  
+                        'cost_unit_price.*' => 'required',  
+                        'cost_price.*' => 'required',  
                     ]);
                 if ($validator->fails()) {
                     return response()->json([
@@ -101,6 +105,9 @@ class FinishedGoodsStockController extends Controller
                         'message' => $validator->errors()->first()
                     ]);
                 }
+
+
+              
     
                 $newInvoiceNo = InvoiceMaster::generateInvoiceNo('OB','output');// defined in model
     
@@ -110,6 +117,10 @@ class FinishedGoodsStockController extends Controller
                     'batch_no' => $request->input('batch_no'),
                     'type' => 'output',
                     'description' => "opening Balance",
+                    'output_qty' => $request->total_net_weight,
+
+                    'grand_total' => $request->grand_total,
+
                 ];
     
                 $invoice_master_id  = DB::table('invoice_master')->insertGetId($invoice_master);
@@ -127,14 +138,58 @@ class FinishedGoodsStockController extends Controller
                         'type' => 'output',
                         'item_id' => $request->item_id[$i],
                         'unit_weight' => $request->unit_weight[$i],
+                        'per_unit_price' => $request->cost_unit_price[$i] ,
                         'total_quantity' => $request->total_quantity[$i],
                         'net_weight' => $request->net_weight[$i],
+                        
+                        'total_price' => $request->grand_total[$i],
+                        'grand_total' => $request->grand_total[$i],//output Grand Total
                     ];
     
                     DB::table('invoice_detail')->insertGetId($invoice_detail);
+
+                    DB::table('items')
+                    ->where('id', $request->item_id[$i])
+                    ->update([
+                        'purchase_price' => $request->cost_unit_price[$i]
+                    ]);
     
                 }
-    
+
+                $journalDebit = [
+                    'date' => $request->input('date'),
+                    'voucher_no' => $newInvoiceNo,
+                    'type' => 'invoice',
+                    
+                    'chart_of_account_id' => env('FINISHED_GOOD'),
+                    'narration' => 'Opening Balance',
+                    
+                    'invoice_master_id' => $invoice_master_id,
+                    
+                    'debit' => $request->input('grand_total'),
+                    'trace' => '',
+                    'created_by' => Auth::user()->id,
+                    'created_at' => now(),
+                ];
+                DB::table('journals')->insert($journalDebit);
+        
+                $journalCredit = [
+                    'date' => $request->input('date'),
+                    'voucher_no' => $newInvoiceNo,
+                    'type' => 'invoice',
+                    
+                    'chart_of_account_id' => 311006,
+                    'narration' => 'Opening Balance',
+                    
+                    'invoice_master_id' => $invoice_master_id,
+                    
+                    'credit' => $request->input('grand_total'),
+                    'trace' => '',
+                    'created_by' => Auth::user()->id,
+                    'created_at' => now(),
+                ];
+                DB::table('journals')->insert($journalCredit); 
+               
                 
                    
     
@@ -191,17 +246,17 @@ class FinishedGoodsStockController extends Controller
      */
     public function edit($id)
     {
-        try {
-            $data = Brand::findOrFail($id);
-            return response()->json($data);
+        // try {
+        //     $data = Brand::findOrFail($id);
+        //     return response()->json($data);
 
-        } catch (\Exception $e) {
-            // Return a JSON response with an error message
-            return response()->json([
-                'message' => $e->getMessage(),
-                'success' => false,
-            ], 500);
-        }
+        // } catch (\Exception $e) {
+        //     // Return a JSON response with an error message
+        //     return response()->json([
+        //         'message' => $e->getMessage(),
+        //         'success' => false,
+        //     ], 500);
+        // }
     }
 
     /**
