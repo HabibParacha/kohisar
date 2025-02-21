@@ -58,6 +58,7 @@
                                             <th>mobile No</th>
                                             <th>Email</th>
                                             <th>Type</th>
+                                            <th>Role</th>
                                             <th>Image</th>
                                             <th>Status</th>
                                             <th>Action</th>
@@ -114,6 +115,18 @@
                                         <div class="mb-3">
                                             <label class="form-label">Image</label>
                                             <input type="file" name="image" id="image" class="form-control" style="width: 100%;">
+                                        </div>
+                                        <div class="mb-3 ">
+                                            <label class="col-form-label">Role</label>
+                                            <select name="role_id" id="role_id" class="form-select form-control" style="width:100%">
+                                                <option value="">Select Type</option>
+                                                @foreach ($roles as $role)
+
+                                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+
+                                                @endforeach
+                                               
+                                            </select>
                                         </div>
                                         <div class="mb-3 ">
                                             <label class="col-form-label">Type</label>
@@ -184,7 +197,18 @@
                                             <label class="form-label">Image</label>
                                             <input type="file" name="image" id="edit_image" class="form-control" style="width: 100%;">
                                         </div>
+                                        <div class="mb-3 ">
+                                            <label class="col-form-label">Role</label>
+                                            <select name="role_id" id="edit_role_id" class="form-select form-control" style="width:100%">
+                                                <option value="">Select Type</option>
+                                                @foreach ($roles as $role)
 
+                                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+
+                                                @endforeach
+                                               
+                                            </select>
+                                        </div>
                                         <div class="mb-3 ">
                                             <label class="col-form-label">Type</label>
                                             <select name="type" id="edit_type" class="form-select form-control" style="width:100%">
@@ -333,6 +357,7 @@
                     { data: 'mobile_no' },
                     { data: 'email' },
                     { data: 'type' },
+                    { data: 'role_name' },
                     { 
                         data: 'is_active',
                         className: 'text-center', // This applies the text-center class to the entire column
@@ -513,6 +538,7 @@
                 $('#edit_mobile_no').val(response.mobile_no);
                 $('#edit_hint').val(response.hint);
                 $('#edit_type').val(response.type).trigger('change');
+                $('#edit_role_id').val(response.role_id).trigger('change');
                 $('#edit_is_active').val(response.is_active).trigger('change');
                 console.log(response.is_active);              
                 $('#edit-user').modal('show');

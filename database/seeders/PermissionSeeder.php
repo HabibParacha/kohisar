@@ -56,7 +56,10 @@ class PermissionSeeder extends Seeder
             }
         }
 
-        
+        $singlePermissions = [
+            ['section' => 'Voucher', 'action' => 'Create JV', 'route_name' => 'voucher.createJournalVoucher'],
+          
+        ];
 
         $accountReports = [
             ['section' => 'Account Reports', 'action' => 'Request', 'route_name' => 'account-reports.request'],
@@ -97,7 +100,7 @@ class PermissionSeeder extends Seeder
         ];
         
         
-        $permissions = array_merge($permissions, $accountReports, $inventoryReports, $posting);
+        $permissions = array_merge($permissions,$singlePermissions ,$accountReports, $inventoryReports, $posting);
 
 
         DB::table('permissions')->insert($permissions);

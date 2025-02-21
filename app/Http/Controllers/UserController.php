@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Role;
 use App\Models\User;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Validation\Rules;
-
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
@@ -28,12 +29,17 @@ class UserController extends Controller
     {
     
        $types = $this->userTypes();
+       $roles = Role::all();
         try{
             if ($request->ajax()) {
                 $data = User::all();
     
                 return Datatables::of($data)
                     ->addIndexColumn()
+
+                    ->addColumn('role_name', function($row){
+                        return $row->role->name ?? "N/A";
+                    })
                   
 
                     ->addColumn('action', function ($row) {
@@ -78,7 +84,7 @@ class UserController extends Controller
                     ->make(true);
             }
     
-            return view('users.index',compact('types'));
+            return view('users.index',compact('types','roles'));
 
         }catch (\Exception $e){
 
@@ -103,6 +109,7 @@ class UserController extends Controller
                 'email' => ['required', 'string', 'max:255', 'unique:users,email'],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
                 'type' => 'nullable',
+                'role_id' => 'required',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation for image
                 'is_active' => 'boolean'
 
@@ -131,6 +138,7 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
                 'hint' => $request->password,
                 'type' => $request->type,
+                'role_id' => $request->role_id,
                 'image' => $image,
 
             ]);
@@ -192,6 +200,7 @@ class UserController extends Controller
             'email' => ['required', 'string','max:255','unique:users,email,' . $current_user->id],
             'hint' => ['required', 'string', 'max:255'],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation for image
+            'role_id' => 'required',
             'is_active' => 'boolean'
 
         ]);
@@ -229,6 +238,7 @@ class UserController extends Controller
                 'password' => Hash::make($request->hint),
                 'hint' => $request->hint,
                 'type' => $request->type,
+                'role_id' => $request->role_id,
                 'image' => $image,
            ]);
 
@@ -265,6 +275,14 @@ class UserController extends Controller
 
         try {
             $user = User::findOrFail($id);
+
+            if($user->is_super_admin == 1)
+            {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Master User can not be deleted.',
+                    ],200);
+            }
             
             // Delete the user record
             $user->delete();

@@ -49,3 +49,6 @@ ALTER TABLE `invoice_master` ADD `total_purchase_price` DECIMAL(15,2) NULL AFTER
 ALTER TABLE `invoice_master` ADD `profit_loss` DECIMAL(15,2) NULL AFTER `total_purchase_price`;
 
 ALTER TABLE `users` ADD `is_super_admin` INT(1) NOT NULL DEFAULT '0' AFTER `id`;
+---------------------------------------------System updated--------------------------------------------
+
+ALTER TABLE `users` ADD `role_id` BIGINT(20) NULL AFTER `type`;
