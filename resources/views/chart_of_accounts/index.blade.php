@@ -32,7 +32,9 @@
                                                     <a href="#" class="add-new-account-btn text-primary"
                                                         id="{{ 'level-2-account-' . $level_2->id }}"
                                                         data-id="{{ $level_2->id }}" data-code="{{ $level_2->id }}"
-                                                        data-name="{{ $level_2->name }}">
+                                                        data-name="{{ $level_2->name }}"
+                                                        data-category="{{ $level_2->category }}">
+
                                                         <i class="fas fa-plus-square fs-5 pt-1"></i>
                                                     </a>
                                                     {{ $level_2->name }} ({{ $level_2->id }})
@@ -52,7 +54,9 @@
                                                             <a href="#" class="add-new-account-btn text-primary"
                                                                 id="{{ 'level-2-account-' . $level_3->id }}"
                                                                 data-id="{{ $level_3->id }}" data-code="{{ $level_3->id }}"
-                                                                data-name="{{ $level_3->name }}">
+                                                                data-name="{{ $level_3->name }}"
+                                                                data-category="{{ $level_3->category }}">
+
                                                                 <i class="fas fa-plus-square fs-5 pt-1"></i>
                                                             </a>
                                                             {{ $level_3->name }} ({{ $level_3->id }})
@@ -63,7 +67,9 @@
                                                                 id="{{ 'level-3-account-' . $level_3->id }}"
                                                                 data-id="{{ $level_3->id }}"
                                                                 data-code="{{ $level_3->id }}"
-                                                                data-name="{{ $level_3->name }}">
+                                                                data-name="{{ $level_3->name }}"
+                                                                data-category="{{ $level_3->category }}">
+
                                                                 <i class=" fas fa-pencil-alt"></i>
                                                             </a>
                                                         </td>
@@ -81,7 +87,9 @@
                                                                     id="{{ 'level-3-account-' . $level_4->id }}"
                                                                     data-id="{{ $level_4->id }}"
                                                                     data-code="{{ $level_4->id }}"
-                                                                    data-name="{{ $level_4->name }}" >
+                                                                    data-name="{{ $level_4->name }}" 
+                                                                    data-category="{{ $level_4->category }}">
+                                                                    
                                                                     <i class=" fas fa-pencil-alt"></i>
                                                                 </a>
                                                             </td>
@@ -180,6 +188,17 @@
                                     <label class="form-label">Account Name</label>
                                     <input type="text" name="account_name" class="form-control">
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select name="category" class="form-control form-select">
+                                        <option value=""></option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category }}">{{ $category }}</option>
+                                            
+                                        @endforeach
+                                    </select>
+                                </div>
+
 
 
 
@@ -228,6 +247,16 @@
                                 <div class="mb-3">
                                     <label class="form-label">Name</label>
                                     <input type="text" name="account_name" id="edit_account_name" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <select name="category" id="edit_category" class="form-control form-select">
+                                        <option value=""></option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category }}">{{ $category }}</option>
+                                            
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <div class="modal-footer-btn">
@@ -288,11 +317,13 @@
                 let id = $(this).data('id');
                 let code = $(this).data('code');
                 let name = $(this).data('name');
+                let category = $(this).data('category');
 
                 $('#edit_id').val(id);
                 $('#edit_account_code').val(code);
                 $('#edit_account_name').val(name);
-
+                $('#edit_category').val(category).trigger('change');
+                
                 $('#edit-chart-of-account').modal('show');
 
             });

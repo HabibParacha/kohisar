@@ -89,8 +89,8 @@ class ChartOfAccountController extends Controller
     {
        
         $accounts = ChartOfAccount::with('children')->whereNull('parent_id')->get();
-
-        return view('chart_of_accounts.index', compact('accounts'));
+        $categories = $this->categoryList();
+        return view('chart_of_accounts.index', compact('accounts','categories'));
     }
 
     /**
@@ -179,6 +179,8 @@ class ChartOfAccountController extends Controller
             $newAccount->level = $newLevel;
             $newAccount->parent_id = $parent_id;
             $newAccount->type = $newType;
+            $newAccount->category = $request->category;
+
 
             $newAccount->save();
             
@@ -244,6 +246,7 @@ class ChartOfAccountController extends Controller
         try {
             $chart_of_account = ChartOfAccount::find($id);
             $chart_of_account->name = $request->account_name;
+            $chart_of_account->category = $request->category;
             $chart_of_account->save();
 
             return response()->json([
@@ -290,6 +293,16 @@ class ChartOfAccountController extends Controller
             
         }
        return response()->json($data);
+    }
+
+    public function categoryList()
+    {
+        $data = [
+            'cash',
+            'card',
+            'bank',
+        ];
+        return $data;
     }
 
    
