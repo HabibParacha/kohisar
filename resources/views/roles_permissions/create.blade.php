@@ -68,7 +68,7 @@
                                         
                                                 <tr> <!-- Start a new row every 6 actions -->
                                                     <th>
-                                                        <input class="form-check-input section-checkbox" type="checkbox">
+                                                        <input class="section-checkbox" type="checkbox">
                                                         <label class="form-check-label">{{ $data->section }}</label>
                                                     </th>
                                             @endif       
@@ -126,10 +126,10 @@
     $('.form-check-input').on('click', function(){
         if ($(this).prop('checked') === true) {
             // Action when the section checkbox is checked
-            $(this).closest('tr').find('.is-allowed').val(1);
+            $(this).closest('td').find('.is-allowed').val(1);
         } else {
             // Action when the section checkbox is unchecked
-            $(this).closest('tr').find('.is-allowed').val(0);
+            $(this).closest('td').find('.is-allowed').val(0);
         }
     });
     $('#master-checkbox').on('click', function(){

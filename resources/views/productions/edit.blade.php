@@ -185,11 +185,11 @@
                                             <tfoot>
                                                 <tr class="text-end">
                                                     <td  class="fw-bold text-start">TOTAL</td>
-                                                    <td><input type="number" id="materail_recipe_qty_total" class="fw-bold text-end" readonly></td>
-                                                    <td><input type="number" id="materail_production_qty_total" class="text-end fw-bold" readonly></td>
-                                                    <td><input type="number" id="materail_stock_qty_total" class="text-end fw-bold" readonly></td>
-                                                    <td class="d-none"><input type="number" id="materail_avg_unit_price" class="text-end fw-bold" readonly></td>
-                                                    <td class="text-end d-none"><input type="number" id="materail_total_cost" class="text-end fw-bold" readonly></td>
+                                                    <td><input type="number" id="materail_recipe_qty_total" class="fw-bold text-end" step="0.0001" readonly></td>
+                                                    <td><input type="number" id="materail_production_qty_total" class="text-end fw-bold" step="0.0001" readonly></td>
+                                                    <td><input type="number" id="materail_stock_qty_total" class="text-end fw-bold" step="0.0001" readonly></td>
+                                                    <td class="d-none"><input type="number" id="materail_avg_unit_price" class="text-end fw-bold" step="0.0001" readonly></td>
+                                                    <td class="d-none text-end"><input type="number" id="materail_total_cost" class="text-end fw-bold" step="0.0001" readonly></td>
                                                     <td></td>
                                                     
                                                 </tr>
@@ -269,7 +269,7 @@
                                                             <input type="number" name="output_quantity_weight[]" value="{{ $detail->net_weight }}" step="0.0001" class="form-control output-quantity-weight" readonly>  
                                                         </td>
                                                         <td>
-                                                            <input type="number" name="output_per_unit_cost[]" value="{{ $detail->per_unit_price * $detail->unit_weight }}" step="0.0001" class="form-control output-per-unit-cost" readonly>  
+                                                            <input type="number" name="output_per_unit_cost[]" value="{{ round($detail->total_price / $detail->total_quantity,4) }}" step="0.0001" class="form-control output-per-unit-cost" readonly>  
                                                         </td>
                                                         <td>
                                                             <input type="number" name="output_total_cost[]" value="{{ $detail->grand_total }}" step="0.0001" class="form-control output-total-cost" readonly>  
@@ -311,7 +311,7 @@
                                         <tr>
                                             <th width="50%">Production <sub>KG's</sub></th>
                                             <td width="50%">
-                                                <input type="number" name="production_sub_total_weight" id="production-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                <input type="number" name="production_sub_total_weight" id="production-sub-total-weight" value="0" step="0.0001" class="form-control text-end border-0 fw-bold" readonly>
                                             </td>
                                         </tr>  
                                         <tr>
@@ -321,12 +321,12 @@
                                             <td>
                                                 <div class="input-group">
                                                         <span class="input-group-text"> KG's</span>
-                                                        <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                        <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" value="0" step="0.0001" class="form-control text-end border-0 fw-bold" readonly>
 
                                                 </div>
                                                 <div class="input-group ">
                                                     <span class="input-group-text">Bags</span>
-                                                    <input type="number" name="output_bags" id="output-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                    <input type="number" name="output_bags" id="output-bags" value="0" step="0.0001" class="form-control text-end border-0 fw-bold" readonly>
                                                 </div>
                                             </td>
                                         </tr>  
@@ -335,19 +335,19 @@
                                             <td width="50%">
                                                 <div class="input-group">
                                                     <span class="input-group-text"> KG's</span>
-                                                    <input type="number" name="surplus_sub_total_weight" id="surplus-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                    <input type="number" name="surplus_sub_total_weight" id="surplus-sub-total-weight" value="0" step="0.0001" class="form-control text-end border-0 fw-bold" readonly>
 
                                                 </div>
                                                 <div class="input-group ">
                                                     <span class="input-group-text">Bags</span>
-                                                    <input type="number" name="surplus_bags" id="surplus-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                    <input type="number" name="surplus_bags" id="surplus-bags" value="0" step="0.0001" class="form-control text-end border-0 fw-bold" readonly>
                                                 </div>
                                             </td>
                                         </tr>  
                                         <tr>
                                             <th width="50%">Prod. Cost</th>
                                             <td width="50%">
-                                                <input type="number" name="total_production_cost" id="total-production-cost" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                <input type="number" name="total_production_cost" id="total-production-cost" value="0" step="0.0001" class="form-control text-end border-0 fw-bold" readonly>
                                             </td>
                                         </tr>  
                                     
@@ -482,7 +482,7 @@
                     let prodcution_qty = parseFloat(((detail.quantity) * tons));
                     let balance_val = parseFloat(detail.balance);
                     let stock_val = balance_val+prodcution_qty;
-                    let total_cost = (prodcution_qty*detail.purchase_unit_price).toFixed(2);
+                    let total_cost = (prodcution_qty*detail.purchase_unit_price).toFixed(4);
                     
                     
 
@@ -502,7 +502,7 @@
                                 <input type="number" name="production_quantity_weight[]" value="${prodcution_qty}" step="0.0001" class="production-quantity-weight text-end" readonly>
                             </td>
                             <td class="text-center">
-                                <input type="number" name="" step="0.0001" class="stock-quantity text-end" value="${stock_val.toFixed(2)}" readonly>
+                                <input type="number" name="" step="0.0001" class="stock-quantity text-end" value="${stock_val.toFixed(4)}" readonly>
                             </td> 
                                </td> 
                             <td class="text-end d-none">
@@ -558,9 +558,9 @@
        }
     
 
-       $('#productionQty').text(prodcution_weight.toFixed(2));
-       $('#outputQty').text(output_weight.toFixed(2));
-       $('#quantityDifference').text(difference.toFixed(2));
+       $('#productionQty').text(prodcution_weight.toFixed(4));
+       $('#outputQty').text(output_weight.toFixed(4));
+       $('#quantityDifference').text(difference.toFixed(4));
 
        if(prodcution_weight != output_weight)
        {

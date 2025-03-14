@@ -81,6 +81,7 @@ class AverageCostingController extends Controller
 
     public function itemsListShow(Request $request)
     {
+        $totalStockValue = 0;
         $items = Item::where('type','Raw')->get();
         $data = [];
         foreach($items as $item)
@@ -95,7 +96,7 @@ class AverageCostingController extends Controller
             $stock_weight = 0;
             $stock_value = 0;
             $avg_cost = 0;
-            
+           
             
             if($transactions->sum('net_weight') > 0)
             {
@@ -121,12 +122,14 @@ class AverageCostingController extends Controller
                 }
                 $data[] =[
                     'name' => $item->name,
-                    'qty_in' =>  $transactions->where('type','receipt')->sum('net_weight'),
-                    'qty_out' =>  $transactions->where('type','production')->sum('net_weight'),
+                    'qty_in' =>  number_format($transactions->where('type','receipt')->sum('net_weight'),2),
+                    'qty_out' =>  number_format($transactions->where('type','production')->sum('net_weight'),2),
                     'balance' => number_format($stock_weight, 2),
                     'stock_value' => number_format($stock_weight*$avg_cost, 2),
                     'avg_cost' =>  number_format($avg_cost,2),
-                ];     
+                ];   
+                
+                $totalStockValue += ($stock_weight*$avg_cost);
             }
             else
             {
@@ -143,7 +146,7 @@ class AverageCostingController extends Controller
            
         }
        
-        return view('reports.average_costing_items_list.show', compact('data'));
+        return view('reports.average_costing_items_list.show', compact('data','totalStockValue'));
     }
     /*
         //date is required that's why we are using above code 

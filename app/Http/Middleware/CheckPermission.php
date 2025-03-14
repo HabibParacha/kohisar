@@ -18,27 +18,36 @@ class CheckPermission
      */
     public function handle(Request $request, Closure $next)
     {
+        
         $user = Auth::user();
         
-        if($user->is_super_admin == 1)
+        if($user->is_super_admin == '1')
         {
-            return $next($request);
+              return $next($request);
         }
         
         $routeName = $request->route()->getName(); // e.g., 'item.create'
         $hasPermission = DB::table('role_permissions')
         ->where('role_id', $user->role_id)
         ->where('route_name', $routeName) // Direct match
-        ->where('is_allowed', 1)
-        ->exists();
+        ->where('is_allowed', 0)
+        ->first();
 
-       
-        if (!$hasPermission) {
-            // abort(403, 'Unauthorized action.');
-            // return view('403');
-             // Return a JSON response with a success message
+        if($hasPermission == null)
+        {
+            return $next($request);
+        }else{
             return redirect()->back()->with('success','Your Are Not Authorized Please Contact Admin');
+
         }
+
+      
+        // if (!$hasPermission) {
+        //     // abort(403, 'Unauthorized action.');
+        //     // return view('403');
+        //      // Return a JSON response with a success message
+        //     return redirect()->back()->with('success','Your Are Not Authorized Please Contact Admin');
+        // }
 
         
 

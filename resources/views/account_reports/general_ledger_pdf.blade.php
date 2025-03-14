@@ -48,6 +48,7 @@
                 <tbody>
                     <tr bgcolor="#CCCCCC">
                         <th width='50' style="text-align:center;">DATE</th>
+                        <th width='50' style="text-align:center;">Chart Of Account</th>
                         <th width='50' style="text-align:center;">VHNO</th>
                         <th width='200' style="text-align:center;">Narration</th>
                         <th width='75' style="text-align:right;">RECEIPTS / DR</th>
@@ -63,6 +64,7 @@
                             $bf = $broughtForward[0]->amount;
                         @endphp
                         <tr>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td>By Balance Brought Forward</td>
@@ -87,6 +89,7 @@
                         @foreach ($journals as $journal)
                         <tr>
                             <td>{{ $journal->date }}</td>
+                            <td>{{ $journal->chartOfAccount->name ?? 'N/A' }}</td>
                             <td>{{ $journal->voucher_no }}</td>
                             <td>{{ $journal->narration }}</td>
                             <td style="text-align:right;">{{ ($journal->debit) ? number_format($journal->debit, 2) : ''  }}</td>
@@ -115,6 +118,7 @@
 
                         <tr class="table-active">
 
+                            <td></td>
                             <td></td>
                             <td bgcolor="#CCCCCC">TOTAL</td>
                             <td bgcolor="#CCCCCC" class="text-end"></td>

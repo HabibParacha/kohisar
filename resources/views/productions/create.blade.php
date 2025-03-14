@@ -181,11 +181,11 @@
                                             <tfoot>
                                                 <tr class="text-end">
                                                     <td  class="fw-bold text-start">TOTAL</td>
-                                                    <td><input type="number" id="materail_recipe_qty_total" class="fw-bold text-end" readonly></td>
-                                                    <td><input type="number" id="materail_production_qty_total" class="text-end fw-bold" readonly></td>
-                                                    <td><input type="number" id="materail_stock_qty_total" class="text-end fw-bold" readonly></td>
-                                                    <td class="d-none"><input type="number" id="materail_avg_unit_price" class="text-end fw-bold" readonly></td>
-                                                    <td class="d-none"><input type="number" id="materail_total_cost" class="text-end fw-bold" readonly></td>
+                                                    <td><input type="number" id="materail_recipe_qty_total" step="0.0001" class="fw-bold text-end" readonly></td>
+                                                    <td><input type="number" id="materail_production_qty_total" step="0.0001" class="text-end fw-bold" readonly></td>
+                                                    <td><input type="number" id="materail_stock_qty_total" step="0.0001" class="text-end fw-bold" readonly></td>
+                                                    <td class=""><input type="number" id="materail_avg_unit_price" step="0.0001" class="text-end fw-bold" readonly></td>
+                                                    <td  class=""><input type="number" id="materail_total_cost" step="0.0001" class="text-end fw-bold" readonly></td>
                                                     <td></td>
                                                     
                                                 </tr>
@@ -228,6 +228,7 @@
                                                 
                                                
                                             </tbody> 
+
                                         </table>
         
                                         <button id="btn-add-more" class="btn btn-primary"><span class="bx bx-plus"></span> Add More</button>
@@ -259,7 +260,7 @@
                                     <tr>
                                         <th width="50%">Production <sub>KG's</sub></th>
                                         <td width="50%">
-                                            <input type="number" name="production_sub_total_weight" id="production-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                            <input type="number" name="production_sub_total_weight" id="production-sub-total-weight" step="0.0001" value="0" class="form-control text-end border-0 fw-bold" readonly>
                                         </td>
                                     </tr>  
                                     <tr>
@@ -269,12 +270,12 @@
                                         <td>
                                             <div class="input-group">
                                                     <span class="input-group-text"> KG's</span>
-                                                    <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                    <input type="number" name="output_sub_total_weight" id="output-sub-total-weight" step="0.0001" value="0" class="form-control text-end border-0 fw-bold" readonly>
 
                                             </div>
                                             <div class="input-group ">
                                                 <span class="input-group-text">Bags</span>
-                                                <input type="number" name="output_bags" id="output-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                <input type="number" name="output_bags" id="output-bags" step="0.0001" value="0" class="form-control text-end border-0 fw-bold" readonly>
                                             </div>
                                         </td>
                                     </tr>  
@@ -283,19 +284,19 @@
                                         <td width="50%">
                                             <div class="input-group">
                                                 <span class="input-group-text"> KG's</span>
-                                                <input type="number" name="surplus_sub_total_weight" id="surplus-sub-total-weight" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                <input type="number" name="surplus_sub_total_weight" id="surplus-sub-total-weight" step="0.0001" value="0" class="form-control text-end border-0 fw-bold" readonly>
 
                                             </div>
                                             <div class="input-group ">
                                                 <span class="input-group-text">Bags</span>
-                                                <input type="number" name="surplus_bags" id="surplus-bags" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                                <input type="number" name="surplus_bags" id="surplus-bags" value="0" step="0.0001" class="form-control text-end border-0 fw-bold" readonly>
                                             </div>
                                         </td>
                                     </tr>  
                                     <tr>
                                         <th width="50%">Prod. Cost</th>
                                         <td width="50%">
-                                            <input type="number" name="total_production_cost" id="total-production-cost" value="0" class="form-control text-end border-0 fw-bold" readonly>
+                                            <input type="number" name="total_production_cost" id="total-production-cost" value="0" step="0.0001" class="form-control text-end border-0 fw-bold" readonly>
                                         </td>
                                     </tr>  
                                 

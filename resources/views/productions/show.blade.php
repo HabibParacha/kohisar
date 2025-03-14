@@ -130,12 +130,12 @@
                                                         <td class="text-right"> {{ $detail->item->name}}</td>
                                                         <td class="text-right">{{ $detail->item->category->name }}</td>
                                                     
-                                                        <td class="text-center">{{ number_format($detail->unit_weight, 0) }}</td> 
+                                                        <td class="text-center">{{ number_format($detail->unit_weight, 4) }}</td> 
                                                        
-                                                        <td class="text-center">{{ number_format($detail->total_quantity, 0) }} </td> 
-                                                        <td class="text-center"> {{ number_format($detail->net_weight, 2) }}</td> 
-                                                        <td class="text-center"> {{ number_format($detail->per_unit_price, 2) }}</td>
-                                                        <td class="text-end"> {{ number_format($detail->grand_total, 2) }}</td>
+                                                        <td class="text-center">{{ number_format($detail->total_quantity, 4) }} </td> 
+                                                        <td class="text-center"> {{ number_format($detail->net_weight, 4) }}</td> 
+                                                        <td class="text-center"> {{ number_format($detail->per_unit_price, 4) }}</td>
+                                                        <td class="text-end"> {{ number_format($detail->grand_total, 4) }}</td>
                                                        
                                                     </tr>
                                                 @endforeach
@@ -147,10 +147,10 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td class="fw-bold text-center">{{ number_format($production->outputDetails->sum('total_quantity'),2) }}</td>
-                                                <td class="fw-bold text-center">{{ number_format($production->outputDetails->sum('net_weight'),2) }}</td>
+                                                <td class="fw-bold text-center">{{ number_format($production->outputDetails->sum('total_quantity'),4) }}</td>
+                                                <td class="fw-bold text-center">{{ number_format($production->outputDetails->sum('net_weight'),4) }}</td>
                                                 <td></td>
-                                                <td class="fw-bold text-end">{{ number_format($production->outputDetails->sum('grand_total'),2) }}</td>
+                                                <td class="fw-bold text-end">{{ number_format($production->outputDetails->sum('grand_total'),4) }}</td>
                                             </tfoot>
                                         @else
                                             <tr>
@@ -200,9 +200,9 @@
                                         <tfoot>
                                             <td></td>
                                             <td></td>
-                                            <td class="text-center fw-bold">{{ number_format($production->productionDetails->sum('net_weight'),2) }}</td>
+                                            <td class="text-center fw-bold">{{ number_format($production->productionDetails->sum('net_weight'),4) }}</td>
                                             <td></td>
-                                            <td class="text-end fw-bold">{{ number_format($production->productionDetails->sum('grand_total'),2) }}</td>
+                                            <td class="text-end fw-bold">{{ number_format($production->productionDetails->sum('grand_total'),4) }}</td>
                                         </tfoot>
                                         <!-- Expense Summary -->
                                         

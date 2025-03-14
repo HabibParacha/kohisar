@@ -28,6 +28,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                       
                                         @foreach ($data as $value)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
@@ -40,7 +41,18 @@
                                                
     
                                             </tr>
+                                               
+                                              
                                         @endforeach
+                                        <tr>
+                                            <th>Total</th>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <th>{{ number_format($totalStockValue,2) }}</th>
+                                        </tr>
     
                                     </tbody>
                                     

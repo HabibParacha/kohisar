@@ -52,3 +52,35 @@ ALTER TABLE `users` ADD `is_super_admin` INT(1) NOT NULL DEFAULT '0' AFTER `id`;
 ---------------------------------------------System updated--------------------------------------------
 
 ALTER TABLE `users` ADD `role_id` BIGINT(20) NULL AFTER `type`;
+---------------------------------------------System updated--------------------------------------------
+
+
+DELETE FROM invoice_master where date > '2025-02-17';
+DELETE FROM invoice_detail where date > '2025-02-17';
+DELETE FROM journals where date > '2025-02-17';
+DELETE FROM vouchers where date > '2025-02-17';
+DELETE FROM voucher_details where date > '2025-02-17';
+
+436,980,476.46 438,858,206.56
+
+---------------------------------------------System updated--------------------------------------------
+
+
+
+ALTER TABLE `invoice_detail` CHANGE `unit_weight` `unit_weight` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `gross_weight` `gross_weight` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `after_cut_total_weight` `after_cut_total_weight` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `total_quantity` `total_quantity` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `per_package_weight` `per_package_weight` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `total_package_weight` `total_package_weight` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `net_weight` `net_weight` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `per_unit_price_stock` `per_unit_price_stock` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `per_unit_price` `per_unit_price` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `per_unit_price_old_value` `per_unit_price_old_value` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `per_unit_price_new_value` `per_unit_price_new_value` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `total_price_stock` `total_price_stock` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `total_price` `total_price` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `after_discount_total_price` `after_discount_total_price` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `purchase_unit_price` `	purchase_unit_price` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `total_purchase_price` `total_purchase_price` DECIMAL(20,4) NULL DEFAULT NULL;
+ALTER TABLE `invoice_detail` CHANGE `grand_total` `grand_total` DECIMAL(20,4) NULL DEFAULT NULL;

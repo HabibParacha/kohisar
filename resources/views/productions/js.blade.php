@@ -1,4 +1,40 @@
 {{-- START:: Production Table Function --}}
+{{-- <script>
+    $(document).ready(function () {
+        var unit_weight = 50;
+        let avg_production_unit_price = 95.3229813161657; 
+                
+        let per_unit_cost = (avg_production_unit_price * unit_weight);
+        alert(per_unit_cost.toFixed(4));
+    });
+</script> --}}
+{{-- <script>
+    $(document).ready(function () {
+        let prodCost = 95354.4379;
+        let weight = 1000.3300;
+
+        let perUnit = prodCost/weight;
+        alert(perUnit.toFixed(4));
+
+        let bag = 50;
+        let bagPrice = perUnit*bag;
+        alert(bagPrice.toFixed(4));
+
+    });
+    $(document).ready(function () {
+        let prodCost = parseFloat(95354.4379);
+        let weight = parseFloat(1000.3300);
+
+        let perUnit = prodCost/weight;
+
+        let bag = 50;
+        let bagPrice = perUnit*bag;
+        alert(bagPrice);
+
+    });
+</script> --}}
+
+
 <script>
   
     // START:: input: Total Tons calculation
@@ -18,7 +54,7 @@
 
                 // Calculate cost
                 let total_cost = production_quantity_weight * unit_cost;
-                $(this).find('.stock-total-cost').val(total_cost.toFixed(2));
+                $(this).find('.stock-total-cost').val(total_cost.toFixed(4));
 
                 
 
@@ -160,7 +196,7 @@
             let row =  $(this).closest('tr');
 
             let unit_dropdown = row.find('.output-item-unit-dropdown');
-            row.find('.output-unit-weight').val(unit_weight.toFixed(2));
+            row.find('.output-unit-weight').val(unit_weight.toFixed(4));
 
             unit_dropdown.val(unit_id).trigger('change');
             
@@ -186,27 +222,32 @@
 
             summaryCalculation();
         });
-
+        
         function calculation(row)
         {
             let quantity = parseFloat(row.find('.output-quantity').val()) || 0;
             let unit_weight = parseFloat(row.find('.output-unit-weight').val()) ||0;
-            let avg_production_unit_price = $('#materail_avg_unit_price').val() ||0; 
             
+            let avg_production_unit_price = accurateDecimalCalAvgUnitCost();
             
-            let quanity_weight = quantity * unit_weight;
-            row.find('.output-quantity-weight').val(quanity_weight.toFixed(2));
+            let quanity_weight = parseFloat(quantity * unit_weight);
+            row.find('.output-quantity-weight').val(quanity_weight.toFixed(4));
           
-            let per_unit_cost = avg_production_unit_price * unit_weight;
-            row.find('.output-per-unit-cost').val(per_unit_cost.toFixed(2));
+            let per_unit_cost = parseFloat(avg_production_unit_price * unit_weight);
+            row.find('.output-per-unit-cost').val(per_unit_cost.toFixed(4));
+         
 
-            let total_cost = avg_production_unit_price * quanity_weight;
-            row.find('.output-total-cost').val(total_cost.toFixed(2));
+            let total_cost = parseFloat(avg_production_unit_price * quanity_weight);
+            row.find('.output-total-cost').val(total_cost.toFixed(4));
 
-            
+           
 
             summaryCalculation();
         }
+        
+          
+          
+        
         //Quantity Value Change
         $(document).on('keyup','.output-quantity', function(e){
             e.preventDefault(); // Prevent the default behavior (form submission)
@@ -306,7 +347,7 @@
                 let production_quantity_weight = parseFloat($(this).val()) || 0;
                 production_sub_total_weight+= production_quantity_weight;
             });
-            $('#production-sub-total-weight').val(production_sub_total_weight.toFixed(2));
+            $('#production-sub-total-weight').val(production_sub_total_weight.toFixed(4));
 
 
 
@@ -314,7 +355,7 @@
                 let value = parseFloat($(this).val()) || 0;
                 total_production_cost+= value;
             });
-            $('#total-production-cost').val(total_production_cost.toFixed(2));
+            $('#total-production-cost').val(total_production_cost.toFixed(4));
 
 
 
@@ -335,8 +376,8 @@
                 }
               
             });
-            $('#output-sub-total-weight').val(output_sub_total_weight.toFixed(2));
-            $('#surplus-sub-total-weight').val(surplus_sub_total_weight.toFixed(2));
+            $('#output-sub-total-weight').val(output_sub_total_weight.toFixed(4));
+            $('#surplus-sub-total-weight').val(surplus_sub_total_weight.toFixed(4));
 
 
             $('.output-quantity').each(function(){
@@ -355,8 +396,8 @@
                 }
               
             });
-            $('#output-bags').val(output_bags.toFixed(2));
-            $('#surplus-bags').val(surplus_bags.toFixed(2));
+            $('#output-bags').val(output_bags.toFixed(4));
+            $('#surplus-bags').val(surplus_bags.toFixed(4));
 
 
             $('.output-quantity-weight').each(function(){
@@ -381,36 +422,57 @@
 
 
 
-            outputTableCalculation(production_sub_total_weight);
+           outputTableCalculation(production_sub_total_weight);
 
     
             // checkProductionOutputWeight(output_sub_total_weight, production_sub_total_weight);
         }
 
+        function accurateDecimalCalAvgUnitCost()
+        {
+            let materail_total_cost = parseFloat($('#materail_total_cost').val()) || 0;
+            let materail_production_qty_total = parseFloat($('#materail_production_qty_total').val()) || 0;
+
+            let avg_production_unit_price = materail_total_cost/materail_production_qty_total;
+
+            return avg_production_unit_price;
+        }
 
         function outputTableCalculation(prodcution_weight)
         {
             let output_item = $('#output-item').val();
-            let unit_weight = $('#output-item option:selected').data('unit-weight'); 
+            let unit_weight = parseFloat($('#output-item option:selected').data('unit-weight')); 
 
            
             let first_row = $('#output-table tbody tr:first');
             let output_item_id = first_row.find('.output-item-dropdown option:selected').val();
             
-            let avg_production_unit_price = $('#materail_avg_unit_price').val() ||0; 
+           
 
+            let avg_production_unit_price = accurateDecimalCalAvgUnitCost();
 
             if (output_item == output_item_id) {
                
                 let qty = parseFloat(prodcution_weight / unit_weight);
+                let output_qty_weight = parseFloat(qty*unit_weight);
              
-                first_row.find('.output-quantity').val(qty.toFixed(2));
-                first_row.find('.output-quantity-weight').val((qty*unit_weight).toFixed(2));
+                first_row.find('.output-quantity').val(qty.toFixed(4));
+                first_row.find('.output-quantity-weight').val((output_qty_weight).toFixed(4));
 
-                let total_cost = avg_production_unit_price * prodcution_weight;
-                first_row.find('.output-total-cost').val(total_cost.toFixed(2));
-                summaryCalculation();// becuase once costing is done then we will get production cost vlaue
+                let total_cost = parseFloat(avg_production_unit_price * prodcution_weight);
+                first_row.find('.output-total-cost').val(total_cost.toFixed(4));
+                // summaryCalculation();// becuase once costing is done then we will get production cost vlaue
+            
+                let total_production_cost = 0;
+
+                $('.output-total-cost').each(function(){
+                    let value = parseFloat($(this).val()) || 0;
+                    total_production_cost+= value;
+                });
+                $('#total-production-cost').val(total_production_cost.toFixed(4));
+
             }
+            
 
         }
     
@@ -450,30 +512,30 @@
             let value = parseFloat($(this).val()) || 0;
             materail_recipe_qty_total+= value;
         });
-        $('#materail_recipe_qty_total').val(materail_recipe_qty_total.toFixed(2));
+        $('#materail_recipe_qty_total').val(materail_recipe_qty_total.toFixed(4));
 
 
         $('.production-quantity-weight').each(function(){
             let value = parseFloat($(this).val()) || 0;
             materail_production_qty_total+= value;
         });
-        $('#materail_production_qty_total').val(materail_production_qty_total.toFixed(2));
+        $('#materail_production_qty_total').val(materail_production_qty_total.toFixed(4));
 
         $('.stock-quantity').each(function(){
             let value = parseFloat($(this).val()) || 0;
             materail_stock_qty_total+= value;
         });
-        $('#materail_stock_qty_total').val(materail_stock_qty_total.toFixed(2));
+        $('#materail_stock_qty_total').val(materail_stock_qty_total.toFixed(4));
 
        
         $('.stock-total-cost').each(function(){
             let value = parseFloat($(this).val()) || 0;
             materail_total_cost+= value;
         });
-        $('#materail_total_cost').val(materail_total_cost.toFixed(2));
+        $('#materail_total_cost').val(materail_total_cost.toFixed(4));
 
-        materail_avg_unit_price = materail_total_cost/materail_production_qty_total;
-        $('#materail_avg_unit_price').val(materail_avg_unit_price.toFixed(2));
+        materail_avg_unit_price =parseFloat( materail_total_cost/materail_production_qty_total);
+        $('#materail_avg_unit_price').val(materail_avg_unit_price.toFixed(4));
 
         
     }
