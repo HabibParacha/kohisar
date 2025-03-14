@@ -51,7 +51,7 @@
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <th>{{ number_format($totalStockValue,2) }}</th>
+                                            <th>{{ number_format($totalStockValue,4) }}</th>
                                         </tr>
     
                                     </tbody>

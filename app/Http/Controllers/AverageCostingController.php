@@ -55,9 +55,9 @@ class AverageCostingController extends Controller
                 'qty_in' => ($transaction->type == 'receipt') ? $transaction->net_weight : '-',
                 'qty_out' => ($transaction->type == 'production') ? $transaction->net_weight : '-',
                 'balance' => $stock_weight,
-                'balance' => number_format($stock_weight, 2),
-                'avg_cost' => ($transaction->type == 'receipt') ? number_format($avg_cost, 2):'-',
-                'stock_value' => number_format($stock_weight*$avg_cost, 2),
+                'balance' => number_format($stock_weight, 4),
+                'avg_cost' => ($transaction->type == 'receipt') ? number_format($avg_cost, 4):'-',
+                'stock_value' => number_format($stock_weight*$avg_cost, 4),
             ];
 
 
@@ -120,13 +120,21 @@ class AverageCostingController extends Controller
                     }
     
                 }
+                // $data[] =[
+                //     'name' => $item->name,
+                //     'qty_in' =>  number_format($transactions->where('type','receipt')->sum('net_weight'),4),
+                //     'qty_out' =>  number_format($transactions->where('type','production')->sum('net_weight'),4),
+                //     'balance' => number_format($stock_weight, 4),
+                //     'stock_value' => number_format($stock_weight*$avg_cost, 4),
+                //     'avg_cost' =>  number_format($avg_cost,4),
+                // ];   
                 $data[] =[
                     'name' => $item->name,
-                    'qty_in' =>  number_format($transactions->where('type','receipt')->sum('net_weight'),2),
-                    'qty_out' =>  number_format($transactions->where('type','production')->sum('net_weight'),2),
-                    'balance' => number_format($stock_weight, 2),
-                    'stock_value' => number_format($stock_weight*$avg_cost, 2),
-                    'avg_cost' =>  number_format($avg_cost,2),
+                    'qty_in' =>  $transactions->where('type','receipt')->sum('net_weight'),
+                    'qty_out' =>  $transactions->where('type','production')->sum('net_weight'),
+                    'balance' => $stock_weight,
+                    'stock_value' => $stock_weight*$avg_cost,
+                    'avg_cost' =>  $avg_cost,
                 ];   
                 
                 $totalStockValue += ($stock_weight*$avg_cost);

@@ -61,6 +61,8 @@ DELETE FROM journals where date > '2025-02-17';
 DELETE FROM vouchers where date > '2025-02-17';
 DELETE FROM voucher_details where date > '2025-02-17';
 
+DELETE from invoice_master where type = "production"
+
 436,980,476.46 438,858,206.56
 
 ---------------------------------------------System updated--------------------------------------------
@@ -84,3 +86,4 @@ ALTER TABLE `invoice_detail` CHANGE `after_discount_total_price` `after_discount
 ALTER TABLE `invoice_detail` CHANGE `purchase_unit_price` `	purchase_unit_price` DECIMAL(20,4) NULL DEFAULT NULL;
 ALTER TABLE `invoice_detail` CHANGE `total_purchase_price` `total_purchase_price` DECIMAL(20,4) NULL DEFAULT NULL;
 ALTER TABLE `invoice_detail` CHANGE `grand_total` `grand_total` DECIMAL(20,4) NULL DEFAULT NULL;
+---------------------------------------------System updated--------------------------------------------
