@@ -126,9 +126,9 @@ class AverageCostingController extends Controller
                     'name' => $item->name,
                     'qty_in' =>  $transactions->where('type','receipt')->sum('net_weight'),
                     'qty_out' =>  $transactions->where('type','production')->sum('net_weight'),
-                    'balance' => $stock_weight,
-                    'stock_value' => $stock_weight*$avg_cost,
-                    'avg_cost' =>  $avg_cost,
+                    'balance' => number_format($stock_weight, 2),
+                    'stock_value' => number_format($stock_weight*$avg_cost, 2),
+                    'avg_cost' =>  number_format($avg_cost,2),
                 ];   
                
                 
