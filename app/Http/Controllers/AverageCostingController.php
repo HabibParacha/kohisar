@@ -110,24 +110,18 @@ class AverageCostingController extends Controller
     
                         if($stock_weight > 0)
                             $avg_cost = $stock_value / $stock_weight;
+                       
                         
                     }
                     else if($transaction->type == 'production')
                     {           
                         $stock_value -= $transaction->net_weight * $avg_cost;
                         $stock_weight -= $transaction->net_weight;
+                       
          
                     }
     
                 }
-                // $data[] =[
-                //     'name' => $item->name,
-                //     'qty_in' =>  number_format($transactions->where('type','receipt')->sum('net_weight'),4),
-                //     'qty_out' =>  number_format($transactions->where('type','production')->sum('net_weight'),4),
-                //     'balance' => number_format($stock_weight, 4),
-                //     'stock_value' => number_format($stock_weight*$avg_cost, 4),
-                //     'avg_cost' =>  number_format($avg_cost,4),
-                // ];   
                 $data[] =[
                     'name' => $item->name,
                     'qty_in' =>  $transactions->where('type','receipt')->sum('net_weight'),
@@ -136,8 +130,9 @@ class AverageCostingController extends Controller
                     'stock_value' => $stock_weight*$avg_cost,
                     'avg_cost' =>  $avg_cost,
                 ];   
+               
                 
-                $totalStockValue += ($stock_weight*$avg_cost);
+                $totalStockValue += round(($stock_weight*$avg_cost),4);
             }
             else
             {

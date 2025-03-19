@@ -409,13 +409,18 @@ class RecipeController extends Controller
             {
                 $averageCost = Item::averageCost($detail->item_id);
 
+                //bcdiv() ensures higher precision during division, and rounding is done at the final step.
+                $quantity = round($detail->quantity, 2);
+                $balance = round(bcdiv($averageCost['balance'], 1, 2), 2);
+                $purchase_unit_price = round(bcdiv($averageCost['avg_cost'], 1, 2), 2);
+
                 $recipeDetails [] = [
                     'item_id' => $detail->item_id,
                     'name' => $detail->item->name,
                     'base_unit' => $detail->item->unit->base_unit,
-                    'quantity' => $detail->quantity,
-                    'balance' => $averageCost['balance'],
-                    'purchase_unit_price' => $averageCost['avg_cost'],
+                    'quantity' => $quantity,
+                    'balance' => $balance,
+                    'purchase_unit_price' => $purchase_unit_price,
                 ];
             }
             
